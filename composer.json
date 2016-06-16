@@ -1,0 +1,23 @@
+{
+  "name": "altapay/magento2-payment",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Martin Aarhof",
+      "email": "maa@scandesigns.dk",
+      "role": "Developer"
+    }
+  ],
+  "description": "Altapay payment",
+  "require": {
+    "php": "^5.5|^7.0"
+  },
+  "type": "magento2-module",
+  "autoload": {
+    "files": [ "registration.php" ],
+    "psr-4": {
+      "SDM\\Altapay\\": ""
+    }
+  }
+
+}
