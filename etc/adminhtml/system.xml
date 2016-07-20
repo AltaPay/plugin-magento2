@@ -31,6 +31,12 @@
                         <config_path>payment/altapay_config/api_pass_word</config_path>
                     </field>
 
+                    <field id="productionurl" translate="label comment" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Production URL</label>
+                        <comment><![CDATA[Your production url fx (https://YourShopName.altapaysecure.com)]]></comment>
+                        <config_path>payment/altapay_config/productionurl</config_path>
+                    </field>
+
                     <field id="api_test_connection" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                         <label>Test connection</label>
                         <comment>Can we connect to Altapay</comment>
@@ -86,46 +92,40 @@
                     <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/altapay_terminal1/active</config_path>
+                        <config_path>payment/terminal1/active</config_path>
                     </field>
 
                     <field id="title" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Title</label>
-                        <config_path>payment/altapay_terminal1/title</config_path>
+                        <config_path>payment/terminal1/title</config_path>
                     </field>
 
                     <field id="terminalname" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Terminal name</label>
                         <comment>Select terminal - Remember to save configuration after you have added your API login and password, to get your terminals</comment>
-                        <config_path>payment/altapay_terminal1/terminalname</config_path>
+                        <config_path>payment/terminal1/terminalname</config_path>
                         <source_model>SDM\Altapay\Model\Config\Source\Terminals</source_model>
-                    </field>
-
-                    <field id="productionurl" translate="label comment" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Production URL</label>
-                        <comment><![CDATA[Your production url fx (https://<YourShopName>.altapaysecure.com/merchant/)]]></comment>
-                        <config_path>payment/altapay_terminal1/productionurl</config_path>
                     </field>
 
                     <field id="language" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Force language</label>
                         <comment>Force the language of the payment page</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Languages</source_model>
-                        <config_path>payment/altapay_terminal1/language</config_path>
+                        <config_path>payment/terminal1/language</config_path>
                     </field>
 
                     <field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Fraud detection</label>
                         <comment>Select the software to use for fraud detection, or disable it</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>
-                        <config_path>payment/altapay_terminal1/fraud</config_path>
+                        <config_path>payment/terminal1/fraud</config_path>
                     </field>
 
                     <field id="capture" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Auto capture</label>
                         <comment>If you only sell download products, which are delivered immediately you can turn this on</comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/altapay_terminal1/capture</config_path>
+                        <config_path>payment/terminal1/capture</config_path>
                     </field>
 
                 </group>
@@ -136,46 +136,40 @@
                     <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/altapay_terminal2/active</config_path>
+                        <config_path>payment/terminal2/active</config_path>
                     </field>
 
                     <field id="title" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Title</label>
-                        <config_path>payment/altapay_terminal2/title</config_path>
+                        <config_path>payment/terminal2/title</config_path>
                     </field>
 
                     <field id="terminalname" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Terminal name</label>
                         <comment>Select terminal - Remember to save configuration after you have added your API login and password, to get your terminals</comment>
-                        <config_path>payment/altapay_terminal2/terminalname</config_path>
+                        <config_path>payment/terminal2/terminalname</config_path>
                         <source_model>SDM\Altapay\Model\Config\Source\Terminals</source_model>
-                    </field>
-
-                    <field id="productionurl" translate="label comment" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Production URL</label>
-                        <comment><![CDATA[Your production url fx (https://<YourShopName>.altapaysecure.com/merchant/)]]></comment>
-                        <config_path>payment/altapay_terminal2/productionurl</config_path>
                     </field>
 
                     <field id="language" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Force language</label>
                         <comment>Force the language of the payment page</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Languages</source_model>
-                        <config_path>payment/altapay_terminal2/language</config_path>
+                        <config_path>payment/terminal2/language</config_path>
                     </field>
 
                     <field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Fraud detection</label>
                         <comment>Select the software to use for fraud detection, or disable it</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>
-                        <config_path>payment/altapay_terminal2/fraud</config_path>
+                        <config_path>payment/terminal2/fraud</config_path>
                     </field>
 
                     <field id="capture" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Auto capture</label>
                         <comment>If you only sell download products, which are delivered immediately you can turn this on</comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/altapay_terminal2/capture</config_path>
+                        <config_path>payment/terminal2/capture</config_path>
                     </field>
 
                 </group>
@@ -186,46 +180,40 @@
                     <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/altapay_terminal3/active</config_path>
+                        <config_path>payment/terminal3/active</config_path>
                     </field>
 
                     <field id="title" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Title</label>
-                        <config_path>payment/altapay_terminal3/title</config_path>
+                        <config_path>payment/terminal3/title</config_path>
                     </field>
 
                     <field id="terminalname" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Terminal name</label>
                         <comment>Select terminal - Remember to save configuration after you have added your API login and password, to get your terminals</comment>
-                        <config_path>payment/altapay_terminal3/terminalname</config_path>
+                        <config_path>payment/terminal3/terminalname</config_path>
                         <source_model>SDM\Altapay\Model\Config\Source\Terminals</source_model>
-                    </field>
-
-                    <field id="productionurl" translate="label comment" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Production URL</label>
-                        <comment><![CDATA[Your production url fx (https://<YourShopName>.altapaysecure.com/merchant/)]]></comment>
-                        <config_path>payment/altapay_terminal3/productionurl</config_path>
                     </field>
 
                     <field id="language" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Force language</label>
                         <comment>Force the language of the payment page</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Languages</source_model>
-                        <config_path>payment/altapay_terminal3/language</config_path>
+                        <config_path>payment/terminal3/language</config_path>
                     </field>
 
                     <field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Fraud detection</label>
                         <comment>Select the software to use for fraud detection, or disable it</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>
-                        <config_path>payment/altapay_terminal3/fraud</config_path>
+                        <config_path>payment/terminal3/fraud</config_path>
                     </field>
 
                     <field id="capture" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Auto capture</label>
                         <comment>If you only sell download products, which are delivered immediately you can turn this on</comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/altapay_terminal3/capture</config_path>
+                        <config_path>payment/terminal3/capture</config_path>
                     </field>
 
                 </group>
@@ -236,46 +224,40 @@
                     <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/altapay_terminal4/active</config_path>
+                        <config_path>payment/terminal4/active</config_path>
                     </field>
 
                     <field id="title" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Title</label>
-                        <config_path>payment/altapay_terminal4/title</config_path>
+                        <config_path>payment/terminal4/title</config_path>
                     </field>
 
                     <field id="terminalname" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Terminal name</label>
                         <comment>Select terminal - Remember to save configuration after you have added your API login and password, to get your terminals</comment>
-                        <config_path>payment/altapay_terminal4/terminalname</config_path>
+                        <config_path>payment/terminal4/terminalname</config_path>
                         <source_model>SDM\Altapay\Model\Config\Source\Terminals</source_model>
-                    </field>
-
-                    <field id="productionurl" translate="label comment" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Production URL</label>
-                        <comment><![CDATA[Your production url fx (https://<YourShopName>.altapaysecure.com/merchant/)]]></comment>
-                        <config_path>payment/altapay_terminal4/productionurl</config_path>
                     </field>
 
                     <field id="language" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Force language</label>
                         <comment>Force the language of the payment page</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Languages</source_model>
-                        <config_path>payment/altapay_terminal4/language</config_path>
+                        <config_path>payment/terminal4/language</config_path>
                     </field>
 
                     <field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Fraud detection</label>
                         <comment>Select the software to use for fraud detection, or disable it</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>
-                        <config_path>payment/altapay_terminal4/fraud</config_path>
+                        <config_path>payment/terminal4/fraud</config_path>
                     </field>
 
                     <field id="capture" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Auto capture</label>
                         <comment>If you only sell download products, which are delivered immediately you can turn this on</comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/altapay_terminal4/capture</config_path>
+                        <config_path>payment/terminal4/capture</config_path>
                     </field>
 
                 </group>
@@ -286,46 +268,40 @@
                     <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/altapay_terminal5/active</config_path>
+                        <config_path>payment/terminal5/active</config_path>
                     </field>
 
                     <field id="title" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Title</label>
-                        <config_path>payment/altapay_terminal5/title</config_path>
+                        <config_path>payment/terminal5/title</config_path>
                     </field>
 
                     <field id="terminalname" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Terminal name</label>
                         <comment>Select terminal - Remember to save configuration after you have added your API login and password, to get your terminals</comment>
-                        <config_path>payment/altapay_terminal5/terminalname</config_path>
+                        <config_path>payment/terminal5/terminalname</config_path>
                         <source_model>SDM\Altapay\Model\Config\Source\Terminals</source_model>
-                    </field>
-
-                    <field id="productionurl" translate="label comment" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Production URL</label>
-                        <comment><![CDATA[Your production url fx (https://<YourShopName>.altapaysecure.com/merchant/)]]></comment>
-                        <config_path>payment/altapay_terminal5/productionurl</config_path>
                     </field>
 
                     <field id="language" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Force language</label>
                         <comment>Force the language of the payment page</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Languages</source_model>
-                        <config_path>payment/altapay_terminal5/language</config_path>
+                        <config_path>payment/terminal5/language</config_path>
                     </field>
 
                     <field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Fraud detection</label>
                         <comment>Select the software to use for fraud detection, or disable it</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>
-                        <config_path>payment/altapay_terminal5/fraud</config_path>
+                        <config_path>payment/terminal5/fraud</config_path>
                     </field>
 
                     <field id="capture" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Auto capture</label>
                         <comment>If you only sell download products, which are delivered immediately you can turn this on</comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/altapay_terminal5/capture</config_path>
+                        <config_path>payment/terminal5/capture</config_path>
                     </field>
 
                 </group>

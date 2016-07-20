@@ -31,16 +31,14 @@ class SystemConfig
     }
 
     /**
-     * @param int $terminalId
      * @return Authentication
      */
-    public function getAuth($terminalId = null)
+    public function getAuth()
     {
         $login = $this->getApiConfig('api_log_in');
         $password = $this->encrypter->processValue($this->getApiConfig('api_pass_word'));
-        if ($terminalId) {
-            $baseurl = $this->getTerminalConfig($terminalId, 'productionurl');
-        } else {
+        $baseurl = $this->getApiConfig('productionurl');
+        if (empty($baseurl)) {
             $baseurl = null;
         }
 
@@ -67,7 +65,7 @@ class SystemConfig
     public function getTerminalConfig($id, $configKey)
     {
         return $this->scopeConfig->getValue(sprintf(
-            'payment/altapay_terminal%d/%s',
+            'payment/terminal%d/%s',
             $id,
             $configKey
         ));
