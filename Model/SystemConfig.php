@@ -26,7 +26,11 @@ class SystemConfig
     static public function getTerminalCodes()
     {
         return [
-            Terminal1::METHOD_CODE
+            Terminal1::METHOD_CODE,
+            Terminal2::METHOD_CODE,
+            Terminal3::METHOD_CODE,
+            Terminal4::METHOD_CODE,
+            Terminal5::METHOD_CODE
         ];
     }
 
@@ -58,15 +62,15 @@ class SystemConfig
     }
 
     /**
-     * @param int $id
+     * @param int $terminalId
      * @param string $configKey
      * @return \Magento\Payment\Model\MethodInterface
      */
-    public function getTerminalConfig($id, $configKey)
+    public function getTerminalConfig($terminalId, $configKey)
     {
         return $this->scopeConfig->getValue(sprintf(
             'payment/terminal%d/%s',
-            $id,
+            $terminalId,
             $configKey
         ));
     }

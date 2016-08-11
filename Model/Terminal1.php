@@ -8,7 +8,7 @@ namespace SDM\Altapay\Model;
 /**
  * Pay In Store payment method model
  */
-class Terminal1 extends \Magento\Payment\Model\Method\AbstractMethod
+class Terminal1 extends TerminalModel
 {
 
     const METHOD_CODE = 'terminal1';
@@ -19,15 +19,5 @@ class Terminal1 extends \Magento\Payment\Model\Method\AbstractMethod
      * @var string
      */
     protected $_code = self::METHOD_CODE;
-
-    /**
-     * Availability option
-     *
-     * @var bool
-     */
-    protected $_isOffline = true;
-
-
-
 
 }

@@ -210,6 +210,7 @@ class Generator
         $order = $this->loadOrderFromCallback($response);
 
         if ($order->getId()) {
+            // @todo Write data to DB
             $payment = $order->getPayment();
             $payment->setPaymentId($response->paymentId);
             $payment->setLastTransId($response->transactionId);
@@ -226,7 +227,7 @@ class Generator
 
         $order->addStatusHistoryComment($comment);
         $order->addStatusHistoryComment(sprintf(
-            "Transaction ID: %s\nPayment ID: %s\nCredit card token: %s",
+            "Transaction ID: %s - Payment ID: %s - Credit card token: %s",
             $response->transactionId,
             $response->paymentId,
             $response->creditCardToken
@@ -273,6 +274,7 @@ class Generator
         $config->setCallbackOpen($this->urlInterface->getDirectUrl('sdmaltapay/index/open'));
         $config->setCallbackNotification($this->urlInterface->getDirectUrl('sdmaltapay/index/notification'));
         $config->setCallbackVerifyOrder($this->urlInterface->getDirectUrl('sdmaltapay/index/verifyorder'));
+        $config->setCallbackForm($this->urlInterface->getDirectUrl('sdmaltapay/index/callbackform'));
         return $config;
     }
 

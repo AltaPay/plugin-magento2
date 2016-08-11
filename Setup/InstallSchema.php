@@ -29,10 +29,13 @@ class InstallSchema implements InstallSchemaInterface
      */
     public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
-        $setup->startSetup();
+        $installer = $setup;
+
+        $installer->startSetup();
 
         // Create transaction data schema
-        $table = $setup->getConnection()->newTable($setup->getTable(self::TABLE_IDENTIFIER));
+        $table = $installer->getConnection()->newTable($installer->getTable(self::TABLE_NAME));
+
         $table->addColumn(
             self::TABLE_IDENTIFIER,
             Table::TYPE_INTEGER,
@@ -112,9 +115,9 @@ class InstallSchema implements InstallSchemaInterface
 
         $table->setComment('Altapay transaction data');
 
-        $setup->getConnection()->createTable($table);
+        $installer->getConnection()->createTable($table);
 
-        $setup->endSetup();
+        $installer->endSetup();
 
     }
 

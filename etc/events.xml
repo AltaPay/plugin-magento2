@@ -3,4 +3,16 @@
     <event name="sales_order_payment_place_start">
         <observer name="SDM_Altapay_Order_Before_Payment" instance="SDM\Altapay\Observer\BeforePaymentObserver" />
     </event>
+
+    <event name="order_cancel_after">
+        <observer name="SDM_Altapay_OrderCancel" instance="SDM\Altapay\Observer\OrderCancelObserver" />
+    </event>
+
+    <event name="sales_order_payment_capture">
+        <observer name="SDM_Altapay_Capture" instance="SDM\Altapay\Observer\CaptureObserver" />
+    </event>
+
+    <event name="sales_order_creditmemo_refund">
+        <observer name="SDM_Altapay_Creditmemo_Refund" instance="SDM\Altapay\Observer\CreditmemoRefundObserver" />
+    </event>
 </config>
