@@ -24,9 +24,15 @@ class Authentication implements \Magento\Framework\Option\ArrayInterface
      */
     public function toOptionArray()
     {
-        $connection = new TestAuthentication($this->systemConfig->getAuth());
+        try {
+            $response = new TestAuthentication($this->systemConfig->getAuth());
+            $result = $response->call();
+        } catch (\Exception $e) {
+            $result = false;
+        }
+
         return [
-            ['value' => '', 'label' => $connection->call() ? 'Authentication successful' : 'Could not authenticate']
+            ['value' => '', 'label' => $result ? 'Authentication successful' : 'Could not authenticate']
         ];
     }
 }

@@ -24,9 +24,15 @@ class Connection implements \Magento\Framework\Option\ArrayInterface
      */
     public function toOptionArray()
     {
-        $response = new TestConnection($this->systemConfig->getApiConfig('productionurl'));
+        try {
+            $response = new TestConnection($this->systemConfig->getApiConfig('productionurl'));
+            $result = $response->call();
+        } catch (\Exception $e) {
+            $result = false;
+        }
+
         return [
-            ['value' => '', 'label' => $response->call() ? 'Connection successful' : 'Could not connect']
+            ['value' => '', 'label' => $result->call() ? 'Connection successful' : 'Could not connect']
         ];
     }
 }
