@@ -26,13 +26,17 @@ class Connection implements \Magento\Framework\Option\ArrayInterface
     {
         try {
             $response = new TestConnection($this->systemConfig->getApiConfig('productionurl'));
-            $result = $response->call();
+            if (! $response) {
+                $result = false;
+            } else {
+                $result = $response->call();
+            }
         } catch (\Exception $e) {
             $result = false;
         }
 
         return [
-            ['value' => '', 'label' => $result->call() ? 'Connection successful' : 'Could not connect']
+            ['value' => '', 'label' => $result ? 'Connection successful' : 'Could not connect']
         ];
     }
 }
