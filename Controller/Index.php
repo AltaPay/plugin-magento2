@@ -32,6 +32,7 @@ abstract class Index extends Action
      * @var Generator
      */
     protected $generator;
+
     /**
      * @var LoggerInterface
      */

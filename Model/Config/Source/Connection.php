@@ -2,9 +2,10 @@
 namespace SDM\Altapay\Model\Config\Source;
 
 use Altapay\Api\Test\TestConnection;
+use Magento\Framework\Option\ArrayInterface;
 use SDM\Altapay\Model\SystemConfig;
 
-class Connection implements \Magento\Framework\Option\ArrayInterface
+class Connection implements ArrayInterface
 {
 
     /**

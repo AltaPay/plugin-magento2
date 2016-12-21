@@ -10,6 +10,7 @@ use Altapay\Exceptions\ResponseMessageException;
 use Altapay\Request\Address;
 use Altapay\Request\Config;
 use Altapay\Request\Customer;
+use Altapay\Request\OrderLine;
 use Altapay\Response\CallbackResponse;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Request\Http;
@@ -87,7 +88,7 @@ class Generator
     public function createRequest($terminalId, $orderId)
     {
         $terminalName = $this->systemConfig->getTerminalConfig($terminalId, 'terminalname');
-        $auth = $this->systemConfig->getAuth($terminalId);
+        $auth = $this->systemConfig->getAuth();
 
         $api = new TestAuthentication($auth);
         $response = $api->call();
@@ -121,7 +122,19 @@ class Generator
             if ($this->systemConfig->getTerminalConfig($terminalId, 'capture')) {
                 $request->setType('paymentAndCapture');
             }
-            // @todo add order lines
+
+            $orderlines = [];
+            /** @var \Magento\Sales\Model\Order\Item $item */
+            foreach ($order->getAllVisibleItems() as $item) {
+                $orderlines[] = new OrderLine(
+                    $item->getName(),
+                    $item->getSku(),
+                    $item->getQtyOrdered(),
+                    $item->getPriceInclTax()
+                );
+            }
+
+            $request->setOrderLines($orderlines);
 
             try {
                 /** @var \Altapay\Response\PaymentRequestResponse $response */
@@ -130,7 +143,7 @@ class Generator
                 $requestParams['formurl'] = $response->Url;
                 // set before payment status
                 $this->setCustomOrderStatus($order, Order::STATE_PENDING_PAYMENT, 'before');
-                $order->save();
+                $order->getResource()->save($order);
                 // set notification
                 $order->addStatusHistoryComment('Redirected to Altapay - Payment ID: ' . $response->PaymentRequestId);
                 return $requestParams;
@@ -167,8 +180,8 @@ class Generator
             $quote
                 ->setIsActive(1)
                 ->setReservedOrderId(null)
-                ->save()
             ;
+            $quote->getResource()->save($quote);
             $this->checkoutSession->replaceQuote($quote);
         }
     }
@@ -234,7 +247,7 @@ class Generator
         ));
 
         $order->setIsNotified(false);
-        $order->save();
+        $order->getResource()->save($order);
     }
 
     /**
@@ -262,7 +275,7 @@ class Generator
         if ($status = $this->systemConfig->getStatusConfig($statusKey)) {
             $this->order->setStatus($status);
         }
-        $order->save();
+        $order->getResource()->save($order);
     }
 
     private function setConfig()

@@ -35,13 +35,15 @@ class CreditmemoRefundObserver implements ObserverInterface
 
             /** @var \Magento\Sales\Model\Order\Payment $payment */
             $payment = $order->getPayment();
-
-            $refund = new RefundCapturedReservation($this->systemConfig->getAuth());
-            $refund->setTransaction($payment->getLastTransId());
-            /** @var RefundResponse $response */
-            $response = $refund->call();
-            if ($response->Result != 'Success') {
-                throw new \InvalidArgumentException('Could not refund captured reservation');
+            if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
+                $refund = new RefundCapturedReservation($this->systemConfig->getAuth());
+                $refund->setTransaction($payment->getLastTransId());
+                $refund->setAmount($memo->getGrandTotal());
+                /** @var RefundResponse $response */
+                $response = $refund->call();
+                if ($response->Result != 'Success') {
+                    throw new \InvalidArgumentException('Could not refund captured reservation');
+                }
             }
         }
 

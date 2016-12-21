@@ -11,7 +11,9 @@ define(
     function (Component) {
         'use strict';
         return Component.extend({
-            terminal: '1'
+            defaults: {
+                terminal: '1'
+            }
         });
     }
 );

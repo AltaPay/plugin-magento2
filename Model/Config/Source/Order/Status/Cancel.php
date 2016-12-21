@@ -2,6 +2,7 @@
 namespace SDM\Altapay\Model\Config\Source\Order\Status;
 
 use Magento\Sales\Model\Config\Source\Order\Status;
+use Magento\Sales\Model\Order;
 
 class Cancel extends Status
 {
@@ -10,7 +11,7 @@ class Cancel extends Status
      * @var string[]
      */
     protected $_stateStatuses = [
-        \Magento\Sales\Model\Order::STATE_CANCELED,
+        Order::STATE_CANCELED,
     ];
 
 }

@@ -2,9 +2,10 @@
 namespace SDM\Altapay\Model\Config\Source;
 
 use Altapay\Api\Test\TestAuthentication;
+use Magento\Framework\Option\ArrayInterface;
 use SDM\Altapay\Model\SystemConfig;
 
-class Authentication implements \Magento\Framework\Option\ArrayInterface
+class Authentication implements ArrayInterface
 {
 
     /**

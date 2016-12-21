@@ -2,9 +2,10 @@
 namespace SDM\Altapay\Model\Config\Source;
 
 use Altapay\Response\TerminalsResponse;
+use Magento\Framework\Option\ArrayInterface;
 use SDM\Altapay\Model\SystemConfig;
 
-class Terminals implements \Magento\Framework\Option\ArrayInterface
+class Terminals implements ArrayInterface
 {
 
     /**
