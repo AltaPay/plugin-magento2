@@ -130,7 +130,7 @@ class Generator
                     $item->getName(),
                     $item->getSku(),
                     $item->getQtyOrdered(),
-                    $item->getPriceInclTax()
+                    $item->getPrice()
                 );
             }
 
