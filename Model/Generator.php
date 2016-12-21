@@ -136,12 +136,6 @@ class Generator
 
             $request->setOrderLines($orderlines);
 
-            $order->addStatusHistoryComment(sprintf(
-                "Altapay request - Body: %s",
-                $request->getRawRequest()->getBody()
-            ));
-            $order->getResource()->save($order);
-
             try {
                 /** @var \Altapay\Response\PaymentRequestResponse $response */
                 $response = $request->call();
