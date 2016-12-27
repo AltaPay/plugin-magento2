@@ -16,7 +16,9 @@
                 <place_order_url>sdmaltapay/index/request</place_order_url>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
+                <can_capture_partial>1</can_capture_partial>
                 <can_refund>1</can_refund>
+                <can_refund_partial>1</can_refund_partial>
                 <can_cancel>1</can_cancel>
                 <can_use_checkout>1</can_use_checkout>
                 <is_gateway>1</is_gateway>
@@ -31,7 +33,9 @@
                 <place_order_url>sdmaltapay/index/request</place_order_url>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
+                <can_capture_partial>1</can_capture_partial>
                 <can_refund>1</can_refund>
+                <can_refund_partial>1</can_refund_partial>
                 <can_cancel>1</can_cancel>
                 <can_use_checkout>1</can_use_checkout>
                 <is_gateway>1</is_gateway>
@@ -46,7 +50,9 @@
                 <place_order_url>sdmaltapay/index/request</place_order_url>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
+                <can_capture_partial>1</can_capture_partial>
                 <can_refund>1</can_refund>
+                <can_refund_partial>1</can_refund_partial>
                 <can_cancel>1</can_cancel>
                 <can_use_checkout>1</can_use_checkout>
                 <is_gateway>1</is_gateway>
@@ -61,7 +67,9 @@
                 <place_order_url>sdmaltapay/index/request</place_order_url>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
+                <can_capture_partial>1</can_capture_partial>
                 <can_refund>1</can_refund>
+                <can_refund_partial>1</can_refund_partial>
                 <can_cancel>1</can_cancel>
                 <can_use_checkout>1</can_use_checkout>
                 <is_gateway>1</is_gateway>
@@ -76,7 +84,9 @@
                 <place_order_url>sdmaltapay/index/request</place_order_url>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
+                <can_capture_partial>1</can_capture_partial>
                 <can_refund>1</can_refund>
+                <can_refund_partial>1</can_refund_partial>
                 <can_cancel>1</can_cancel>
                 <can_use_checkout>1</can_use_checkout>
                 <is_gateway>1</is_gateway>
