@@ -96,7 +96,7 @@ class CaptureObserver implements ObserverInterface
                 );
 
                 $orderlines[] = (new OrderLine(
-                    $item->getDescription(),
+                    $item->getName(),
                     $item->getSku(),
                     $item->getQty(),
                     $item->getPrice()
@@ -104,7 +104,7 @@ class CaptureObserver implements ObserverInterface
 
                 if ($item->getDiscountAmount()) {
                     $orderlines[] = (new OrderLine(
-                        $item->getDescription(),
+                        $item->getName(),
                         $item->getSku(),
                         1,
                         (-1 * $item->getDiscountAmount())
