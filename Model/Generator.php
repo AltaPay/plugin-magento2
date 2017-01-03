@@ -15,6 +15,7 @@ use Altapay\Response\CallbackResponse;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Logger\Monolog;
 use Magento\Framework\UrlInterface;
 use Magento\Payment\Helper\Data as PaymentData;
 use Magento\Quote\Model\Quote;
@@ -28,34 +29,46 @@ class Generator
      * @var Quote
      */
     private $quote;
+
     /**
      * @var UrlInterface
      */
     private $urlInterface;
+
     /**
      * @var PaymentData
      */
     private $paymentData;
+
     /**
      * @var Session
      */
     private $checkoutSession;
+
     /**
      * @var Http
      */
     private $request;
+
     /**
      * @var Order
      */
     private $order;
+
     /**
      * @var OrderSender
      */
     private $orderSender;
+
     /**
      * @var SystemConfig
      */
     private $systemConfig;
+
+    /**
+     * @var Monolog
+     */
+    private $_logger;
 
     public function __construct(
         Quote $quote,
@@ -65,7 +78,8 @@ class Generator
         Http $request,
         Order $order,
         OrderSender $orderSender,
-        SystemConfig $systemConfig
+        SystemConfig $systemConfig,
+        Monolog $_logger
     )
     {
         $this->quote = $quote;
@@ -76,6 +90,7 @@ class Generator
         $this->order = $order;
         $this->orderSender = $orderSender;
         $this->systemConfig = $systemConfig;
+        $this->_logger = $_logger;
     }
 
     /**
@@ -126,13 +141,54 @@ class Generator
             $orderlines = [];
             /** @var \Magento\Sales\Model\Order\Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $orderlines[] = new OrderLine(
+                $logs = [
+                    'SKU: %s',
+                    'getPrice: %s',
+                    'getPriceInclTax: %s',
+                    'getBasePrice: %s',
+                    'getBaseOriginalPrice: %s',
+                    'getGwBasePrice: %s',
+                    'getGwPrice: %s',
+                    'getOriginalPrice: %s',
+                    'getDiscountAmount: %s',
+                    'getBaseDiscountAmount: %s',
+                ];
+
+                $this->_logger->addInfo(sprintf(implode(' - ', $logs),
+                    $item->getSku(),
+                    $item->getPrice(),
+                    $item->getPriceInclTax(),
+                    $item->getBasePrice(),
+                    $item->getBaseOriginalPrice(),
+                    $item->getGwBasePrice(),
+                    $item->getGwPrice(),
+                    $item->getOriginalPrice(),
+                    $item->getDiscountAmount(),
+                    $item->getBaseDiscountAmount()
+                ));
+
+                $orderlines[] = (new OrderLine(
                     $item->getName(),
                     $item->getSku(),
                     $item->getQtyOrdered(),
-                    $item->getPrice()
-                );
+                    $item->getPriceInclTax()
+                ))->setGoodsType('item');
+
+                if ($item->getDiscountAmount() > 0) {
+                    $orderlines[] = (new OrderLine(
+                        $item->getName(),
+                        $item->getSku(),
+                        1,
+                        $item->getDiscountAmount()
+                    ))->setGoodsType('handling');
+                }
             }
+
+            // Handling orderline
+            $data = $order->getShippingMethod(true);
+            $sku = $data['carrier_code'];
+            $name = $data['method'];
+            $orderlines[] = (new OrderLine($name, $sku, 1, $order->getShippingInclTax()))->setGoodsType('shipment');
 
             $request->setOrderLines($orderlines);
 
@@ -296,6 +352,7 @@ class Generator
         $billingAddress = new Address();
         if ($order->getBillingAddress()) {
             $address = $order->getBillingAddress()->convertToArray();
+            $billingAddress->Email = $order->getBillingAddress()->getEmail();
             $billingAddress->Firstname = $address['firstname'];
             $billingAddress->Lastname = $address['lastname'];
             $billingAddress->Address = $address['street'];
@@ -309,6 +366,7 @@ class Generator
         if ($order->getShippingAddress()) {
             $address = $order->getShippingAddress()->convertToArray();
             $shippingAddress = new Address();
+            $shippingAddress->Email = $order->getShippingAddress()->getEmail();
             $shippingAddress->Firstname = $address['firstname'];
             $shippingAddress->Lastname = $address['lastname'];
             $shippingAddress->Address = $address['street'];
@@ -317,6 +375,14 @@ class Generator
             $shippingAddress->Region = $address['region'] ?: '0';
             $shippingAddress->Country = $address['country_id'];
             $customer->setShipping($shippingAddress);
+        }
+
+        if ($order->getBillingAddress()) {
+            $customer->setEmail($order->getBillingAddress()->getEmail());
+            $customer->setPhone($order->getBillingAddress()->getTelephone());
+        } elseif ($order->getShippingAddress()) {
+            $customer->setEmail($order->getShippingAddress()->getEmail());
+            $customer->setPhone($order->getShippingAddress()->getTelephone());
         }
 
         return $customer;
