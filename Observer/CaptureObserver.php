@@ -78,13 +78,15 @@ class CaptureObserver implements ObserverInterface
                             'getQty: %s',
                             'getDescription: %s',
                             'getPrice(): %s',
-                            'getDiscountAmount(): %s'
+                            'getDiscountAmount(): %s',
+                            'getPrice() - getDiscountAmount(): %s'
                         ]),
                         $item->getSku(),
                         $item->getQty(),
                         $item->getDescription(),
                         $item->getPrice(),
-                        $item->getDiscountAmount()
+                        $item->getDiscountAmount(),
+                        $item->getPrice() - $item->getDiscountAmount()
                     )
                 );
 
@@ -92,7 +94,7 @@ class CaptureObserver implements ObserverInterface
                     $item->getDescription(),
                     $item->getSku(),
                     $item->getQty(),
-                    $item->getPrice()
+                    $item->getPrice() - $item->getDiscountAmount()
                 ))->setGoodsType('item');
 
             }
