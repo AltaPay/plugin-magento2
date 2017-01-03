@@ -43,8 +43,15 @@ abstract class Index extends Action
      */
     protected $pageFactory;
 
-    public function __construct(Context $context, PageFactory $pageFactory, Order $order, Quote $quote, Session $checkoutSession, Generator $generator, LoggerInterface $logger)
-    {
+    public function __construct(
+        Context $context,
+        PageFactory $pageFactory,
+        Order $order,
+        Quote $quote,
+        Session $checkoutSession,
+        Generator $generator,
+        LoggerInterface $logger
+    ) {
         parent::__construct($context);
         $this->order = $order;
         $this->quote = $quote;
