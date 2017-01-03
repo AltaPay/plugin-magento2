@@ -122,6 +122,16 @@ class CaptureObserver implements ObserverInterface
             $api->setTransaction($payment->getLastTransId());
             /** @var CaptureReservationResponse $response */
             $response = $api->call();
+
+            $body = $api->getRawResponse()->getBody();
+            $headers = $api->getRawResponse()->getHeaders();
+            $this->monolog->addInfo('Response body: ' . $body);
+            $headdata = [];
+            foreach ($headers as $k => $v) {
+                $headdata[] = $k . ' : ' . $v;
+            }
+            $this->monolog->addInfo('Response headers: ' . implode(" - ", $headdata));
+            
             if ($response->Result != 'Success') {
                 throw new \InvalidArgumentException('Could not capture reservation');
             }
