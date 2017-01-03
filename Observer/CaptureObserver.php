@@ -41,48 +41,48 @@ class CaptureObserver implements ObserverInterface
         $invoice = $observer['invoice'];
 
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
-//            $logs = [
-//                'invoice.getTransactionId: %s',
-//                'invoice->getOrder()->getIncrementId: %s',
-//                'getLastTransId: %s',
-//                'getAmountAuthorized: %s',
-//                'getAmountCanceled: %s',
-//                'getAmountOrdered: %s',
-//                'getAmountPaid: %s',
-//                'getAmountRefunded: %s',
-//            ];
-//
-//            $this->monolog->addInfo(
-//                sprintf(
-//                    implode(' - ', $logs),
-//                    $invoice->getTransactionId(),
-//                    $invoice->getOrder()->getIncrementId(),
-//                    $payment->getLastTransId(),
-//                    $payment->getAmountAuthorized(),
-//                    $payment->getAmountCanceled(),
-//                    $payment->getAmountOrdered(),
-//                    $payment->getAmountPaid(),
-//                    $payment->getAmountRefunded()
-//                )
-//            );
+            $logs = [
+                'invoice.getTransactionId: %s',
+                'invoice->getOrder()->getIncrementId: %s',
+                'getLastTransId: %s',
+                'getAmountAuthorized: %s',
+                'getAmountCanceled: %s',
+                'getAmountOrdered: %s',
+                'getAmountPaid: %s',
+                'getAmountRefunded: %s',
+            ];
+
+            $this->monolog->addInfo(
+                sprintf(
+                    implode(' - ', $logs),
+                    $invoice->getTransactionId(),
+                    $invoice->getOrder()->getIncrementId(),
+                    $payment->getLastTransId(),
+                    $payment->getAmountAuthorized(),
+                    $payment->getAmountCanceled(),
+                    $payment->getAmountOrdered(),
+                    $payment->getAmountPaid(),
+                    $payment->getAmountRefunded()
+                )
+            );
 
             $orderlines = [];
             /** @var \Magento\Sales\Model\Order\Invoice\Item $item */
             foreach ($invoice->getAllItems() as $item) {
-//                $this->monolog->addInfo(
-//                    sprintf(
-//                        implode(' - ', [
-//                            'getSku: %s',
-//                            'getQty: %s',
-//                            'getDescription: %s',
-//                            'getPriceInclTax: %s',
-//                        ]),
-//                        $item->getSku(),
-//                        $item->getQty(),
-//                        $item->getDescription(),
-//                        $item->getPriceInclTax()
-//                    )
-//                );
+                $this->monolog->addInfo(
+                    sprintf(
+                        implode(' - ', [
+                            'getSku: %s',
+                            'getQty: %s',
+                            'getDescription: %s',
+                            'getPriceInclTax: %s',
+                        ]),
+                        $item->getSku(),
+                        $item->getQty(),
+                        $item->getDescription(),
+                        $item->getPriceInclTax()
+                    )
+                );
 
                 $orderlines[] = (new OrderLine(
                     $item->getDescription(),
