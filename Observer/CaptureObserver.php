@@ -44,6 +44,7 @@ class CaptureObserver implements ObserverInterface
             $logs = [
                 'invoice.getTransactionId: %s',
                 'invoice->getOrder()->getIncrementId: %s',
+                '$invoice->getGrandTotal(): %s',
                 'getLastTransId: %s',
                 'getAmountAuthorized: %s',
                 'getAmountCanceled: %s',
@@ -57,6 +58,7 @@ class CaptureObserver implements ObserverInterface
                     implode(' - ', $logs),
                     $invoice->getTransactionId(),
                     $invoice->getOrder()->getIncrementId(),
+                    $invoice->getGrandTotal(),
                     $payment->getLastTransId(),
                     $payment->getAmountAuthorized(),
                     $payment->getAmountCanceled(),
