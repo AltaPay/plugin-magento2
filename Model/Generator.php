@@ -179,7 +179,7 @@ class Generator
                         $item->getName(),
                         $item->getSku(),
                         1,
-                        $item->getDiscountAmount()
+                        (-1 * $item->getDiscountAmount())
                     ))->setGoodsType('handling');
                 }
             }

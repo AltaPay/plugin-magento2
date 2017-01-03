@@ -79,14 +79,18 @@ class CaptureObserver implements ObserverInterface
                             'getDescription: %s',
                             'getPrice(): %s',
                             'getDiscountAmount(): %s',
-                            'getPrice() - getDiscountAmount(): %s'
+                            'getPrice() - getDiscountAmount(): %s',
+                            'getRowTotalInclTax: %s',
+                            'getRowTotal: %s'
                         ]),
                         $item->getSku(),
                         $item->getQty(),
                         $item->getDescription(),
                         $item->getPrice(),
                         $item->getDiscountAmount(),
-                        $item->getPrice() - $item->getDiscountAmount()
+                        $item->getPrice() - $item->getDiscountAmount(),
+                        $item->getRowTotalInclTax(),
+                        $item->getRowTotal()
                     )
                 );
 
@@ -94,8 +98,17 @@ class CaptureObserver implements ObserverInterface
                     $item->getDescription(),
                     $item->getSku(),
                     $item->getQty(),
-                    $item->getPrice() - $item->getDiscountAmount()
+                    $item->getPrice()
                 ))->setGoodsType('item');
+
+                if ($item->getDiscountAmount()) {
+                    $orderlines[] = (new OrderLine(
+                        $item->getDescription(),
+                        $item->getSku(),
+                        1,
+                        (-1 * $item->getDiscountAmount())
+                    ))->setGoodsType('handling');
+                }
 
             }
 
