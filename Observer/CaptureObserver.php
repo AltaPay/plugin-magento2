@@ -64,6 +64,24 @@ class CaptureObserver implements ObserverInterface
                 )
             );
 
+            /** @var \Magento\Sales\Model\Order\Invoice\Item $item */
+            foreach ($invoice->getAllItems() as $item) {
+                $this->monolog->addInfo(
+                    sprintf(
+                        implode(' - ', [
+                            'getSku: %s',
+                            'getQty: %s',
+                            'getDescription: %s',
+                            'getPriceInclTax: %s',
+                        ]),
+                        $item->getSku(),
+                        $item->getQty(),
+                        $item->getDescription(),
+                        $item->getPriceInclTax()
+                    )
+                );
+            }
+
             $observer['order']->getTransactionId();
 
             $api = new CaptureReservation($this->systemConfig->getAuth());
