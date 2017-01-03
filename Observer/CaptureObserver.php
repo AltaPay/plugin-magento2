@@ -129,14 +129,15 @@ class CaptureObserver implements ObserverInterface
                 $this->monolog->addCritical('Response header exception: ' . $e->getMessage());
             }
 
-            $body = $api->getRawResponse()->getBody();
-            $headers = $api->getRawResponse()->getHeaders();
+            $rawresponse = $api->getRawResponse();
+            $body = $rawresponse->getBody();
             $this->monolog->addInfo('Response body: ' . $body);
+
             $headdata = [];
-            foreach ($headers as $k => $v) {
-                $headdata[] = $k . ' : ' . $v;
+            foreach ($rawresponse->getHeaders() as $k => $v) {
+                $headdata[] = $k . ': ' . $v;
             }
-            $this->monolog->addInfo('Response headers: ' . implode(" - ", $headdata));
+            $this->monolog->addInfo('Response headers: ' . implode(", ", $headdata));
 
             if ($response->Result != 'Success') {
                 throw new \InvalidArgumentException('Could not capture reservation');
