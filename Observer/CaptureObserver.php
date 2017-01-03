@@ -2,6 +2,7 @@
 namespace SDM\Altapay\Observer;
 
 use Altapay\Api\Payments\CaptureReservation;
+use Altapay\Exceptions\ResponseHeaderException;
 use Altapay\Request\OrderLine;
 use Altapay\Response\CaptureReservationResponse;
 use Magento\Framework\Event\Observer;
@@ -121,7 +122,12 @@ class CaptureObserver implements ObserverInterface
             $api->setOrderLines($orderlines);
             $api->setTransaction($payment->getLastTransId());
             /** @var CaptureReservationResponse $response */
-            $response = $api->call();
+
+            try {
+                $response = $api->call();
+            } catch (ResponseHeaderException $e) {
+                $this->monolog->addCritical('Response header exception: ' . $e->getMessage());
+            }
 
             $body = $api->getRawResponse()->getBody();
             $headers = $api->getRawResponse()->getHeaders();
@@ -131,7 +137,7 @@ class CaptureObserver implements ObserverInterface
                 $headdata[] = $k . ' : ' . $v;
             }
             $this->monolog->addInfo('Response headers: ' . implode(" - ", $headdata));
-            
+
             if ($response->Result != 'Success') {
                 throw new \InvalidArgumentException('Could not capture reservation');
             }
