@@ -33,6 +33,8 @@ class CaptureObserver implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        $this->monolog->addInfo('observer: ' . implode(', ', array_keys($observer->convertToArray())));
+
         /** @var \Magento\Sales\Model\Order\Payment $payment */
         $payment = $observer['payment'];
         /** @var \Magento\Sales\Model\Order $order */
