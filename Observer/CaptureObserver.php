@@ -64,6 +64,8 @@ class CaptureObserver implements ObserverInterface
                 )
             );
 
+            $observer['order']->getTransactionId();
+
             $api = new CaptureReservation($this->systemConfig->getAuth());
             $api->setTransaction($payment->getLastTransId());
             /** @var CaptureReservationResponse $response */
