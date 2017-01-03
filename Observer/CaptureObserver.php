@@ -35,9 +35,12 @@ class CaptureObserver implements ObserverInterface
     {
         /** @var \Magento\Sales\Model\Order\Payment $payment */
         $payment = $observer['payment'];
+        /** @var \Magento\Sales\Model\Order $order */
+        $order = $observer['order'];
 
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
             $logs = [
+                'order.getIncrementId: %s',
                 'getLastTransId: %s',
                 'getAmountAuthorized: %s',
                 'getAmountCanceled: %s',
@@ -49,6 +52,7 @@ class CaptureObserver implements ObserverInterface
             $this->monolog->addInfo(
                 sprintf(
                     implode(' - ', $logs),
+                    $order->getIncrementId(),
                     $payment->getLastTransId(),
                     $payment->getAmountAuthorized(),
                     $payment->getAmountCanceled(),
