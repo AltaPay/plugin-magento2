@@ -252,7 +252,6 @@ class Generator
         $response = $callback->call();
 
         var_dump($response);
-        exit;
 
         $order = $this->loadOrderFromCallback($response);
         if ($order->getId()) {
@@ -265,10 +264,12 @@ class Generator
             $this->checkoutSession->replaceQuote($quote);
         }
 
+        var_dump('response', $response->CardHolderErrorMessage);
         if ($response->CardHolderErrorMessage) {
             return $response->CardHolderErrorMessage;
         }
 
+        var_dump('header', $response->Header->ErrorMessage);
         return $response->Header->ErrorMessage;
     }
 
