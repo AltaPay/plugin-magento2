@@ -251,6 +251,9 @@ class Generator
         $callback = new Callback($request->getPostValue());
         $response = $callback->call();
 
+        var_dump($response);
+        exit;
+
         $order = $this->loadOrderFromCallback($response);
         if ($order->getId()) {
             $quote = $this->quote->loadByIdWithoutStore($order->getQuoteId());
