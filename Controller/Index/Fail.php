@@ -17,6 +17,8 @@ class Fail extends Index
     {
         $this->writeLog();
         $errorMessage = $this->generator->restoreOrderFromRequest($this->getRequest());
+        var_dump($errorMessage);
+        exit;
         $this->messageManager->addErrorMessage($errorMessage);
         return $this->_redirect('checkout');
     }
