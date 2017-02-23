@@ -135,7 +135,7 @@ class CaptureObserver implements ObserverInterface
 
             $headdata = [];
             foreach ($rawresponse->getHeaders() as $k => $v) {
-                $headdata[] = $k . ': ' . $v;
+                $headdata[] = $k . ': ' . json_encode($v);
             }
             $this->monolog->addInfo('Response headers: ' . implode(", ", $headdata));
 
