@@ -188,10 +188,14 @@ class Generator
             $data = $order->getShippingMethod(true);
             $sku = $data['carrier_code'];
             $name = $data['method'];
-            $orderlines[] = (new OrderLine($name, $sku, 1, $order->getShippingInclTax()))->setGoodsType('shipment');
+            $orderlines[] = (new OrderLine(
+                $name,
+                $sku,
+                1,
+                $order->getShippingInclTax()
+            ))->setGoodsType('shipment');
 
             $request->setOrderLines($orderlines);
-
             try {
                 /** @var \Altapay\Response\PaymentRequestResponse $response */
                 $response = $request->call();
@@ -250,11 +254,7 @@ class Generator
     {
         $callback = new Callback($request->getPostValue());
         $response = $callback->call();
-
-        var_dump($response);
-
         $order = $this->loadOrderFromCallback($response);
-        var_dump('order_id', $order->getId());
         if ($order->getId()) {
             $quote = $this->quote->loadByIdWithoutStore($order->getQuoteId());
             $quote
@@ -265,12 +265,10 @@ class Generator
             $this->checkoutSession->replaceQuote($quote);
         }
 
-        var_dump('response', $response->CardHolderErrorMessage);
         if ($response->CardHolderErrorMessage) {
             return $response->CardHolderErrorMessage;
         }
 
-        var_dump('header', $response->Header->ErrorMessage);
         return $response->Header->ErrorMessage;
     }
 
@@ -307,9 +305,6 @@ class Generator
             $this->orderSender->send($order);
         }
 
-
-        $this->setCustomOrderStatus($order, Order::STATE_PROCESSING, 'process');
-
         $order->addStatusHistoryComment($comment);
         $order->addStatusHistoryComment(sprintf(
             "Transaction ID: %s - Payment ID: %s - Credit card token: %s",
@@ -317,6 +312,21 @@ class Generator
             $response->paymentId,
             $response->creditCardToken
         ));
+
+        $isCaptured = false;
+        foreach (SystemConfig::getTerminalCodes() as $terminalName) {
+            if ($this->systemConfig->getTerminalConfigFromTerminalName($terminalName, 'terminalname') === $response->Transactions[0]->Terminal) {
+                $isCaptured = $this->systemConfig->getTerminalConfigFromTerminalName($terminalName, 'capture');
+                break;
+            }
+        }
+
+        if ($isCaptured) {
+            $this->setCustomOrderStatus($order, Order::STATE_COMPLETE, 'complete');
+            $order->addStatusHistoryComment('Payment is completed');
+        } else {
+            $this->setCustomOrderStatus($order, Order::STATE_PROCESSING, 'process');
+        }
 
         $order->setIsNotified(false);
         $order->getResource()->save($order);
