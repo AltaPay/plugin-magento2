@@ -2,6 +2,7 @@
 namespace SDM\Altapay\Observer;
 
 use Altapay\Api\Payments\ReleaseReservation;
+use Altapay\Exceptions\ResponseHeaderException;
 use Altapay\Response\ReleaseReservationResponse;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -22,7 +23,9 @@ class OrderCancelObserver implements ObserverInterface
 
     /**
      * @param Observer $observer
+     *
      * @return void
+     * @throws ResponseHeaderException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -36,9 +39,13 @@ class OrderCancelObserver implements ObserverInterface
             $api = new ReleaseReservation($this->systemConfig->getAuth());
             $api->setTransaction($payment->getLastTransId());
             /** @var ReleaseReservationResponse $response */
-            $response = $api->call();
-            if ($response->Result != 'Success') {
-                throw new \InvalidArgumentException('Could not release reservation');
+            try {
+                $response = $api->call();
+                if ($response->Result != 'Success') {
+                    throw new \InvalidArgumentException('Could not release reservation');
+                }
+            } catch (ResponseHeaderException $e) {
+                throw $e;
             }
         }
 
