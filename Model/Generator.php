@@ -254,6 +254,7 @@ class Generator
         var_dump($response);
 
         $order = $this->loadOrderFromCallback($response);
+        var_dump('order_id', $order->getId());
         if ($order->getId()) {
             $quote = $this->quote->loadByIdWithoutStore($order->getQuoteId());
             $quote
