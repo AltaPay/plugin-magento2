@@ -44,64 +44,18 @@ class CaptureObserver implements ObserverInterface
         $invoice = $observer['invoice'];
 
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
-            $logs = [
-                'invoice.getTransactionId: %s',
-                'invoice->getOrder()->getIncrementId: %s',
-                '$invoice->getGrandTotal(): %s',
-                'getLastTransId: %s',
-                'getAmountAuthorized: %s',
-                'getAmountCanceled: %s',
-                'getAmountOrdered: %s',
-                'getAmountPaid: %s',
-                'getAmountRefunded: %s',
-            ];
-
-            $this->monolog->addInfo(
-                sprintf(
-                    implode(' - ', $logs),
-                    $invoice->getTransactionId(),
-                    $invoice->getOrder()->getIncrementId(),
-                    $invoice->getGrandTotal(),
-                    $payment->getLastTransId(),
-                    $payment->getAmountAuthorized(),
-                    $payment->getAmountCanceled(),
-                    $payment->getAmountOrdered(),
-                    $payment->getAmountPaid(),
-                    $payment->getAmountRefunded()
-                )
-            );
+            $this->logPayment($payment, $invoice);
 
             $orderlines = [];
             /** @var \Magento\Sales\Model\Order\Invoice\Item $item */
             foreach ($invoice->getItems() as $item) {
-                $this->monolog->addInfo(
-                    sprintf(
-                        implode(' - ', [
-                            'getSku: %s',
-                            'getQty: %s',
-                            'getDescription: %s',
-                            'getPrice(): %s',
-                            'getDiscountAmount(): %s',
-                            'getPrice() - getDiscountAmount(): %s',
-                            'getRowTotalInclTax: %s',
-                            'getRowTotal: %s'
-                        ]),
-                        $item->getSku(),
-                        $item->getQty(),
-                        $item->getDescription(),
-                        $item->getPrice(),
-                        $item->getDiscountAmount(),
-                        $item->getPrice() - $item->getDiscountAmount(),
-                        $item->getRowTotalInclTax(),
-                        $item->getRowTotal()
-                    )
-                );
+                $this->logItem($item);
 
                 $orderlines[] = (new OrderLine(
                     $item->getName(),
                     $item->getSku(),
                     $item->getQty(),
-                    $item->getRowTotalInclTax()
+                    $item->getPriceInclTax()
                 ))->setGoodsType('item');
             }
 
@@ -121,7 +75,6 @@ class CaptureObserver implements ObserverInterface
             $api->setOrderLines($orderlines);
             $api->setTransaction($payment->getLastTransId());
             /** @var CaptureReservationResponse $response */
-
             try {
                 $response = $api->call();
             } catch (ResponseHeaderException $e) {
@@ -144,5 +97,68 @@ class CaptureObserver implements ObserverInterface
             }
         }
 
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order\Invoice\Item $item
+     */
+    private function logItem($item)
+    {
+        $this->monolog->addInfo(
+            sprintf(
+                implode(' - ', [
+                    'getSku: %s',
+                    'getQty: %s',
+                    'getDescription: %s',
+                    'getPrice(): %s',
+                    'getDiscountAmount(): %s',
+                    'getPrice() - getDiscountAmount(): %s',
+                    'getRowTotalInclTax: %s',
+                    'getRowTotal: %s'
+                ]),
+                $item->getSku(),
+                $item->getQty(),
+                $item->getDescription(),
+                $item->getPrice(),
+                $item->getDiscountAmount(),
+                $item->getPrice() - $item->getDiscountAmount(),
+                $item->getRowTotalInclTax(),
+                $item->getRowTotal()
+            )
+        );
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order\Payment $payment
+     * @param \Magento\Sales\Model\Order\Invoice $invoice
+     */
+    private function logPayment($payment, $invoice)
+    {
+        $logs = [
+            'invoice.getTransactionId: %s',
+            'invoice->getOrder()->getIncrementId: %s',
+            '$invoice->getGrandTotal(): %s',
+            'getLastTransId: %s',
+            'getAmountAuthorized: %s',
+            'getAmountCanceled: %s',
+            'getAmountOrdered: %s',
+            'getAmountPaid: %s',
+            'getAmountRefunded: %s',
+        ];
+
+        $this->monolog->addInfo(
+            sprintf(
+                implode(' - ', $logs),
+                $invoice->getTransactionId(),
+                $invoice->getOrder()->getIncrementId(),
+                $invoice->getGrandTotal(),
+                $payment->getLastTransId(),
+                $payment->getAmountAuthorized(),
+                $payment->getAmountCanceled(),
+                $payment->getAmountOrdered(),
+                $payment->getAmountPaid(),
+                $payment->getAmountRefunded()
+            )
+        );
     }
 }

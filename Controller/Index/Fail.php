@@ -16,8 +16,18 @@ class Fail extends Index
     public function execute()
     {
         $this->writeLog();
-        $this->generator->restoreOrderFromRequest($this->getRequest());
-        $msg = $this->getRequest()->getPostValue()['error_message'];
+        try {
+            $this->generator->restoreOrderFromRequest($this->getRequest());
+            $post = $this->getRequest()->getPostValue();
+            if (isset($post['error_message'])) {
+                $msg = $post['error_message'];
+            } else {
+                $msg = 'Unknown response';
+            }
+        } catch (\Exception $e) {
+            $msg = $e->getMessage();
+        }
+
         $this->logger->debug('messageManager - Error message: ' . $msg);
         $this->messageManager->addWarningMessage($msg);
         return $this->_redirect('checkout');
