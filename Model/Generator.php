@@ -242,10 +242,17 @@ class Generator
         }
     }
 
+    /**
+     * @param RequestInterface $request
+     * @return string
+     */
     public function restoreOrderFromRequest(RequestInterface $request)
     {
         $callback = new Callback($request->getPostValue());
         $response = $callback->call();
+
+        var_dump($response);
+
         $order = $this->loadOrderFromCallback($response);
         if ($order->getId()) {
             $quote = $this->quote->loadByIdWithoutStore($order->getQuoteId());
@@ -256,6 +263,14 @@ class Generator
             ;
             $this->checkoutSession->replaceQuote($quote);
         }
+
+        var_dump('response', $response->CardHolderErrorMessage);
+        if ($response->CardHolderErrorMessage) {
+            return $response->CardHolderErrorMessage;
+        }
+
+        var_dump('header', $response->Header->ErrorMessage);
+        return $response->Header->ErrorMessage;
     }
 
     public function handleNotificationAction(RequestInterface $request)

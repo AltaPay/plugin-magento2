@@ -16,8 +16,8 @@ class Fail extends Index
     public function execute()
     {
         $this->writeLog();
-
-        $this->generator->restoreOrderFromRequest($this->getRequest());
+        $errorMessage = $this->generator->restoreOrderFromRequest($this->getRequest());
+        $this->messageManager->addErrorMessage($errorMessage);
         return $this->_redirect('checkout');
     }
 

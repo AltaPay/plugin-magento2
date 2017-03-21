@@ -31,7 +31,9 @@ class CaptureObserver implements ObserverInterface
 
     /**
      * @param Observer $observer
+     *
      * @return void
+     * @throws ResponseHeaderException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -71,7 +73,7 @@ class CaptureObserver implements ObserverInterface
 
             $orderlines = [];
             /** @var \Magento\Sales\Model\Order\Invoice\Item $item */
-            foreach ($invoice->getAllItems() as $item) {
+            foreach ($invoice->getItems() as $item) {
                 $this->monolog->addInfo(
                     sprintf(
                         implode(' - ', [
@@ -99,19 +101,16 @@ class CaptureObserver implements ObserverInterface
                     $item->getName(),
                     $item->getSku(),
                     $item->getQty(),
-                    $item->getPrice()
+                    $item->getRowTotalInclTax()
                 ))->setGoodsType('item');
-
-                if ($item->getDiscountAmount()) {
-                    $orderlines[] = (new OrderLine(
-                        $item->getName(),
-                        $item->getSku(),
-                        1,
-                        (-1 * $item->getDiscountAmount())
-                    ))->setGoodsType('handling');
-                }
-
             }
+
+            $orderlines[] = (new OrderLine(
+                'Shipping',
+                'shipping',
+                1,
+                $invoice->getShippingInclTax()
+            ))->setGoodsType('shipment');
 
             $api = new CaptureReservation($this->systemConfig->getAuth());
             if ($invoice->getTransactionId()) {
@@ -127,6 +126,7 @@ class CaptureObserver implements ObserverInterface
                 $response = $api->call();
             } catch (ResponseHeaderException $e) {
                 $this->monolog->addCritical('Response header exception: ' . $e->getMessage());
+                throw $e;
             }
 
             $rawresponse = $api->getRawResponse();
