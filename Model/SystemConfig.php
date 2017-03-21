@@ -68,9 +68,22 @@ class SystemConfig
      */
     public function getTerminalConfig($terminalId, $configKey)
     {
+        return $this->getTerminalConfigFromTerminalName(
+            sprintf('terminal%d', $terminalId),
+            $configKey
+        );
+    }
+
+    /**
+     * @param string $terminalName
+     * @param string $configKey
+     * @return \Magento\Payment\Model\MethodInterface
+     */
+    public function getTerminalConfigFromTerminalName($terminalName, $configKey)
+    {
         return $this->scopeConfig->getValue(sprintf(
-            'payment/terminal%d/%s',
-            $terminalId,
+            'payment/%s/%s',
+            $terminalName,
             $configKey
         ));
     }
