@@ -15,6 +15,7 @@ class Ok extends Index
      */
     public function execute()
     {
+
         $this->writeLog();
 
         if ($this->checkPost()) {

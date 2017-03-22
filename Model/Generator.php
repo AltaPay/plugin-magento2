@@ -287,46 +287,54 @@ class Generator
     {
         $callback = new Callback($request->getPostValue());
         $response = $callback->call();
-        $order = $this->loadOrderFromCallback($response);
+        if ($response) {
+            $order = $this->loadOrderFromCallback($response);
 
-        if ($order->getId()) {
-            // @todo Write data to DB
-            $payment = $order->getPayment();
-            $payment->setPaymentId($response->paymentId);
-            $payment->setLastTransId($response->transactionId);
-            $payment->setCcTransId($response->creditCardToken);
-            $payment->save();
-        }
-
-        if (! $order->getEmailSent()) {
-            $this->orderSender->send($order);
-        }
-
-        $order->addStatusHistoryComment($comment);
-        $order->addStatusHistoryComment(sprintf(
-            "Transaction ID: %s - Payment ID: %s - Credit card token: %s",
-            $response->transactionId,
-            $response->paymentId,
-            $response->creditCardToken
-        ));
-
-        $isCaptured = false;
-        foreach (SystemConfig::getTerminalCodes() as $terminalName) {
-            if ($this->systemConfig->getTerminalConfigFromTerminalName($terminalName, 'terminalname') === $response->Transactions[0]->Terminal) {
-                $isCaptured = $this->systemConfig->getTerminalConfigFromTerminalName($terminalName, 'capture');
-                break;
+            if ($order->getId()) {
+                // @todo Write data to DB
+                $payment = $order->getPayment();
+                $payment->setPaymentId($response->paymentId);
+                $payment->setLastTransId($response->transactionId);
+                $payment->setCcTransId($response->creditCardToken);
+                $payment->save();
             }
-        }
 
-        if ($isCaptured) {
-            $this->setCustomOrderStatus($order, Order::STATE_COMPLETE, 'complete');
-            $order->addStatusHistoryComment('Payment is completed');
-        } else {
-            $this->setCustomOrderStatus($order, Order::STATE_PROCESSING, 'process');
-        }
+            if (!$order->getEmailSent()) {
+                $this->orderSender->send($order);
+            }
 
-        $order->setIsNotified(false);
-        $order->getResource()->save($order);
+            $order->addStatusHistoryComment($comment);
+            $order->addStatusHistoryComment(
+                sprintf(
+                    "Transaction ID: %s - Payment ID: %s - Credit card token: %s",
+                    $response->transactionId,
+                    $response->paymentId,
+                    $response->creditCardToken
+                )
+            );
+
+            $isCaptured = false;
+            foreach (SystemConfig::getTerminalCodes() as $terminalName) {
+                if ($this->systemConfig->getTerminalConfigFromTerminalName(
+                        $terminalName,
+                        'terminalname'
+                    ) === $response->Transactions[0]->Terminal
+                ) {
+                    $isCaptured = $this->systemConfig->getTerminalConfigFromTerminalName($terminalName, 'capture');
+                    break;
+                }
+            }
+
+            if ($isCaptured) {
+                $this->setCustomOrderStatus($order, Order::STATE_COMPLETE, 'complete');
+                $order->addStatusHistoryComment('Payment is completed');
+            } else {
+                $this->setCustomOrderStatus($order, Order::STATE_PROCESSING, 'process');
+            }
+
+            $order->setIsNotified(false);
+            $order->getResource()->save($order);
+        }
     }
 
     /**

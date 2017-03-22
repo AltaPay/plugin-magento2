@@ -49,14 +49,16 @@ class CaptureObserver implements ObserverInterface
             $orderlines = [];
             /** @var \Magento\Sales\Model\Order\Invoice\Item $item */
             foreach ($invoice->getItems() as $item) {
-                $this->logItem($item);
+                if ($item->getPriceInclTax()) {
+                    $this->logItem($item);
 
-                $orderlines[] = (new OrderLine(
-                    $item->getName(),
-                    $item->getSku(),
-                    $item->getQty(),
-                    $item->getPriceInclTax()
-                ))->setGoodsType('item');
+                    $orderlines[] = (new OrderLine(
+                        $item->getName(),
+                        $item->getSku(),
+                        $item->getQty(),
+                        $item->getPriceInclTax()
+                    ))->setGoodsType('item');
+                }
             }
 
             $orderlines[] = (new OrderLine(
@@ -78,7 +80,11 @@ class CaptureObserver implements ObserverInterface
             try {
                 $response = $api->call();
             } catch (ResponseHeaderException $e) {
+                $this->monolog->addInfo(print_r($e->getHeader()));
                 $this->monolog->addCritical('Response header exception: ' . $e->getMessage());
+                throw $e;
+            } catch (\Exception $e) {
+                $this->monolog->addCritical('Exception: ' . $e->getMessage());
                 throw $e;
             }
 
