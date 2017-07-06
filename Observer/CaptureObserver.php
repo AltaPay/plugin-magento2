@@ -61,12 +61,14 @@ class CaptureObserver implements ObserverInterface
                 }
             }
 
-            $orderlines[] = (new OrderLine(
-                'Shipping',
-                'shipping',
-                1,
-                $invoice->getShippingInclTax()
-            ))->setGoodsType('shipment');
+            if ($invoice->getShippingInclTax()) {
+                $orderlines[] = (new OrderLine(
+                    'Shipping',
+                    'shipping',
+                    1,
+                    $invoice->getShippingInclTax()
+                ))->setGoodsType('shipment');
+            }
 
             $api = new CaptureReservation($this->systemConfig->getAuth());
             if ($invoice->getTransactionId()) {
