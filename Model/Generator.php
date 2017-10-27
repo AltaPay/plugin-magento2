@@ -130,9 +130,14 @@ class Generator
                 $request->setFraudService($fraud);
             }
 
-            if ($lang = $this->systemConfig->getTerminalConfig($terminalId, 'language')) {
-                $request->setLanguage($lang);
-            }
+	        if ($lang = $this->systemConfig->getTerminalConfig($terminalId, 'language')) {
+		        $langArr = explode("_", $lang, 2);
+		        if (isset($langArr[0]))
+		        {
+			        $language = $langArr[0];
+			        $request->setLanguage($language);
+		        }
+	        }
 
             if ($this->systemConfig->getTerminalConfig($terminalId, 'capture')) {
                 $request->setType('paymentAndCapture');
