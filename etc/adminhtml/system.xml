@@ -71,12 +71,12 @@
                         <config_path>payment/altapay_status/process</config_path>
                     </field>
 
-                    <field id="orderstatus_payment_complete" translate="label comment" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Order status - if payment is completed immediately</label>
-                        <comment>The status on the order after payment is completed</comment>
-                        <source_model>SDM\Altapay\Model\Config\Source\Order\Status\Complete</source_model>
-                        <config_path>payment/altapay_status/complete</config_path>
-                    </field>
+                    <!--<field id="orderstatus_payment_complete" translate="label comment" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                        <!--<label>Order status - if payment is completed immediately</label>-->
+                        <!--<comment>The status on the order after payment is completed</comment>-->
+                        <!--<source_model>SDM\Altapay\Model\Config\Source\Order\Status\Complete</source_model>-->
+                        <!--<config_path>payment/altapay_status/complete</config_path>-->
+                    <!--</field>-->
 
                     <field id="orderstatus_fraud_detected" translate="label comment" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Order status - Fraud detected</label>
