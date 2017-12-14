@@ -182,6 +182,7 @@ class Generator
                 $orderline->taxAmount = $taxAmount;
                 $orderlines[] = $orderline;
 
+                /*
                 if ($item->getDiscountAmount() > 0) {
                     $orderlines[] = (new OrderLine(
                         $item->getName(),
@@ -190,6 +191,7 @@ class Generator
                         -1 * $item->getDiscountAmount()
                     ))->setGoodsType('handling');
                 }
+                */
             }
 
             if ($order->getDiscountAmount()) {
