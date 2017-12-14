@@ -192,6 +192,18 @@ class Generator
                 }
             }
 
+            if ($order->getDiscountAmount()) {
+                // Handling price reductions
+                $orderline = new OrderLine(
+                    $order->getDiscountDescription(),
+                    'discount',
+                    1,
+                    $order->getDiscountAmount()
+                );
+                $orderline->setGoodsType('handling');
+                $orderlines[] = $orderline;
+            }
+
             // Handling orderline
             $data = $order->getShippingMethod(true);
             $sku = $data['carrier_code'];
