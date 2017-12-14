@@ -160,24 +160,27 @@ class Generator
 
                 $this->_logger->addInfo(sprintf(implode(' - ', $logs),
                     $item->getSku(),
-                    $item->getPrice(),
-                    $item->getPriceInclTax(),
-                    $item->getBasePrice(),
-                    $item->getBaseOriginalPrice(),
-                    $item->getGwBasePrice(),
-                    $item->getGwPrice(),
-                    $item->getOriginalPrice(),
-                    $item->getDiscountAmount(),
-                    $item->getBaseDiscountAmount()
+                    $item->getPrice() * $item->getQtyOrdered(),
+                    $item->getPriceInclTax() * $item->getQtyOrdered(),
+                    $item->getBasePrice() * $item->getQtyOrdered(),
+                    $item->getBaseOriginalPrice() * $item->getQtyOrdered(),
+                    $item->getGwBasePrice() * $item->getQtyOrdered(),
+                    $item->getGwPrice() * $item->getQtyOrdered(),
+                    $item->getOriginalPrice() * $item->getQtyOrdered(),
+                    $item->getDiscountAmount() * $item->getQtyOrdered(),
+                    $item->getBaseDiscountAmount() * $item->getQtyOrdered()
                 ));
 
                 $taxAmount = ($item->getQtyOrdered() * $item->getPriceInclTax()) - ($item->getQtyOrdered() * $item->getPrice());
-                $orderlines[] = (new OrderLine(
+                $orderline = new OrderLine(
                     $item->getName(),
                     $item->getSku(),
                     $item->getQtyOrdered(),
-                    $item->getPriceInclTax()
-                ))->setGoodsType('item')->taxAmount = $taxAmount;
+                    $item->getPriceInclTax() * $item->getQtyOrdered()
+                );
+                $orderline->setGoodsType('item');
+                $orderline->taxAmount = $taxAmount;
+                $orderlines[] = $orderline;
 
                 if ($item->getDiscountAmount() > 0) {
                     $orderlines[] = (new OrderLine(

@@ -11,7 +11,6 @@
   "description": "Altapay payment",
   "require": {
     "php": "^5.5|^7.0",
-    "magento/product-community-edition": "2.*",
     "lsv/altapay-php-api": "^1.0"
   },
   "type": "magento2-module",
