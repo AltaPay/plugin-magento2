@@ -131,9 +131,8 @@ class Generator
             }
 
 	        if ($lang = $this->systemConfig->getTerminalConfig($terminalId, 'language')) {
-		        $langArr = explode("_", $lang, 2);
-		        if (isset($langArr[0]))
-		        {
+		        $langArr = explode('_', $lang, 2);
+		        if (isset($langArr[0])) {
 			        $language = $langArr[0];
 			        $request->setLanguage($language);
 		        }
@@ -172,19 +171,20 @@ class Generator
                     $item->getBaseDiscountAmount()
                 ));
 
+                $taxAmount = ($item->getQtyOrdered() * $item->getPriceInclTax()) - ($item->getQtyOrdered() * $item->getPrice());
                 $orderlines[] = (new OrderLine(
                     $item->getName(),
                     $item->getSku(),
                     $item->getQtyOrdered(),
                     $item->getPriceInclTax()
-                ))->setGoodsType('item');
+                ))->setGoodsType('item')->taxAmount = $taxAmount;
 
                 if ($item->getDiscountAmount() > 0) {
                     $orderlines[] = (new OrderLine(
                         $item->getName(),
-                        $item->getSku(),
+                        $item->getSku() - 'Discount',
                         1,
-                        (-1 * $item->getDiscountAmount())
+                        -1 * $item->getDiscountAmount()
                     ))->setGoodsType('handling');
                 }
             }
