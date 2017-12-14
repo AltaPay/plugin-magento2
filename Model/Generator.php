@@ -378,7 +378,7 @@ class Generator
         $config->setCallbackRedirect($this->urlInterface->getDirectUrl('sdmaltapay/index/redirect'));
         $config->setCallbackOpen($this->urlInterface->getDirectUrl('sdmaltapay/index/open'));
         $config->setCallbackNotification($this->urlInterface->getDirectUrl('sdmaltapay/index/notification'));
-        $config->setCallbackVerifyOrder($this->urlInterface->getDirectUrl('sdmaltapay/index/verifyorder'));
+        //$config->setCallbackVerifyOrder($this->urlInterface->getDirectUrl('sdmaltapay/index/verifyorder'));
         $config->setCallbackForm($this->urlInterface->getDirectUrl('sdmaltapay/index/callbackform'));
         return $config;
     }
