@@ -121,12 +121,12 @@
                         <config_path>payment/terminal1/language</config_path>
                     </field>
 
-                    <field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Fraud detection</label>
-                        <comment>Select the software to use for fraud detection, or disable it</comment>
-                        <source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>
-                        <config_path>payment/terminal1/fraud</config_path>
-                    </field>
+                    <!--<field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                        <!--<label>Fraud detection</label>-->
+                        <!--<comment>Select the software to use for fraud detection, or disable it</comment>-->
+                        <!--<source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>-->
+                        <!--<config_path>payment/terminal1/fraud</config_path>-->
+                    <!--</field>-->
 
                     <field id="capture" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Auto capture</label>
@@ -165,12 +165,12 @@
                         <config_path>payment/terminal2/language</config_path>
                     </field>
 
-                    <field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Fraud detection</label>
-                        <comment>Select the software to use for fraud detection, or disable it</comment>
-                        <source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>
-                        <config_path>payment/terminal2/fraud</config_path>
-                    </field>
+                    <!--<field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                        <!--<label>Fraud detection</label>-->
+                        <!--<comment>Select the software to use for fraud detection, or disable it</comment>-->
+                        <!--<source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>-->
+                        <!--<config_path>payment/terminal2/fraud</config_path>-->
+                    <!--</field>-->
 
                     <field id="capture" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Auto capture</label>
@@ -209,12 +209,12 @@
                         <config_path>payment/terminal3/language</config_path>
                     </field>
 
-                    <field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Fraud detection</label>
-                        <comment>Select the software to use for fraud detection, or disable it</comment>
-                        <source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>
-                        <config_path>payment/terminal3/fraud</config_path>
-                    </field>
+                    <!--<field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                        <!--<label>Fraud detection</label>-->
+                        <!--<comment>Select the software to use for fraud detection, or disable it</comment>-->
+                        <!--<source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>-->
+                        <!--<config_path>payment/terminal3/fraud</config_path>-->
+                    <!--</field>-->
 
                     <field id="capture" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Auto capture</label>
@@ -253,12 +253,12 @@
                         <config_path>payment/terminal4/language</config_path>
                     </field>
 
-                    <field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Fraud detection</label>
-                        <comment>Select the software to use for fraud detection, or disable it</comment>
-                        <source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>
-                        <config_path>payment/terminal4/fraud</config_path>
-                    </field>
+                    <!--<field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                        <!--<label>Fraud detection</label>-->
+                        <!--<comment>Select the software to use for fraud detection, or disable it</comment>-->
+                        <!--<source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>-->
+                        <!--<config_path>payment/terminal4/fraud</config_path>-->
+                    <!--</field>-->
 
                     <field id="capture" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Auto capture</label>
@@ -297,12 +297,12 @@
                         <config_path>payment/terminal5/language</config_path>
                     </field>
 
-                    <field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Fraud detection</label>
-                        <comment>Select the software to use for fraud detection, or disable it</comment>
-                        <source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>
-                        <config_path>payment/terminal5/fraud</config_path>
-                    </field>
+                    <!--<field id="fraud" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                        <!--<label>Fraud detection</label>-->
+                        <!--<comment>Select the software to use for fraud detection, or disable it</comment>-->
+                        <!--<source_model>SDM\Altapay\Model\Config\Source\Frauddetection</source_model>-->
+                        <!--<config_path>payment/terminal5/fraud</config_path>-->
+                    <!--</field>-->
 
                     <field id="capture" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Auto capture</label>
