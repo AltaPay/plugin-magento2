@@ -5,6 +5,7 @@ web shop.
 
 
 == Change log ==
+
 ** Version 0.1.7
     * Bug fixes: unit price and "handling" GoodsType
     
