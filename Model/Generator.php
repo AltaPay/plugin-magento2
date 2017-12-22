@@ -144,80 +144,67 @@ class Generator
 
             $orderlines = [];
             /** @var \Magento\Sales\Model\Order\Item $item */
-            foreach ($order->getAllVisibleItems() as $item) {
-                $logs = [
-                    'SKU: %s',
-                    'getPrice: %s',
-                    'getPriceInclTax: %s',
-                    'getBasePrice: %s',
-                    'getBaseOriginalPrice: %s',
-                    'getGwBasePrice: %s',
-                    'getGwPrice: %s',
-                    'getOriginalPrice: %s',
-                    'getDiscountAmount: %s',
-                    'getBaseDiscountAmount: %s',
-                ];
+	        foreach ($order->getAllVisibleItems() as $item) {
+		        // log data ...
+		        /*$logs = [
+					'SKU: %s',
+					'getPrice: %s',
+					'getPriceInclTax: %s',
+					'getBasePrice: %s',
+					'getBaseOriginalPrice: %s',
+					'getGwBasePrice: %s',
+					'getGwPrice: %s',
+					'getOriginalPrice: %s',
+					'getDiscountAmount: %s',
+					'getBaseDiscountAmount: %s',
+				];
 
-                $this->_logger->addInfo(sprintf(implode(' - ', $logs),
-                    $item->getSku(),
-                    $item->getPrice() * $item->getQtyOrdered(),
-                    $item->getPriceInclTax() * $item->getQtyOrdered(),
-                    $item->getBasePrice() * $item->getQtyOrdered(),
-                    $item->getBaseOriginalPrice() * $item->getQtyOrdered(),
-                    $item->getGwBasePrice() * $item->getQtyOrdered(),
-                    $item->getGwPrice() * $item->getQtyOrdered(),
-                    $item->getOriginalPrice() * $item->getQtyOrdered(),
-                    $item->getDiscountAmount() * $item->getQtyOrdered(),
-                    $item->getBaseDiscountAmount() * $item->getQtyOrdered()
-                ));
+				$this->_logger->addInfo(sprintf(implode(' - ', $logs),
+					$item->getSku(),
+					$item->getPrice() * $item->getQtyOrdered(),
+					$item->getPriceInclTax() * $item->getQtyOrdered(),
+					$item->getBasePrice() * $item->getQtyOrdered(),
+					$item->getBaseOriginalPrice() * $item->getQtyOrdered(),
+					$item->getGwBasePrice() * $item->getQtyOrdered(),
+					$item->getGwPrice() * $item->getQtyOrdered(),
+					$item->getOriginalPrice() * $item->getQtyOrdered(),
+					$item->getDiscountAmount() * $item->getQtyOrdered(),
+					$item->getBaseDiscountAmount() * $item->getQtyOrdered()
+				));*/
 
-                $taxAmount = ($item->getQtyOrdered() * $item->getPriceInclTax()) - ($item->getQtyOrdered() * $item->getPrice());
-                $orderline = new OrderLine(
-                    $item->getName(),
-                    $item->getSku(),
-                    $item->getQtyOrdered(),
-                    $item->getPriceInclTax() * $item->getQtyOrdered()
-                );
-                $orderline->setGoodsType('item');
-                $orderline->taxAmount = $taxAmount;
-                $orderlines[] = $orderline;
+		        $taxAmount = ($item->getQtyOrdered() * $item->getPriceInclTax()) - ($item->getQtyOrdered() * $item->getPrice());
+		        $orderline = new OrderLine(
+			        $item->getName(),
+			        $item->getSku(),
+			        $item->getQtyOrdered(),
+			        $item->getPrice()
+		        );
+		        $orderline->setGoodsType('item');
+		        $orderline->taxAmount = $taxAmount;
+		        //$orderline->taxPercent = $item->getTaxPercent();
+		        $orderlines[] = $orderline;
+	        }
+	        if ($order->getDiscountAmount() > 0 ) {
+		        // Handling price reductions
+		        $orderline = new OrderLine(
+			        $order->getDiscountDescription(),
+			        'discount',
+			        1,
+			        $order->getDiscountAmount()
+		        );
+		        $orderline->setGoodsType('handling');
+		        $orderlines[] = $orderline;
+	        }
 
-                /*
-                if ($item->getDiscountAmount() > 0) {
-                    $orderlines[] = (new OrderLine(
-                        $item->getName(),
-                        $item->getSku() - 'Discount',
-                        1,
-                        -1 * $item->getDiscountAmount()
-                    ))->setGoodsType('handling');
-                }
-                */
-            }
-
-            if ($order->getDiscountAmount()) {
-                // Handling price reductions
-                $orderline = new OrderLine(
-                    $order->getDiscountDescription(),
-                    'discount',
-                    1,
-                    $order->getDiscountAmount()
-                );
-                $orderline->setGoodsType('handling');
-                $orderlines[] = $orderline;
-            }
-
-            // Handling orderline
-            $data = $order->getShippingMethod(true);
-            $sku = $data['carrier_code'];
-            $name = $data['method'];
-            $orderlines[] = (new OrderLine(
-                $name,
-                $sku,
-                1,
-                $order->getShippingInclTax()
-            ))->setGoodsType('shipment');
-
-            $request->setOrderLines($orderlines);
+	        // Handling orderline
+	        $data = $order->getShippingMethod(true);
+	        $orderlines[] = (new OrderLine(
+		        $data['method'],
+		        $data['carrier_code'],
+		        1,
+		        $order->getShippingInclTax()
+	        ))->setGoodsType('shipment');
+	        $request->setOrderLines($orderlines);
             try {
                 /** @var \Altapay\Response\PaymentRequestResponse $response */
                 $response = $request->call();
