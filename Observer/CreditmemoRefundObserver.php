@@ -48,7 +48,7 @@ class CreditmemoRefundObserver implements ObserverInterface
             if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
                 $refund = new RefundCapturedReservation($this->systemConfig->getAuth());
                 $refund->setTransaction($payment->getLastTransId());
-                $refund->setAmount($memo->getGrandTotal());
+                $refund->setAmount((float) $memo->getGrandTotal());
                 /** @var RefundResponse $response */
                 try {
                     $response = $refund->call();
