@@ -6,6 +6,9 @@ web shop.
 
 == Change log ==
 
+** Version 0.1.8
+    * Bug fixes: amount type should be float
+    
 ** Version 0.1.7
     * Bug fixes: unit price and "handling" GoodsType
     
