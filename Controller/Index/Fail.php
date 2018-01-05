@@ -17,7 +17,7 @@ class Fail extends Index
     {
         $this->writeLog();
         try {
-            $this->generator->restoreOrderFromRequest($this->getRequest());
+            $order = $this->generator->restoreOrderFromRequest($this->getRequest());
             $post = $this->getRequest()->getPostValue();
             if (isset($post['error_message'])) {
                 $msg = $post['error_message'];
@@ -28,9 +28,14 @@ class Fail extends Index
             $msg = $e->getMessage();
         }
 
-        $this->logger->debug('messageManager - Error message: ' . $msg);
+        $this->logger->debug('messageManager - Error message: ' . $msg . ' - Order found: ' . $order ? 'Yes' : 'No');
         $this->messageManager->addWarningMessage($msg);
-        return $this->_redirect('checkout');
+
+        if ($order) {
+            return $this->_redirect('checkout');
+        }
+
+        return $this->_redirect('checkout/cart');
     }
 
 }

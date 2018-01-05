@@ -258,6 +258,8 @@ class Generator
     /**
      * @param RequestInterface $request
      *
+     * @return bool
+     *
      * @throws \Exception
      */
     public function restoreOrderFromRequest(RequestInterface $request)
@@ -265,17 +267,24 @@ class Generator
         $callback = new Callback($request->getPostValue());
         $response = $callback->call();
         if ($response) {
+            $this->_logger->debug('[restoreOrderFromRequest] Response correct');
             $order = $this->loadOrderFromCallback($response);
-            if ($order->getId()) {
-                $quote = $this->quote->loadByIdWithoutStore($order->getQuoteId());
-                $quote
-                    ->setIsActive(1)
-                    ->setReservedOrderId(null)
-                    ->save()
-                ;
-                $this->checkoutSession->replaceQuote($quote);
+            if ($order->getQuoteId()) {
+                $this->_logger->debug('[restoreOrderFromRequest] Order quote id: ' . $order->getQuoteId());
+                if ($quote = $this->quote->loadByIdWithoutStore($order->getQuoteId())) {
+                    $this->_logger->debug('[restoreOrderFromRequest] Quote found: ' . $order->getQuoteId());
+                    $quote
+                        ->setIsActive(1)
+                        ->setReservedOrderId(null)
+                        ->save()
+                    ;
+                    $this->checkoutSession->replaceQuote($quote);
+                    return true;
+                }
             }
         }
+
+        return false;
     }
 
     public function handleNotificationAction(RequestInterface $request)
