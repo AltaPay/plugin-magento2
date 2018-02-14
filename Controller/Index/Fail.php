@@ -2,6 +2,7 @@
 namespace SDM\Altapay\Controller\Index;
 
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultFactory;
 use SDM\Altapay\Controller\Index;
 
 class Fail extends Index
@@ -17,7 +18,7 @@ class Fail extends Index
     {
         $this->writeLog();
         try {
-            $order = $this->generator->restoreOrderFromRequest($this->getRequest());
+            $this->generator->restoreOrderFromRequest($this->getRequest());
             $post = $this->getRequest()->getPostValue();
             if (isset($post['error_message'])) {
                 $msg = $post['error_message'];
@@ -28,14 +29,10 @@ class Fail extends Index
             $msg = $e->getMessage();
         }
 
-        $this->logger->debug('messageManager - Error message: ' . $msg . ' - Order found: ' . $order ? 'Yes' : 'No');
-        $this->messageManager->addWarningMessage($msg);
+        $this->logger->debug('messageManager - Error message: ' . $msg);
+        $this->messageManager->addErrorMessage($msg);
 
-        if ($order) {
-            return $this->_redirect('checkout');
-        }
-
-        return $this->_redirect('checkout/cart');
+        return $this->_redirect('*/*/failmessage', ['msg'=>$msg]);
     }
 
 }
