@@ -52,22 +52,28 @@ class CaptureObserver implements ObserverInterface
                 if ($item->getPriceInclTax()) {
                     $this->logItem($item);
 
-                    $orderlines[] = (new OrderLine(
-                        $item->getName(),
-                        $item->getSku(),
-                        $item->getQty(),
-                        $item->getPriceInclTax()
-                    ))->setGoodsType('item');
+	                $orderline = new OrderLine(
+		                $item->getName(),
+		                $item->getSku(),
+		                $item->getQty(),
+		                $item->getPriceInclTax()
+	                );
+	                $orderline->setGoodsType('item');
+	                $orderline->taxAmount = $item->getTaxAmount();
+	                $orderlines[] = $orderline;
                 }
             }
 
             if ($invoice->getShippingInclTax()) {
-                $orderlines[] = (new OrderLine(
-                    'Shipping',
-                    'shipping',
-                    1,
-                    $invoice->getShippingInclTax()
-                ))->setGoodsType('shipment');
+	            $orderline = new OrderLine(
+		            'Shipping',
+		            'shipping',
+		            1,
+		            $invoice->getShippingInclTax()
+	            );
+	            $orderline->setGoodsType('shipment');
+	            $orderline->taxAmount = $invoice->getShippingTaxAmount();
+	            $orderlines[] = $orderline;
             }
 
             $api = new CaptureReservation($this->systemConfig->getAuth());
