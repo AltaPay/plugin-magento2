@@ -6,6 +6,13 @@ web shop.
 
 == Change log ==
 
+** Version 0.1.10
+
+    * Improvements: 
+            - orderLines (including taxAmount) added in the Refund request
+            - taxAmount added to Capture request
+
+
 ** Version 0.1.9
 
     * Bug fixes: error message not shown in case of a payment gateway error
