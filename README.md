@@ -6,6 +6,9 @@ web shop.
 
 == Change log ==
 
+** Version 0.1.11
+    * Bug fix: Support for scope
+
 ** Version 0.1.10
 
     * Improvements: 
