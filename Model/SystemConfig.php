@@ -8,6 +8,8 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 class SystemConfig
 {
 
+    private $storeScope;
+
     /**
      * @var ScopeConfigInterface
      */
@@ -21,6 +23,7 @@ class SystemConfig
     {
         $this->scopeConfig = $scopeConfig;
         $this->encrypter = $encrypter;
+        $this->storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
     }
 
     static public function getTerminalCodes()
@@ -58,7 +61,7 @@ class SystemConfig
         return $this->scopeConfig->getValue(sprintf(
             'payment/altapay_status/%s',
             $configKey
-        ));
+        ), $this->storeScope);
     }
 
     /**
@@ -85,7 +88,7 @@ class SystemConfig
             'payment/%s/%s',
             $terminalName,
             $configKey
-        ));
+        ), $this->storeScope);
     }
 
     /**
@@ -97,7 +100,7 @@ class SystemConfig
         return $this->scopeConfig->getValue(sprintf(
             'payment/altapay_config/%s',
             $configKey
-        ));
+        ), $this->storeScope);
     }
 
 }
