@@ -6,12 +6,13 @@ use Magento\Framework\Option\ArrayInterface;
 
 class Languages extends Locale implements ArrayInterface
 {
-
-    private static $allowedLanguages = [
-        'cs', 'da', 'de', 'en', 'es', 'fi', 'fr', 'ja',
-        'lt', 'nl', 'no', 'pl', 'sv','th', 'tr', 'zh',
-        'et', 'it', 'pt', 'eu'
-    ];
+	// nb, nn will be converted to no.
+	//ee will be converted to et
+	private static $allowedLanguages = [
+		'cs', 'da', 'de', 'en', 'es', 'fi', 'fr', 'ja',
+		'lt', 'nl', 'no', 'nb', 'nn', 'pl', 'sv','th', 'tr', 'zh',
+		'et', 'ee', 'it', 'pt', 'eu'
+	];
 
     /**
      * Return array of options as value-label pairs
