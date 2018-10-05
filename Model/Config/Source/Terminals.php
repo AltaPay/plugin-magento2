@@ -34,8 +34,8 @@ class Terminals implements ArrayInterface
                 $terminals[] = ['value' => $terminal->Title, 'label' => $terminal->Title];
             }
         } catch (\Exception $e) {}
-        // Sort alphabetically the terminals
-	    asort($terminals);
+	    // Sort the terminals alphabetically
+	    array_multisort(array_column($terminals, 'label'), SORT_ASC,SORT_NUMERIC,$terminals);
         return $terminals;
     }
 }
