@@ -36,7 +36,7 @@ class OrderCancelObserver implements ObserverInterface
         $payment = $order->getPayment();
 
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
-            $api = new ReleaseReservation($this->systemConfig->getAuth());
+            $api = new ReleaseReservation($this->systemConfig->getAuth($order->getStore()->getCode()));
             $api->setTransaction($payment->getLastTransId());
             /** @var ReleaseReservationResponse $response */
             try {

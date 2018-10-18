@@ -17,6 +17,7 @@ class Fail extends Index
     public function execute()
     {
         $this->writeLog();
+
         try {
             $this->generator->restoreOrderFromRequest($this->getRequest());
             $post = $this->getRequest()->getPostValue();
@@ -25,14 +26,36 @@ class Fail extends Index
             } else {
                 $msg = 'Unknown response';
             }
+
+            //Set order status, if available from the payment gateway
+            switch ($post['status'])
+            {
+	            case 'cancelled':
+	            	//TODO: Overwrite the message
+				$msg = "Payment canceled";
+		            $this->generator->handleCancelStatusAction($this->getRequest());
+		            break;
+	            case 'failed':
+	            	//The consumer should be redirected to the payment step, where can select a new payment type
+		            $this->generator->handleFailedStatusAction($this->getRequest());
+		            break;
+
+            	default:
+		            $this->generator->handleOrderStateAction($this->getRequest());
+
+            }
         } catch (\Exception $e) {
             $msg = $e->getMessage();
         }
 
-        $this->logger->debug('messageManager - Error message: ' . $msg);
-        $this->messageManager->addErrorMessage($msg);
+	    $this->messageManager->addErrorMessage(__($msg));
+	    $resultRedirect = $this->resultRedirectFactory->create();
+	    $customerRedirUrl = $this->_url->getUrl('checkout', array('_fragment' => 'payment'));
+	    $resultRedirect->setPath($customerRedirUrl);
+	    // TODO: refactor the redirect to a fail message
+	    //return $this->_redirect('*/*/failmessage', ['msg'=>$msg]);
 
-        return $this->_redirect('*/*/failmessage', ['msg'=>$msg]);
+	    return $resultRedirect;
     }
 
 }

@@ -12,7 +12,6 @@ use SDM\Altapay\Model\SystemConfig;
 
 class CaptureObserver implements ObserverInterface
 {
-
     /**
      * @var SystemConfig
      */
@@ -43,6 +42,7 @@ class CaptureObserver implements ObserverInterface
         /** @var \Magento\Sales\Model\Order\Invoice $invoice */
         $invoice = $observer['invoice'];
 
+	    $storeCode = $invoice->getStore()->getCode();
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
             $this->logPayment($payment, $invoice);
 
@@ -76,7 +76,7 @@ class CaptureObserver implements ObserverInterface
 	            $orderlines[] = $orderline;
             }
 
-            $api = new CaptureReservation($this->systemConfig->getAuth());
+            $api = new CaptureReservation($this->systemConfig->getAuth($storeCode));
             if ($invoice->getTransactionId()) {
                 $api->setInvoiceNumber($invoice->getTransactionId());
             }

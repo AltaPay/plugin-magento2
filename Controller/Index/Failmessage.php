@@ -21,7 +21,6 @@ class Failmessage extends Index
 	    $this->logger->debug('messageManager - Error message: ' . $msg);
         $this->messageManager->addErrorMessage($msg);
 
-	    return $this->_redirect('checkout/cart');
+	    return $this->_redirect('checkout', ['_fragment' => 'payment']);
     }
-
 }

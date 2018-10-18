@@ -1,6 +1,5 @@
 <?php
 namespace SDM\Altapay\Model;
-
 use Altapay\Api\Ecommerce\Callback;
 use Altapay\Api\Ecommerce\PaymentRequest;
 use Altapay\Api\Test\TestAuthentication;
@@ -102,13 +101,16 @@ class Generator
      */
     public function createRequest($terminalId, $orderId)
     {
-        $terminalName = $this->systemConfig->getTerminalConfig($terminalId, 'terminalname');
-        $auth = $this->systemConfig->getAuth();
-
-        $api = new TestAuthentication($auth);
-        $response = $api->call();
         $order = $this->order->load($orderId);
         if ($order->getId()) {
+	        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+	        $storeCode = $order->getStore()->getCode();
+	        //Test the conn with the Payment Gateway
+	        $auth = $this->systemConfig->getAuth($storeCode);
+	        $api = new TestAuthentication($auth);
+	        $response = $api->call();
+
+	        $terminalName = $this->systemConfig->getTerminalConfig($terminalId, 'terminalname', $storeScope, $storeCode);
             if (! $response) {
                 $this->restoreOrderFromOrderId($order->getIncrementId());
                 $requestParams['result'] = 'error';
@@ -126,11 +128,11 @@ class Generator
                 ->setConfig($this->setConfig())
             ;
 
-            if ($fraud = $this->systemConfig->getTerminalConfig($terminalId, 'fraud')) {
+            if ($fraud = $this->systemConfig->getTerminalConfig($terminalId, 'fraud', $storeScope, $storeCode)) {
                 $request->setFraudService($fraud);
             }
 
-	        if ($lang = $this->systemConfig->getTerminalConfig($terminalId, 'language')) {
+	        if ($lang = $this->systemConfig->getTerminalConfig($terminalId, 'language', $storeScope, $storeCode)) {
 		        $langArr = explode('_', $lang, 2);
 		        if (isset($langArr[0])) {
 			        $language = $langArr[0];
@@ -138,40 +140,13 @@ class Generator
 		        }
 	        }
 
-            if ($this->systemConfig->getTerminalConfig($terminalId, 'capture')) {
+            if ($this->systemConfig->getTerminalConfig($terminalId, 'capture', $storeScope, $storeCode)) {
                 $request->setType('paymentAndCapture');
             }
 
             $orderlines = [];
             /** @var \Magento\Sales\Model\Order\Item $item */
 	        foreach ($order->getAllVisibleItems() as $item) {
-		        // log data ...
-		        /*$logs = [
-					'SKU: %s',
-					'getPrice: %s',
-					'getPriceInclTax: %s',
-					'getBasePrice: %s',
-					'getBaseOriginalPrice: %s',
-					'getGwBasePrice: %s',
-					'getGwPrice: %s',
-					'getOriginalPrice: %s',
-					'getDiscountAmount: %s',
-					'getBaseDiscountAmount: %s',
-				];
-
-				$this->_logger->addInfo(sprintf(implode(' - ', $logs),
-					$item->getSku(),
-					$item->getPrice() * $item->getQtyOrdered(),
-					$item->getPriceInclTax() * $item->getQtyOrdered(),
-					$item->getBasePrice() * $item->getQtyOrdered(),
-					$item->getBaseOriginalPrice() * $item->getQtyOrdered(),
-					$item->getGwBasePrice() * $item->getQtyOrdered(),
-					$item->getGwPrice() * $item->getQtyOrdered(),
-					$item->getOriginalPrice() * $item->getQtyOrdered(),
-					$item->getDiscountAmount() * $item->getQtyOrdered(),
-					$item->getBaseDiscountAmount() * $item->getQtyOrdered()
-				));*/
-
 		        $taxAmount = ($item->getQtyOrdered() * $item->getPriceInclTax()) - ($item->getQtyOrdered() * $item->getPrice());
 		        $orderline = new OrderLine(
 			        $item->getName(),
@@ -211,10 +186,11 @@ class Generator
                 $requestParams['result'] = 'success';
                 $requestParams['formurl'] = $response->Url;
                 // set before payment status
-                $this->setCustomOrderStatus($order, Order::STATE_PENDING_PAYMENT, 'before');
-                $order->getResource()->save($order);
+                $this->setCustomOrderStatus($order, Order::STATE_NEW, 'before');
                 // set notification
-                $order->addStatusHistoryComment('Redirected to Altapay - Payment ID: ' . $response->PaymentRequestId);
+	            $order->addStatusHistoryComment('Redirected to Altapay - Payment request ID: ' . $response->PaymentRequestId);
+                $order->getResource()->save($order);
+
                 return $requestParams;
             } catch (ClientException $e) {
                 $requestParams['result'] = 'error';
@@ -241,6 +217,11 @@ class Generator
 
     }
 
+	/**
+	 * @param $orderId
+	 * @throws \Exception
+	 * @throws \Magento\Framework\Exception\AlreadyExistsException
+	 */
     public function restoreOrderFromOrderId($orderId)
     {
         $order = $this->loadOrderFromOrderId($orderId);
@@ -255,13 +236,11 @@ class Generator
         }
     }
 
-    /**
-     * @param RequestInterface $request
-     *
-     * @return bool
-     *
-     * @throws \Exception
-     */
+	/**
+	 * @param RequestInterface $request
+	 * @return bool
+	 * @throws \Exception
+	 */
     public function restoreOrderFromRequest(RequestInterface $request)
     {
         $callback = new Callback($request->getPostValue());
@@ -287,27 +266,98 @@ class Generator
         return false;
     }
 
+	/**
+	 * @param RequestInterface $request
+	 */
     public function handleNotificationAction(RequestInterface $request)
     {
-        $this->completeCheckout('Notifcation callback from Altapay', $request);
+        $this->completeCheckout('Notification callback from Altapay', $request);
     }
 
+	/**
+	 * @param RequestInterface $request
+	 */
+	public function handleCancelStatusAction(RequestInterface $request)
+	{
+		$historyComment = "Altapay - Consumer has canceled the payment";
+		//TODO: fetch the MerchantErrorMessage and use it as historyComment
+		$this->handleOrderStateAction($request, Order::STATE_CANCELED, Order::STATE_CANCELED, $historyComment);
+	}
+
+	/**
+	 * @param RequestInterface $request
+	 */
+	public function handleFailedStatusAction(RequestInterface $request)
+	{
+		$historyComment = "Altapay - Consumer has tried to pay but the payment failed";
+		$transInfo = null;
+		$callback = new Callback($request->getPostValue());
+		$response = $callback->call();
+		if ($response) {
+			$order = $this->loadOrderFromCallback($response);
+			$transInfo = sprintf(
+				"Transaction ID: %s - Payment ID: %s - Credit card token: %s",
+				$response->transactionId,
+				$response->paymentId,
+				$response->creditCardToken
+			);
+		}
+		//TODO: fetch the MerchantErrorMessage and use it as historyComment
+		$this->handleOrderStateAction($request, Order::STATE_PENDING_PAYMENT, Order::STATE_PENDING_PAYMENT, $historyComment, $transInfo);
+	}
+
+	/**
+	 * @param RequestInterface $request
+	 * @param string $orderState
+	 * @param string $orderStatus
+	 * @param string $historyComment
+	 * @param null $transactionInfo
+	 * @throws \Exception
+	 * @throws \Magento\Framework\Exception\AlreadyExistsException
+	 */
+	public function handleOrderStateAction(RequestInterface $request,
+	                                       $orderState = Order::STATE_PENDING_PAYMENT,
+	                                       $orderStatus = Order::STATE_PENDING_PAYMENT,
+	                                       $historyComment = "Order state changed",
+	                                       $transactionInfo = null)
+	{
+		$callback = new Callback($request->getPostValue());
+		$response = $callback->call();
+		if ($response) {
+			$order = $this->loadOrderFromCallback($response);
+			$order->setState($orderState);
+			$order->setIsNotified(false);
+			if (!is_null($transactionInfo)) {
+				$order->addStatusHistoryComment($transactionInfo);
+			}
+			$order->addStatusHistoryComment($historyComment, $orderStatus);
+
+			$order->getResource()->save($order);
+		}
+	}
+
+	/**
+	 * @param RequestInterface $request
+	 */
     public function handleOkAction(RequestInterface $request)
     {
         $this->completeCheckout('OK callback from Altapay', $request);
     }
 
-    /**
-     * @param string $comment
-     * @param RequestInterface $request
-     */
+	/**
+	 * @param $comment
+	 * @param RequestInterface $request
+	 * @throws \Exception
+	 * @throws \Magento\Framework\Exception\AlreadyExistsException
+	 */
     private function completeCheckout($comment, RequestInterface $request)
     {
         $callback = new Callback($request->getPostValue());
         $response = $callback->call();
         if ($response) {
             $order = $this->loadOrderFromCallback($response);
-
+	        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+	        $storeCode = $order->getStore()->getCode();
             if ($order->getId()) {
                 // @todo Write data to DB
                 $payment = $order->getPayment();
@@ -335,10 +385,11 @@ class Generator
             foreach (SystemConfig::getTerminalCodes() as $terminalName) {
                 if ($this->systemConfig->getTerminalConfigFromTerminalName(
                         $terminalName,
-                        'terminalname'
-                    ) === $response->Transactions[0]->Terminal
+                        'terminalname',
+		                $storeScope,
+                        $storeCode) === $response->Transactions[0]->Terminal
                 ) {
-                    $isCaptured = $this->systemConfig->getTerminalConfigFromTerminalName($terminalName, 'capture');
+                    $isCaptured = $this->systemConfig->getTerminalConfigFromTerminalName($terminalName, 'capture', $storeScope, $storeCode);
                     break;
                 }
             }
@@ -374,15 +425,27 @@ class Generator
         return $order;
     }
 
+	/**
+	 * @param Order $order
+	 * @param $state
+	 * @param $statusKey
+	 * @throws \Exception
+	 * @throws \Magento\Framework\Exception\AlreadyExistsException
+	 */
     private function setCustomOrderStatus(Order $order, $state, $statusKey)
     {
         $order->setState($state);
-        if ($status = $this->systemConfig->getStatusConfig($statusKey)) {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+        $storeCode = $order->getStore()->getCode();
+        if ($status = $this->systemConfig->getStatusConfig($statusKey, $storeScope, $storeCode)) {
             $this->order->setStatus($status);
         }
         $order->getResource()->save($order);
     }
 
+	/**
+	 * @return Config
+	 */
     private function setConfig()
     {
         $config = new Config();
@@ -396,6 +459,10 @@ class Generator
         return $config;
     }
 
+	/**
+	 * @param Order $order
+	 * @return Customer
+	 */
     private function setCustomer(Order $order)
     {
         $billingAddress = new Address();
@@ -436,5 +503,4 @@ class Generator
 
         return $customer;
     }
-
 }

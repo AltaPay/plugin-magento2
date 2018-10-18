@@ -74,7 +74,7 @@ class CreditmemoRefundObserver implements ObserverInterface
 		            $orderline->taxAmount = $memo->getShippingTaxAmount();
 		            $orderlines[] = $orderline;
 	            }
-                $refund = new RefundCapturedReservation($this->systemConfig->getAuth());
+                $refund = new RefundCapturedReservation($this->systemConfig->getAuth($order->getStore()->getCode()));
                 $refund->setTransaction($payment->getLastTransId());
                 $refund->setAmount((float) $memo->getGrandTotal());
 	            $refund->setOrderLines($orderlines);
@@ -90,6 +90,5 @@ class CreditmemoRefundObserver implements ObserverInterface
                 }
             }
         }
-
     }
 }
