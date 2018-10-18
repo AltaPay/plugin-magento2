@@ -5,8 +5,15 @@ web shop.
 
 
 == Change log ==
+** Version 0.2.0
+
+    * Improvements: 
+            - update the order with the correct status and state in accordance to the payment gateway response 
+            - use StoreScope on all connections to the payment gateway
+            - add Enable option for terminals on store level
 
 ** Version 0.1.11
+
     * Bug fix: Support for scope
 
 ** Version 0.1.10
