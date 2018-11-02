@@ -10,7 +10,7 @@ define(
     ],
     function ($, quote, urlBuilder, storage, errorProcessor, customer, fullScreenLoader) {
         'use strict';
-
+        var agreementsConfig = window.checkoutConfig.checkoutAgreements;
         return function (messageContainer, method) {
 
             var serviceUrl,
@@ -34,6 +34,14 @@ define(
                     paymentMethod: paymentData,
                     billingAddress: quote.billingAddress()
                 };
+            }
+
+             if (agreementsConfig.isEnabled) {
+                if(jQuery(".payment-method._active .checkout-agreements input[type='checkbox']:checked").length == 0){
+                    paymentData.extension_attributes = {agreement_ids: [""]};
+                }else{
+                    paymentData.extension_attributes = {agreement_ids: ["1"]};
+                }
             }
 
             fullScreenLoader.startLoader();

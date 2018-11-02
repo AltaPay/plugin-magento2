@@ -36,7 +36,6 @@ class Fail extends Index
 		            $this->generator->handleCancelStatusAction($this->getRequest());
 		            break;
 	            case 'failed':
-	            	//The consumer should be redirected to the payment step, where can select a new payment type
 		            $this->generator->handleFailedStatusAction($this->getRequest());
 		            break;
 
@@ -47,15 +46,19 @@ class Fail extends Index
         } catch (\Exception $e) {
             $msg = $e->getMessage();
         }
-
-	    $this->messageManager->addErrorMessage(__($msg));
-	    $resultRedirect = $this->resultRedirectFactory->create();
-	    $customerRedirUrl = $this->_url->getUrl('checkout', array('_fragment' => 'payment'));
-	    $resultRedirect->setPath($customerRedirUrl);
-	    // TODO: refactor the redirect to a fail message
-	    //return $this->_redirect('*/*/failmessage', ['msg'=>$msg]);
+	    $resultRedirect = $this->prepareRedirect('checkout', array('_fragment' => 'payment'), $msg);
 
 	    return $resultRedirect;
     }
+	private function prepareRedirect($routePath, $routeParams = null, $message = '')
+	{
+		if ($message != '') {
+			$this->messageManager->addErrorMessage(__($message));
+		}
+		$resultRedirect = $this->resultRedirectFactory->create();
+		$customerRedirUrl = $this->_url->getUrl($routePath, $routeParams);
+		$resultRedirect->setPath($customerRedirUrl);
 
+		return $resultRedirect;
+	}
 }

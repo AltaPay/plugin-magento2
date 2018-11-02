@@ -189,6 +189,14 @@ class Generator
                 $this->setCustomOrderStatus($order, Order::STATE_NEW, 'before');
                 // set notification
 	            $order->addStatusHistoryComment('Redirected to Altapay - Payment request ID: ' . $response->PaymentRequestId);
+
+	            $extensionAttribute = $order->getExtensionAttributes();
+	            if ($extensionAttribute && $extensionAttribute->getAltapayPaymentFormUrl()) {
+		            $extensionAttribute->setAltapayPaymentFormUrl($response->Url);
+	            }
+
+                $order->setAltapayPaymentFormUrl($response->Url);
+
                 $order->getResource()->save($order);
 
                 return $requestParams;
@@ -287,6 +295,32 @@ class Generator
 	/**
 	 * @param RequestInterface $request
 	 */
+	public function handleFailStatusRedirectFormAction(RequestInterface $request)
+	{
+		//TODO:refactor this method
+		$formUrl = null;
+		$transInfo = null;
+		$callback = new Callback($request->getPostValue());
+		$response = $callback->call();
+		if ($response) {
+			$order = $this->loadOrderFromCallback($response);
+            $formUrl = $order->getAltapayPaymentFormUrl();
+			if ($formUrl) {
+				$order->addStatusHistoryComment('Card declined, consumer redirected to the payment form');
+			} else {
+				$order->addStatusHistoryComment('Card declined, consumer redirected to the payment section');
+			}
+			$order->setState(Order::STATE_PENDING_PAYMENT);
+			$order->getResource()->save($order);
+		}
+
+		return $formUrl;
+	}
+
+    
+	/**
+	 * @param RequestInterface $request
+	 */
 	public function handleFailedStatusAction(RequestInterface $request)
 	{
 		$historyComment = "Altapay - Consumer has tried to pay but the payment failed";
@@ -331,9 +365,12 @@ class Generator
 				$order->addStatusHistoryComment($transactionInfo);
 			}
 			$order->addStatusHistoryComment($historyComment, $orderStatus);
-
 			$order->getResource()->save($order);
+
+			return true;
 		}
+
+		return false;
 	}
 
 	/**
@@ -438,7 +475,7 @@ class Generator
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
         $storeCode = $order->getStore()->getCode();
         if ($status = $this->systemConfig->getStatusConfig($statusKey, $storeScope, $storeCode)) {
-            $this->order->setStatus($status);
+            $order->setStatus($status);
         }
         $order->getResource()->save($order);
     }
@@ -503,4 +540,9 @@ class Generator
 
         return $customer;
     }
+
+     public function getCheckoutSession() 
+    {
+        return $this->checkoutSession;
+    }  
 }
