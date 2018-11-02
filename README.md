@@ -5,6 +5,12 @@ web shop.
 
 
 == Change log ==
+** Version 0.2.1
+
+    * Bug fix: 
+            - Terms and Condition checkbox in checkout page
+            - Order status, before payment, set according to the setting from the store
+
 ** Version 0.2.0
 
     * Improvements: 
