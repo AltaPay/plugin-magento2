@@ -15,4 +15,9 @@
     <event name="sales_order_creditmemo_refund">
         <observer name="SDM_Altapay_Creditmemo_Refund" instance="SDM\Altapay\Observer\CreditmemoRefundObserver" />
     </event>
+
+    <event name="controller_action_predispatch_checkout_cart_index">
+        <observer name="SDM_Altapay_Checkout_Cart_Index" instance="SDM\Altapay\Observer\CheckoutCartIndex" />
+    </event>
+
 </config>
