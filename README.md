@@ -5,6 +5,11 @@ web shop.
 
 
 == Change log ==
+** Version 0.3.0
+    
+    * Improvement: payment form with the order details 
+    * Bug fix: empty cart if consumer uses the back button from the payment form
+
 ** Version 0.2.1
 
     * Bug fix: 
