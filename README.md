@@ -5,6 +5,11 @@ web shop.
 
 
 == Change log ==
+
+** Version 0.3.1
+
+    * Bug fix: cancel the order if the consumer moves away from the payment form by using the back button in the browser
+
 ** Version 0.3.0
     
     * Improvement: payment form with the order details 
