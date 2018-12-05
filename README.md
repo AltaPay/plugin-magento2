@@ -6,6 +6,12 @@ web shop.
 
 == Change log ==
 
+** Version 0.3.2
+
+    * Bug fix:
+            - Fix the order-cleanup script to be applicable only to Altapay orders
+            - Fix the terminal name in the order view, according to store level
+
 ** Version 0.3.1
 
     * Bug fix: cancel the order if the consumer moves away from the payment form by using the back button in the browser
