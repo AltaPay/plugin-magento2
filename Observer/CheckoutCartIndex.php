@@ -4,10 +4,14 @@ namespace SDM\Altapay\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\OrderFactory;
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Sales\Model\Order;
+use Magento\SalesRule\Model\Coupon;
+use Magento\SalesRule\Model\ResourceModel\Coupon\Usage as CouponUsage;
 
 class CheckoutCartIndex implements ObserverInterface
 {
+
+    const CHECK_ORDER_STATUS_BEFORE_CANCEL = 'pending'; 
 
     /** @var \Magento\Checkout\Model\Session */
     private $session;
@@ -20,6 +24,15 @@ class CheckoutCartIndex implements ObserverInterface
 
     /** @var \Magento\Sales\Model\OrderFactory */
     protected $orderFactory;
+
+    /**
+     * @var Coupon
+     */
+    private $coupon;
+    /**
+     * @var CouponUsage
+     */
+    private $couponUsage;
      
     /**
      * Constructor
@@ -35,12 +48,16 @@ class CheckoutCartIndex implements ObserverInterface
         \Magento\Checkout\Model\Session $session,
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
-        \Magento\Sales\Model\OrderFactory $orderFactory
+        \Magento\Sales\Model\OrderFactory $orderFactory,
+        Coupon $coupon,
+        CouponUsage $couponUsage
     ) {
         $this->session = $session;
         $this->quoteFactory = $quoteFactory;
         $this->messageManager = $messageManager;
         $this->orderFactory   = $orderFactory;
+        $this->coupon          = $coupon;
+        $this->couponUsage     = $couponUsage;
     }
 
 
@@ -51,34 +68,54 @@ class CheckoutCartIndex implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        if ($this->session->getLastRealOrderId()) {
-            try {
-                $orderId = $this->session->getLastRealOrderId();
-                $order = $orderId ? $this->orderFactory->create()->load($orderId) : false;
-                if ($order->getAltapayPaymentFormUrl()) {
-                    $quote = $this->quoteFactory->create()->loadByIdWithoutStore($order->getQuoteId());
-                    //get quote Id from order and set as active
-                    $quote->setIsActive(1)->setReservedOrderId(null)->save();
-                    $this->session->replaceQuote($quote)->unsLastRealOrderId();
+        //session set in generator create request
+        if ($this->session->getAltapayCustomerRedirect()) {
 
-                     
-                    $historyComment = 'Payment failed! Consumer has pressed the back button from the payment page.';
+          $order = $this->session->getLastRealOrder();
+          $quote = $this->quoteFactory->create()->loadByIdWithoutStore($order->getQuoteId());
 
-                    $order->setState(\Magento\Sales\Model\Order::STATE_CANCELED);
-                    $order->setIsNotified(false);
-                    $order->addStatusHistoryComment($historyComment, \Magento\Sales\Model\Order::STATE_CANCELED);
-                    $order->getResource()->save($order);
+          //if quote id exist and order status is pending
+          if ($quote->getId() && $order->getStatus() == self::CHECK_ORDER_STATUS_BEFORE_CANCEL) {
+            //get quote Id from order and set as active
+            $quote->setIsActive(1)->setReservedOrderId(null)->save();
+            $this->session->replaceQuote($quote)->unsLastRealOrderId();
+            //set order status and comments
+            $historyComment = 'Payment failed! Consumer has pressed the back button from the payment page.';
+            $order->setState(Order::STATE_CANCELED);
+            $order->setIsNotified(false);
+            $order->addStatusHistoryComment($historyComment, \Magento\Sales\Model\Order::STATE_CANCELED);
 
-                    $this->messageManager->addErrorMessage('Payment failed due to the browser back button usage!');
-                }
-            } catch (LocalizedException $e) {
-                // catch and continue - do something when needed
-            } catch (\Exception $e) {
-                // catch and continue - do something when needed
+            //if coupon applied revert it
+            if ($order->getCouponCode()) {
+              $this->resetCouponAfterCancellation($order);
             }
 
+            $order->getResource()->save($order);
+            //show fail message
+            $this->messageManager->addErrorMessage('Payment failed due to the browser back button usage!');
+           }
+            $this->session->unsAltapayCustomerRedirect();
+        }
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     *
+     * @throws \Exception
+     */
+    public function resetCouponAfterCancellation($order)
+    {
+        $this->coupon->load($order->getCouponCode(), 'code');
+        if ($this->coupon->getId()) {
+            $this->coupon->setTimesUsed($this->coupon->getTimesUsed() - 1);
+            $this->coupon->save();
+            $customerId = $order->getCustomerId();
+            if ($customerId) {
+                $this->couponUsage->updateCustomerCouponTimesUsed($customerId, $this->coupon->getId(), false);
+            }
         }
     }
 }
+
 
 

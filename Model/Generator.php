@@ -199,6 +199,9 @@ class Generator
 
                 $order->getResource()->save($order);
 
+                //set check when user redirect
+                $this->checkoutSession->setAltapayCustomerRedirect(true);
+
                 return $requestParams;
             } catch (ClientException $e) {
                 $requestParams['result'] = 'error';
@@ -407,16 +410,9 @@ class Generator
             if (!$order->getEmailSent()) {
                 $this->orderSender->send($order);
             }
-
-            $order->addStatusHistoryComment($comment);
-            $order->addStatusHistoryComment(
-                sprintf(
-                    "Transaction ID: %s - Payment ID: %s - Credit card token: %s",
-                    $response->transactionId,
-                    $response->paymentId,
-                    $response->creditCardToken
-                )
-            );
+           
+            //unset redirect if success
+            $this->checkoutSession->unsAltapayCustomerRedirect();
 
             $isCaptured = false;
             foreach (SystemConfig::getTerminalCodes() as $terminalName) {
@@ -438,6 +434,15 @@ class Generator
                 $this->setCustomOrderStatus($order, Order::STATE_PROCESSING, 'process');
             }
 
+	        $order->addStatusHistoryComment($comment);
+	        $order->addStatusHistoryComment(
+		        sprintf(
+			        "Transaction ID: %s - Payment ID: %s - Credit card token: %s",
+			        $response->transactionId,
+			        $response->paymentId,
+			        $response->creditCardToken
+		        )
+	        );
             $order->setIsNotified(false);
             $order->getResource()->save($order);
         }
