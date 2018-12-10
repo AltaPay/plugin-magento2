@@ -6,6 +6,13 @@ web shop.
 
 == Change log ==
 
+** Version 0.3.3
+
+    * Improvement: Revert the usage of a cupon if the payment is canceled by the consumer through the back button
+    * Bug fix:
+            - Fix the order-cleanup script be aplicable only to Altapay transactions
+            - Fix the order status show in the history comments from the order view
+
 ** Version 0.3.2
 
     * Bug fix:
