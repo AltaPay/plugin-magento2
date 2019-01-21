@@ -10,5 +10,4 @@ abstract class TerminalModel extends \Magento\Payment\Model\Method\AbstractMetho
     protected $_canRefundInvoicePartial = true;
     protected $_canCapturePartial = true;
     protected $_isOffline = true;
-
 }

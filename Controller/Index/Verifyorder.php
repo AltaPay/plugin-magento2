@@ -20,5 +20,4 @@ class Verifyorder extends Index
         echo 'OKAY';
         exit;
     }
-
 }

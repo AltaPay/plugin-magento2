@@ -30,12 +30,13 @@ class Terminals implements ArrayInterface
             $call = new \Altapay\Api\Others\Terminals($this->systemConfig->getAuth());
             /** @var TerminalsResponse $response */
             $response = $call->call();
-            foreach($response->Terminals as $terminal) {
+            foreach ($response->Terminals as $terminal) {
                 $terminals[] = ['value' => $terminal->Title, 'label' => $terminal->Title];
             }
-        } catch (\Exception $e) {}
-	    // Sort the terminals alphabetically
-        array_multisort(array_column($terminals, 'label'), SORT_ASC,SORT_NUMERIC, $terminals);
+        } catch (\Exception $e) {
+        }
+        // Sort the terminals alphabetically
+        array_multisort(array_column($terminals, 'label'), SORT_ASC, SORT_NUMERIC, $terminals);
         return $terminals;
     }
 }

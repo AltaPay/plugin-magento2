@@ -48,6 +48,5 @@ class OrderCancelObserver implements ObserverInterface
                 throw $e;
             }
         }
-
     }
 }

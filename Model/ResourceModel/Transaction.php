@@ -11,5 +11,4 @@ class Transaction extends AbstractDb
     {
         $this->_init(InstallSchema::TABLE_NAME, InstallSchema::TABLE_IDENTIFIER);
     }
-
 }

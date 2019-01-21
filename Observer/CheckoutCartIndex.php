@@ -7,11 +7,12 @@ use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\Order;
 use Magento\SalesRule\Model\Coupon;
 use Magento\SalesRule\Model\ResourceModel\Coupon\Usage as CouponUsage;
+use Magento\CatalogInventory\Api\StockManagementInterface;
+use SDM\Altapay\Model\SystemConfig;
+use Magento\Framework\Session\SessionManagerInterface;
 
 class CheckoutCartIndex implements ObserverInterface
 {
-
-    const CHECK_ORDER_STATUS_BEFORE_CANCEL = 'pending'; 
 
     /** @var \Magento\Checkout\Model\Session */
     private $session;
@@ -33,7 +34,17 @@ class CheckoutCartIndex implements ObserverInterface
      * @var CouponUsage
      */
     private $couponUsage;
-     
+
+    /**
+     * @var StockManagementInterface
+     */
+    protected $stockManagement;
+
+    /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
     /**
      * Constructor
      *
@@ -42,6 +53,10 @@ class CheckoutCartIndex implements ObserverInterface
      * @param \Magento\Framework\Message\ManagerInterface $messageManager
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param Coupon $coupon
+     * @param CouponUsage $couponUsage
+     * @param StockManagementInterface $stockManagement
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -50,7 +65,9 @@ class CheckoutCartIndex implements ObserverInterface
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         Coupon $coupon,
-        CouponUsage $couponUsage
+        CouponUsage $couponUsage,
+        StockManagementInterface $stockManagement,
+        SystemConfig $systemConfig
     ) {
         $this->session = $session;
         $this->quoteFactory = $quoteFactory;
@@ -58,6 +75,8 @@ class CheckoutCartIndex implements ObserverInterface
         $this->orderFactory   = $orderFactory;
         $this->coupon          = $coupon;
         $this->couponUsage     = $couponUsage;
+        $this->stockManagement = $stockManagement;
+        $this->systemConfig    = $systemConfig;
     }
 
 
@@ -68,32 +87,59 @@ class CheckoutCartIndex implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        //session set in generator create request
         if ($this->session->getAltapayCustomerRedirect()) {
+            $order = $this->session->getLastRealOrder();
+            $quote = $this->quoteFactory->create()->loadByIdWithoutStore($order->getQuoteId());
+            $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+            $storeCode = $order->getStore()->getCode();
+            $statusHistoryItem = $order->getStatusHistoryCollection()->getFirstItem();
+            $errorCodeMerchant = $statusHistoryItem->getData('comment');
 
-          $order = $this->session->getLastRealOrder();
-          $quote = $this->quoteFactory->create()->loadByIdWithoutStore($order->getQuoteId());
+            $message = __(ConstantConfig::BROWSER_BK_BUTTON_MSG);
+            $historyComment = __(ConstantConfig::BROWSER_BK_BUTTON_COMMENT);
 
-          //if quote id exist and order status is pending
-          if ($quote->getId() && $order->getStatus() == self::CHECK_ORDER_STATUS_BEFORE_CANCEL) {
-            //get quote Id from order and set as active
-            $quote->setIsActive(1)->setReservedOrderId(null)->save();
-            $this->session->replaceQuote($quote)->unsLastRealOrderId();
-            //set order status and comments
-            $historyComment = 'Payment failed! Consumer has pressed the back button from the payment page.';
-            $order->setState(Order::STATE_CANCELED);
-            $order->setIsNotified(false);
-            $order->addStatusHistoryComment($historyComment, \Magento\Sales\Model\Order::STATE_CANCELED);
 
-            //if coupon applied revert it
-            if ($order->getCouponCode()) {
-              $this->resetCouponAfterCancellation($order);
+            if (strpos($errorCodeMerchant, 'Error code') !== false || strpos($errorCodeMerchant, 'Declined')) {
+                  $message = $errorCodeMerchant;
+                  $historyComment = $errorCodeMerchant;
             }
 
-            $order->getResource()->save($order);
-            //show fail message
-            $this->messageManager->addErrorMessage('Payment failed due to the browser back button usage!');
-           }
+            $orderStatus = $this->systemConfig->getStatusConfig('before', $storeScope, $storeCode);
+
+
+            if ($quote->getId() && $order->getStatus() == $orderStatus) {
+              //get quote Id from order and set as active
+                $quote->setIsActive(1)->setReservedOrderId(null)->save();
+                $this->session->replaceQuote($quote)->unsLastRealOrderId();
+           
+
+                if ($order->getCouponCode()) {
+                    $this->resetCouponAfterCancellation($order);
+                }
+
+              //revert quantity when cancel order
+                $orderItems = $order->getAllItems();
+                foreach ($orderItems as $item) {
+                    $children = $item->getChildrenItems();
+                    $qty = $item->getQtyOrdered() - max($item->getQtyShipped(), $item->getQtyInvoiced()) - $item->getQtyCanceled();
+                    if ($item->getId() && $item->getProductId() && empty($children) && $qty) {
+                        $this->stockManagement->backItemQty($item->getProductId(), $qty, $item->getStore()->getWebsiteId());
+                    }
+                }
+
+                if ($historyComment != $errorCodeMerchant) {
+                  //set order status and comments
+                    $order->addStatusHistoryComment($historyComment, \Magento\Sales\Model\Order::STATE_CANCELED);
+                }
+             
+                $order->setStatus(Order::STATE_CANCELED);
+                $order->setState(Order::STATE_CANCELED);
+                $order->setIsNotified(false);
+
+                $order->getResource()->save($order);
+              //show fail message
+                $this->messageManager->addErrorMessage($message);
+            }
             $this->session->unsAltapayCustomerRedirect();
         }
     }
@@ -116,6 +162,3 @@ class CheckoutCartIndex implements ObserverInterface
         }
     }
 }
-
-
-

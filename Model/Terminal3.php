@@ -19,5 +19,4 @@ class Terminal3 extends TerminalModel
      * @var string
      */
     protected $_code = self::METHOD_CODE;
-
 }

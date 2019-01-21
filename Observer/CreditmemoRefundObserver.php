@@ -39,7 +39,7 @@ class CreditmemoRefundObserver implements ObserverInterface
     {
         /** @var \Magento\Sales\Api\Data\CreditmemoInterface $memo */
         $memo = $observer['creditmemo'];
-	    $orderlines = [];
+        $orderlines = [];
         $creditOnline = $memo->getDoTransaction();
         if ($creditOnline) {
             /** @var \Magento\Sales\Model\Order $order */
@@ -48,36 +48,35 @@ class CreditmemoRefundObserver implements ObserverInterface
             /** @var \Magento\Sales\Model\Order\Payment $payment */
             $payment = $order->getPayment();
             if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
-	            foreach ($memo->getItems() as $item){
-		            if ($item->getPriceInclTax()) {
+                foreach ($memo->getItems() as $item) {
+                    if ($item->getPriceInclTax()) {
+                        $orderline = new OrderLine(
+                            $item->getName(),
+                            $item->getSku(),
+                            $item->getQty(),
+                            $item->getPriceInclTax()
+                        );
+                        $orderline->setGoodsType('item');
+                        $orderline->taxAmount = $item->getTaxAmount();
+                        $orderlines[] = $orderline;
+                    }
+                }
 
-			            $orderline = new OrderLine(
-				            $item->getName(),
-				            $item->getSku(),
-				            $item->getQty(),
-				            $item->getPriceInclTax()
-			            );
-			            $orderline->setGoodsType('item');
-			            $orderline->taxAmount = $item->getTaxAmount();
-			            $orderlines[] = $orderline;
-		            }
-	            }
-
-	            if ($memo->getShippingInclTax()) {
-		            $orderline = new OrderLine(
-			            'Shipping',
-			            'shipping',
-			            1,
-			            $memo->getShippingInclTax()
-		            );
-		            $orderline->setGoodsType('shipment');
-		            $orderline->taxAmount = $memo->getShippingTaxAmount();
-		            $orderlines[] = $orderline;
-	            }
+                if ($memo->getShippingInclTax()) {
+                    $orderline = new OrderLine(
+                        'Shipping',
+                        'shipping',
+                        1,
+                        $memo->getShippingInclTax()
+                    );
+                    $orderline->setGoodsType('shipment');
+                    $orderline->taxAmount = $memo->getShippingTaxAmount();
+                    $orderlines[] = $orderline;
+                }
                 $refund = new RefundCapturedReservation($this->systemConfig->getAuth($order->getStore()->getCode()));
                 $refund->setTransaction($payment->getLastTransId());
                 $refund->setAmount((float) $memo->getGrandTotal());
-	            $refund->setOrderLines($orderlines);
+                $refund->setOrderLines($orderlines);
                 /** @var RefundResponse $response */
                 try {
                     $response = $refund->call();

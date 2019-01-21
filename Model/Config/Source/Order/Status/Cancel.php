@@ -13,5 +13,4 @@ class Cancel extends Status
     protected $_stateStatuses = [
         Order::STATE_CANCELED,
     ];
-
 }

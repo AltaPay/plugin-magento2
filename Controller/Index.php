@@ -78,5 +78,4 @@ abstract class Index extends Action
         $this->logger->debug(print_r($this->getRequest()->getParams(), true));
         $this->logger->debug('- END: ' . $calledClass);
     }
-
 }

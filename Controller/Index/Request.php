@@ -31,6 +31,5 @@ class Request extends Index
         }
 
         die('No post!?');
-
     }
 }

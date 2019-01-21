@@ -14,5 +14,4 @@ class Fraud extends Status
         Order::STATE_PAYMENT_REVIEW,
         Order::STATE_HOLDED,
     ];
-
 }

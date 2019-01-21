@@ -18,9 +18,9 @@ class Failmessage extends Index
     {
         $this->writeLog();
         $msg = $this->getRequest()->getParam('msg');
-	    $this->logger->debug('messageManager - Error message: ' . $msg);
+        $this->logger->debug('messageManager - Error message: ' . $msg);
         $this->messageManager->addErrorMessage($msg);
 
-	    return $this->_redirect('checkout', ['_fragment' => 'payment']);
+        return $this->_redirect('checkout', ['_fragment' => 'payment']);
     }
 }

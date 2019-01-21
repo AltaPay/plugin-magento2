@@ -14,5 +14,4 @@ class Pending extends Status
         Order::STATE_NEW,
         Order::STATE_PENDING_PAYMENT,
     ];
-
 }

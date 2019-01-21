@@ -21,5 +21,4 @@ class Notification extends Index
             $this->generator->handleNotificationAction($this->getRequest());
         }
     }
-
 }

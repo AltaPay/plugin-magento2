@@ -20,5 +20,4 @@ class Redirect extends Index
         $page = $this->pageFactory->create();
         return $page;
     }
-
 }

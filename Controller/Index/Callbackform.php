@@ -30,5 +30,4 @@ class Callbackform extends Action
     {
         return $this->resultPageFactory->create();
     }
-
 }

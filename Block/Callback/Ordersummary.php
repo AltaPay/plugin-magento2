@@ -5,7 +5,7 @@ namespace SDM\Altapay\Block\Callback;
 use Magento\Customer\Model\Context;
 use Magento\Sales\Model\Order;
 
-class Ordersummary extends \Magento\Framework\View\Element\Template 
+class Ordersummary extends \Magento\Framework\View\Element\Template
 {
     /**
      * @var \Magento\Sales\Model\OrderFactory
@@ -62,11 +62,11 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
-        \Magento\Sales\Model\OrderFactory $orderFactory, 
-        \Magento\Framework\App\Request\Http $request, 
-        \Magento\Sales\Model\Order\Config $orderConfig, 
-        \Magento\Framework\App\Http\Context $httpContext, 
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository, 
+        \Magento\Sales\Model\OrderFactory $orderFactory,
+        \Magento\Framework\App\Request\Http $request,
+        \Magento\Sales\Model\Order\Config $orderConfig,
+        \Magento\Framework\App\Http\Context $httpContext,
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
         \Magento\Sales\Model\Order\Address\Renderer $renderer,
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
@@ -90,7 +90,7 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
      */
     public function getOrderId()
     {
-      return $this->request->getParam('shop_orderid');
+        return $this->request->getParam('shop_orderid');
     }
 
     /**
@@ -98,12 +98,12 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
      * @return $this
      */
 
-    public function getOrder() 
+    public function getOrder()
     {
         $orderIncrementId = $this->getOrderId();
-        if($orderIncrementId){
-           $order = $this->orderFactory->create()->loadByIncrementId($orderIncrementId);
-           return $order;  
+        if ($orderIncrementId) {
+            $order = $this->orderFactory->create()->loadByIncrementId($orderIncrementId);
+            return $order;
         }
         
         return '';
@@ -114,7 +114,7 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
      * @return html
      */
 
-    public function getFormatedShippingAddress($address = '') 
+    public function getFormatedShippingAddress($address = '')
     {
         $order = $this->getOrder();
         return $this->renderer->format($order->getShippingAddress(), 'html');
@@ -125,7 +125,7 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
      * Get order payemet title
      * @return string
      */
-    public function getPaymentMethodtitle() 
+    public function getPaymentMethodtitle()
     {
         $order = $this->getOrder();
         $payment = $order->getPayment();
@@ -133,9 +133,8 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
         return $method->getTitle();
     }
 
-    public function getProductImage() 
+    public function getProductImage()
     {
-
     }
 
     /**
@@ -143,18 +142,18 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
      * @param int $id Product id
      * @return $this
      */
-    public function getProductById($id) {
+    public function getProductById($id)
+    {
         return $this->productRepository->getById($id);
     }
 
     /**
      * Get Formated Price
-     * @param fload price 
+     * @param fload price
      * @return boolean
     */
-    public function getFormatedPrice($price='')
+    public function getFormatedPrice($price = '')
     {
         return $this->priceHelper->currency($price, true, false);
     }
-
 }

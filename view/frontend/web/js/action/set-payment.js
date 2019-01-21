@@ -1,3 +1,14 @@
+/**
+ * Altapay Module version 3.0.1 for Magento 2.x.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @copyright 2018 Altapay
+ * @category  payment
+ * @package   altapay
+ */
+ 
 define(
     [
         'jquery',
@@ -36,10 +47,10 @@ define(
                 };
             }
 
-             if (agreementsConfig.isEnabled) {
-                if(jQuery(".payment-method._active .checkout-agreements input[type='checkbox']:checked").length == 0){
+            if (agreementsConfig.isEnabled) {
+                if (jQuery(".payment-method._active .checkout-agreements input[type='checkbox']:checked").length == 0) {
                     paymentData.extension_attributes = {agreement_ids: [""]};
-                }else{
+                } else {
                     paymentData.extension_attributes = {agreement_ids: ["1"]};
                 }
             }
@@ -48,6 +59,7 @@ define(
 
             return storage.post(serviceUrl, JSON.stringify(payload))
                 .done(function (data) {
+                    $('#altapay-error-message').text('');
                     $.ajax({
                         method: "POST",
                         url: window.checkoutConfig.payment['sdm_altapay'].url,
@@ -64,16 +76,16 @@ define(
                                 window.location.href = jsonResponse.formurl;
                             } else {
                                 fullScreenLoader.stopLoader();
-                                alert(jsonResponse.message);
-                                window.location.href = '/checkout/cart/';
+                                $(".payment-method._active").find('#altapay-error-message').css('display','block');
+                                $(".payment-method._active").find('#altapay-error-message').text(jsonResponse.message);
+                                return false;
                             }
                         });
                 })
                 .fail(function (response) {
                     errorProcessor.process(response, messageContainer);
                     fullScreenLoader.stopLoader();
-                }
-            );
+                });
 
         };
     }

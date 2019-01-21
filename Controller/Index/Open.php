@@ -18,5 +18,4 @@ class Open extends Index
         $this->writeLog();
         return $this->_redirect('checkout/onepage/success');
     }
-
 }

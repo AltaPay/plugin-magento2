@@ -14,5 +14,4 @@ class Complete extends Status
         Order::STATE_COMPLETE,
         Order::STATE_CLOSED,
     ];
-
 }

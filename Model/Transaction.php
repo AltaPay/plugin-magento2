@@ -57,5 +57,4 @@ class Transaction extends AbstractModel implements IdentityInterface
     {
         return $this->getData(InstallSchema::COLUMN_PARAMETERS_DATA);
     }
-
 }

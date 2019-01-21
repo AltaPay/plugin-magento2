@@ -42,7 +42,7 @@ class CaptureObserver implements ObserverInterface
         /** @var \Magento\Sales\Model\Order\Invoice $invoice */
         $invoice = $observer['invoice'];
 
-	    $storeCode = $invoice->getStore()->getCode();
+        $storeCode = $invoice->getStore()->getCode();
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
             $this->logPayment($payment, $invoice);
 
@@ -52,28 +52,28 @@ class CaptureObserver implements ObserverInterface
                 if ($item->getPriceInclTax()) {
                     $this->logItem($item);
 
-	                $orderline = new OrderLine(
-		                $item->getName(),
-		                $item->getSku(),
-		                $item->getQty(),
-		                $item->getPriceInclTax()
-	                );
-	                $orderline->setGoodsType('item');
-	                $orderline->taxAmount = $item->getTaxAmount();
-	                $orderlines[] = $orderline;
+                    $orderline = new OrderLine(
+                        $item->getName(),
+                        $item->getSku(),
+                        $item->getQty(),
+                        $item->getPriceInclTax()
+                    );
+                    $orderline->setGoodsType('item');
+                    $orderline->taxAmount = $item->getTaxAmount();
+                    $orderlines[] = $orderline;
                 }
             }
 
             if ($invoice->getShippingInclTax()) {
-	            $orderline = new OrderLine(
-		            'Shipping',
-		            'shipping',
-		            1,
-		            $invoice->getShippingInclTax()
-	            );
-	            $orderline->setGoodsType('shipment');
-	            $orderline->taxAmount = $invoice->getShippingTaxAmount();
-	            $orderlines[] = $orderline;
+                $orderline = new OrderLine(
+                    'Shipping',
+                    'shipping',
+                    1,
+                    $invoice->getShippingInclTax()
+                );
+                $orderline->setGoodsType('shipment');
+                $orderline->taxAmount = $invoice->getShippingTaxAmount();
+                $orderlines[] = $orderline;
             }
 
             $api = new CaptureReservation($this->systemConfig->getAuth($storeCode));
@@ -110,7 +110,6 @@ class CaptureObserver implements ObserverInterface
                 throw new \InvalidArgumentException('Could not capture reservation');
             }
         }
-
     }
 
     /**

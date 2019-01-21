@@ -25,5 +25,4 @@ class Ok extends Index
             return $this->_redirect('checkout');
         }
     }
-
 }

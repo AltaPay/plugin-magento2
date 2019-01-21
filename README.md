@@ -6,6 +6,13 @@ web shop.
 
 == Change log ==
 
+** Version 0.4.0
+
+    * Improvement: 
+            - Added multi language support (Danish, German, Finnish, Swedish, Norwegian and French); other languages will default to English
+            - Added a custom column in the order view with correct terminal name, based on the  order's store scope
+            - Improved the communication with the payment gateway
+
 ** Version 0.3.3
 
     * Improvement: Revert the usage of a cupon if the payment is canceled by the consumer through the back button

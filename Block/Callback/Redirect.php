@@ -8,7 +8,5 @@ class Redirect extends Template
 
     protected function _prepareLayout()
     {
-
     }
-
 }

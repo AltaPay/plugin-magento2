@@ -28,5 +28,4 @@ class Info extends BaseInfo
 
         return $transport->setData(array_merge($data, $transport->getData()));
     }
-
 }
