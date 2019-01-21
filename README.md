@@ -8,7 +8,7 @@ web shop.
 
 ** Version 0.4.0
 
-    * Improvement: 
+    * Improvements: 
             - Added multi language support (Danish, German, Finnish, Swedish, Norwegian and French); other languages will default to English
             - Added a custom column in the order view with correct terminal name, based on the  order's store scope
             - Improved the communication with the payment gateway
