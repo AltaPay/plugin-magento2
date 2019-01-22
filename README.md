@@ -6,6 +6,12 @@ web shop.
 
 == Change log ==
 
+** Version 0.4.1
+
+    * Bug fix: 
+            - Wrong reference (namespace) for the plugin
+            - Module failing in rendering the callback form
+
 ** Version 0.4.0
 
     * Improvements: 
