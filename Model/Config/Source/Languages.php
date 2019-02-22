@@ -10,7 +10,7 @@ class Languages extends Locale implements ArrayInterface
     //ee will be converted to et
     private static $allowedLanguages = [
         'cs', 'da', 'de', 'en', 'es', 'fi', 'fr', 'ja',
-        'lt', 'nl', 'nn', 'pl', 'sv','th', 'tr', 'zh',
+        'lt', 'nl', 'no', 'nb', 'nn', 'pl', 'sv','th', 'tr', 'zh',
         'et', 'ee', 'it', 'pt', 'eu'
     ];
 
