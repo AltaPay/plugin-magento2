@@ -10,6 +10,7 @@ use Magento\SalesRule\Model\ResourceModel\Coupon\Usage as CouponUsage;
 use Magento\CatalogInventory\Api\StockManagementInterface;
 use SDM\Altapay\Model\SystemConfig;
 use Magento\Framework\Session\SessionManagerInterface;
+use SDM\Altapay\Model\ConstantConfig;
 
 class CheckoutCartIndex implements ObserverInterface
 {
@@ -89,7 +90,7 @@ class CheckoutCartIndex implements ObserverInterface
     {
         if ($this->session->getAltapayCustomerRedirect()) {
             $order = $this->session->getLastRealOrder();
-            $quote = $this->quoteFactory->create()->loadByIdWithoutStore($order->getQuoteId());
+            $quote = $this->quoteFactory->create()->load($order->getQuoteId());
             $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
             $storeCode = $order->getStore()->getCode();
             $statusHistoryItem = $order->getStatusHistoryCollection()->getFirstItem();
@@ -104,10 +105,13 @@ class CheckoutCartIndex implements ObserverInterface
                   $historyComment = $errorCodeMerchant;
             }
 
-            $orderStatus = $this->systemConfig->getStatusConfig('before', $storeScope, $storeCode);
+            $orderStatusConfig = $this->systemConfig->getStatusConfig('before', $storeScope, $storeCode);
+            $orderStatusCancel = $this->systemConfig->getStatusConfig('cancel', $storeScope, $storeCode);
+            
+            $orderStatusCancelUpdate = Order::STATE_CANCELED;
+            $orderStateCancelUpdate = Order::STATE_CANCELED;
 
-
-            if ($quote->getId() && $order->getStatus() == $orderStatus) {
+            if ($quote->getId() && $this->verifyIfOrderStatus($orderStatusConfig, $order->getStatus())) {
               //get quote Id from order and set as active
                 $quote->setIsActive(1)->setReservedOrderId(null)->save();
                 $this->session->replaceQuote($quote)->unsLastRealOrderId();
@@ -131,9 +135,14 @@ class CheckoutCartIndex implements ObserverInterface
                   //set order status and comments
                     $order->addStatusHistoryComment($historyComment, \Magento\Sales\Model\Order::STATE_CANCELED);
                 }
+                
+                if($orderStatusCancel){
+                  $orderStatusCancelUpdate = $orderStatusCancel;
+                  $orderStateCancelUpdate = Order::STATE_CANCELED;
+                }
              
-                $order->setStatus(Order::STATE_CANCELED);
-                $order->setState(Order::STATE_CANCELED);
+                $order->setStatus($orderStatusCancelUpdate);
+                $order->setState($orderStateCancelUpdate);
                 $order->setIsNotified(false);
 
                 $order->getResource()->save($order);
@@ -160,5 +169,20 @@ class CheckoutCartIndex implements ObserverInterface
                 $this->couponUsage->updateCustomerCouponTimesUsed($customerId, $this->coupon->getId(), false);
             }
         }
+    }
+    
+     /**
+     * @param orderStatusConfig
+     * @param currentOrderStatus
+     */
+    public function verifyIfOrderStatus($orderStatusConfig, $currentOrderStatus)
+    {
+        if(!is_null($orderStatusConfig)){
+            if($orderStatusConfig != $currentOrderStatus){
+                return false;
+            }
+        }
+
+        return true;
     }
 }

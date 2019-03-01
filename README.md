@@ -6,6 +6,14 @@ web shop.
 
 == Change log ==
 
+** Version 0.4.2
+
+    * Bug fix: 
+            - Item unit price sent when capture
+            - Status set before and after payment
+            - Localization files encoding
+            - Corrected the localization file available for the Norwegian language: Bokmål
+
 ** Version 0.4.1
 
     * Bug fix: 

@@ -56,7 +56,7 @@ class CaptureObserver implements ObserverInterface
                         $item->getName(),
                         $item->getSku(),
                         $item->getQty(),
-                        $item->getPriceInclTax()
+                        $item->getPriceExclTax()
                     );
                     $orderline->setGoodsType('item');
                     $orderline->taxAmount = $item->getTaxAmount();

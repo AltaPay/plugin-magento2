@@ -109,9 +109,8 @@ class Generator
             //Test the conn with the Payment Gateway
             $auth = $this->systemConfig->getAuth($storeCode);
             $api = new TestAuthentication($auth);
-            $response = $api->call();
 
-            $terminalName = $this->systemConfig->getTerminalConfig($terminalId, 'terminalname', $storeScope, $storeCode);
+            $response = $api->call();
             if (! $response) {
                 $this->restoreOrderFromOrderId($order->getIncrementId());
                 $requestParams['result'] = __(ConstantConfig::ERROR);
@@ -119,6 +118,7 @@ class Generator
                 return $requestParams;
             }
 
+            $terminalName = $this->systemConfig->getTerminalConfig($terminalId, 'terminalname', $storeScope, $storeCode);
             $request = new PaymentRequest($auth);
             $request
                 ->setTerminal($terminalName)
@@ -256,12 +256,9 @@ class Generator
         $callback = new Callback($request->getPostValue());
         $response = $callback->call();
         if ($response) {
-            $this->_logger->debug('[restoreOrderFromRequest] Response correct');
             $order = $this->loadOrderFromCallback($response);
             if ($order->getQuoteId()) {
-                $this->_logger->debug('[restoreOrderFromRequest] Order quote id: ' . $order->getQuoteId());
                 if ($quote = $this->quote->loadByIdWithoutStore($order->getQuoteId())) {
-                    $this->_logger->debug('[restoreOrderFromRequest] Quote found: ' . $order->getQuoteId());
                     $quote
                         ->setIsActive(1)
                         ->setReservedOrderId(null)
@@ -294,33 +291,8 @@ class Generator
         $this->handleOrderStateAction($request, Order::STATE_CANCELED, Order::STATE_CANCELED, $historyComment);
     }
 
-    /**
-     * @param RequestInterface $request
-     */
-    public function handleFailStatusRedirectFormAction(RequestInterface $request)
-    {
-        //TODO:refactor this method
-        $formUrl = null;
-        $transInfo = null;
-        $callback = new Callback($request->getPostValue());
-        $response = $callback->call();
-        if ($response) {
-            $order = $this->loadOrderFromCallback($response);
-            $formUrl = $order->getAltapayPaymentFormUrl();
-            if ($formUrl) {
-                $order->addStatusHistoryComment(__(ConstantConfig::DECLINED_PAYMENT_FORM));
-            } else {
-                $order->addStatusHistoryComment(__(ConstantConfig::DECLINED_PAYMENT_SECTION));
-            }
-            $order->setState(Order::STATE_PENDING_PAYMENT);
-            $order->getResource()->save($order);
-        }
-
-        return $formUrl;
-    }
-
     
-     /**
+    /**
      * @param RequestInterface $request
      */
     public function handleFailedStatusAction(RequestInterface $request, $msg)
@@ -338,11 +310,23 @@ class Generator
                 $response->creditCardToken
             );
         }
+        
+        //check if order status set in configuration
+        $stateWhenRedirectFail = Order::STATE_NEW;
+        $statusWhenRedirectFail = Order::STATE_NEW;
+        $storeCode = $order->getStore()->getCode();
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+        $orderStatus = $this->systemConfig->getStatusConfig('before', $storeScope, $storeCode);
+        
+        if ($orderStatus) {
+            $stateWhenRedirectFail = Order::STATE_NEW;
+            $statusWhenRedirectFail = $orderStatus;
+        }
 
         $this->handleOrderStateAction(
             $request,
-            Order::STATE_PENDING_PAYMENT,
-            Order::STATE_PENDING_PAYMENT,
+            $stateWhenRedirectFail,
+            $statusWhenRedirectFail,
             $historyComment,
             $transInfo
         );
@@ -437,8 +421,6 @@ class Generator
             if ($isCaptured) {
                 $this->setCustomOrderStatus($order, Order::STATE_COMPLETE, 'complete');
                 $order->addStatusHistoryComment(__(ConstantConfig::PAYMENT_COMPLETE));
-            } else {
-                $this->setCustomOrderStatus($order, Order::STATE_PROCESSING, 'process');
             }
 
             $order->addStatusHistoryComment($comment);
