@@ -141,9 +141,9 @@ class CheckoutCartIndex implements ObserverInterface
 				$order->setState($orderStateCancelUpdate)->setStatus($orderStatusCancelUpdate);
                 $order->setIsNotified(false);
                 $order->getResource()->save($order);
-                //show fail message
-                $this->messageManager->addErrorMessage($message);
             }
+            //show fail message
+            $this->messageManager->addErrorMessage($message);
             $this->session->unsAltapayCustomerRedirect();
         }
     }
