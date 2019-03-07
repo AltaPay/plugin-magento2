@@ -187,7 +187,10 @@ class Generator
                 $requestParams['result'] = __(ConstantConfig::SUCCESS);
                 $requestParams['formurl'] = $response->Url;
                 // set before payment status
-                $this->setCustomOrderStatus($order, Order::STATE_NEW, 'before');
+                $orderStatusBefore = $this->systemConfig->getStatusConfig('before', $storeScope, $storeCode);
+                if ($orderStatusBefore) {
+                  $this->setCustomOrderStatus($order, Order::STATE_NEW, 'before');
+                }
                 // set notification
                 $order->addStatusHistoryComment(__(ConstantConfig::REDIRECT_TO_ALTAPAY) . $response->PaymentRequestId);
                 $extensionAttribute = $order->getExtensionAttributes();
@@ -286,18 +289,35 @@ class Generator
      */
     public function handleCancelStatusAction(RequestInterface $request)
     {
+        $stateWhenRedirectCancel = Order::STATE_CANCELED;
+        $statusWhenRedirectCancel = Order::STATE_CANCELED;
         $historyComment = __(ConstantConfig::CONSUMER_CANCEL_PAYMENT);
         //TODO: fetch the MerchantErrorMessage and use it as historyComment
-        $this->handleOrderStateAction($request, Order::STATE_CANCELED, Order::STATE_CANCELED, $historyComment);
-    }
+        $callback = new Callback($request->getPostValue());
+        $response = $callback->call();
+        if ($response) {
+            $order = $this->loadOrderFromCallback($response);
+        }
 
+        $storeCode = $order->getStore()->getCode();
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+        $orderStatusCancel = $this->systemConfig->getStatusConfig('cancel', $storeScope, $storeCode);
+
+        if ($orderStatusCancel) {
+            $statusWhenRedirectCancel = $orderStatusCancel;
+        }
+        $this->handleOrderStateAction($request, $stateWhenRedirectCancel, $statusWhenRedirectCancel, $historyComment);
+    }
     
-    /**
+         /**
      * @param RequestInterface $request
      */
-    public function handleFailedStatusAction(RequestInterface $request, $msg)
+    public function handleFailedStatusAction(RequestInterface $request, $msg, $merchantErrorMsg, $responseStatus)
     {
-        $historyComment = $msg;
+        $historyComment = $responseStatus.'|'.$msg;
+        if(!is_null($merchantErrorMsg)){
+		   $historyComment = $responseStatus.'|'.$msg.'|'.$merchantErrorMsg;
+		}
         $transInfo = null;
         $callback = new Callback($request->getPostValue());
         $response = $callback->call();
@@ -311,16 +331,15 @@ class Generator
             );
         }
         
-        //check if order status set in configuration
-        $stateWhenRedirectFail = Order::STATE_NEW;
-        $statusWhenRedirectFail = Order::STATE_NEW;
+        //check if order status set oin configuaration
+        $stateWhenRedirectFail = Order::STATE_CANCELED;
+        $statusWhenRedirectFail = Order::STATE_CANCELED;
         $storeCode = $order->getStore()->getCode();
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
-        $orderStatus = $this->systemConfig->getStatusConfig('before', $storeScope, $storeCode);
-        
-        if ($orderStatus) {
-            $stateWhenRedirectFail = Order::STATE_NEW;
-            $statusWhenRedirectFail = $orderStatus;
+        $orderStatusCancel = $this->systemConfig->getStatusConfig('cancel', $storeScope, $storeCode);
+
+        if ($orderStatusCancel) {
+            $statusWhenRedirectFail = $orderStatusCancel;
         }
 
         $this->handleOrderStateAction(
@@ -343,8 +362,8 @@ class Generator
      */
     public function handleOrderStateAction(
         RequestInterface $request,
-        $orderState = Order::STATE_PENDING_PAYMENT,
-        $orderStatus = Order::STATE_PENDING_PAYMENT,
+        $orderState = Order::STATE_NEW,
+        $orderStatus = Order::STATE_NEW,
         $historyComment = "Order state changed",
         $transactionInfo = null
     ) {
@@ -418,12 +437,16 @@ class Generator
                 }
             }
 
+            $orderStatusProcess = $this->systemConfig->getStatusConfig('process', $storeScope, $storeCode);
             if ($isCaptured) {
                 $this->setCustomOrderStatus($order, Order::STATE_COMPLETE, 'complete');
                 $order->addStatusHistoryComment(__(ConstantConfig::PAYMENT_COMPLETE));
-            }
+            }else{
+				if($orderStatusProcess){
+			    $this->setCustomOrderStatus($order, Order::STATE_PROCESSING, 'process');
+			  }	
+			}
 
-            $order->addStatusHistoryComment($comment);
             $order->addStatusHistoryComment(
                 sprintf(
                     "Transaction ID: %s - Payment ID: %s - Credit card token: %s",

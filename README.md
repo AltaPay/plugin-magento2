@@ -10,7 +10,7 @@ web shop.
 
     * Bug fix: 
             - Item unit price sent when capture
-            - Status set before and after payment
+            - Order status set according to the configuration from the admin panel
             - Localization files encoding
             - Corrected the localization file available for the Norwegian language: Bokmål
 

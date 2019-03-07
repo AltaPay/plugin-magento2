@@ -21,8 +21,14 @@ class Fail extends Index
         try {
             $this->generator->restoreOrderFromRequest($this->getRequest());
             $post = $this->getRequest()->getPostValue();
+            $merchantErrorMsg = '';
+            $responseStatus = '';
             if (isset($post['error_message'])) {
                 $msg = $post['error_message'];
+                if($post['error_message'] != $post['error_message']){
+				  $merchantErrorMsg = $post['merchant_error_message'];
+				}
+                $responseStatus = $post['status'];
             } else {
                 $msg = 'Unknown response';
             }
@@ -35,7 +41,7 @@ class Fail extends Index
                     $this->generator->handleCancelStatusAction($this->getRequest());
                     break;
                 case ('failed' || 'error'):
-                    $this->generator->handleFailedStatusAction($this->getRequest(), $msg);
+                    $this->generator->handleFailedStatusAction($this->getRequest(), $msg, $merchantErrorMsg, $responseStatus);
                     break;
 
                 default:

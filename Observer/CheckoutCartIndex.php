@@ -98,20 +98,19 @@ class CheckoutCartIndex implements ObserverInterface
 
             $message = __(ConstantConfig::BROWSER_BK_BUTTON_MSG);
             $historyComment = __(ConstantConfig::BROWSER_BK_BUTTON_COMMENT);
-
-
-            if (strpos($errorCodeMerchant, 'Error code') !== false || strpos($errorCodeMerchant, 'Declined')) {
-                  $message = $errorCodeMerchant;
-                  $historyComment = $errorCodeMerchant;
+            
+            if (strpos($errorCodeMerchant, 'failed') !== false || strpos($errorCodeMerchant, 'error') !== false) {
+				  $consumerError = explode('|',$errorCodeMerchant);
+                  $message = $consumerError[1];
+                  $historyComment = $consumerError[1];
             }
 
-            $orderStatusConfig = $this->systemConfig->getStatusConfig('before', $storeScope, $storeCode);
+            $orderStatusBefore = $this->systemConfig->getStatusConfig('before', $storeScope, $storeCode);
             $orderStatusCancel = $this->systemConfig->getStatusConfig('cancel', $storeScope, $storeCode);
-            
             $orderStatusCancelUpdate = Order::STATE_CANCELED;
-            $orderStateCancelUpdate = Order::STATE_CANCELED;
+			$orderStateCancelUpdate = Order::STATE_CANCELED;
 
-            if ($quote->getId() && $this->verifyIfOrderStatus($orderStatusConfig, $order->getStatus())) {
+            if ($quote->getId() && $this->verifyIfOrderStatus($orderStatusBefore, $order->getStatus(), $orderStatusCancel)) {
               //get quote Id from order and set as active
                 $quote->setIsActive(1)->setReservedOrderId(null)->save();
                 $this->session->replaceQuote($quote)->unsLastRealOrderId();
@@ -131,22 +130,18 @@ class CheckoutCartIndex implements ObserverInterface
                     }
                 }
 
-                if ($historyComment != $errorCodeMerchant) {
+                if (strpos($historyComment, 'failed') !== false || strpos($historyComment, 'error') !== false ) {
                   //set order status and comments
                     $order->addStatusHistoryComment($historyComment, \Magento\Sales\Model\Order::STATE_CANCELED);
                 }
                 
                 if($orderStatusCancel){
-                  $orderStatusCancelUpdate = $orderStatusCancel;
-                  $orderStateCancelUpdate = Order::STATE_CANCELED;
-                }
-             
-                $order->setStatus($orderStatusCancelUpdate);
-                $order->setState($orderStateCancelUpdate);
+				  $orderStatusCancelUpdate = $orderStatusCancel;
+				}
+				$order->setState($orderStateCancelUpdate)->setStatus($orderStatusCancelUpdate);
                 $order->setIsNotified(false);
-
                 $order->getResource()->save($order);
-              //show fail message
+                //show fail message
                 $this->messageManager->addErrorMessage($message);
             }
             $this->session->unsAltapayCustomerRedirect();
@@ -175,14 +170,20 @@ class CheckoutCartIndex implements ObserverInterface
      * @param orderStatusConfig
      * @param currentOrderStatus
      */
-    public function verifyIfOrderStatus($orderStatusConfig, $currentOrderStatus)
+    public function verifyIfOrderStatus($orderStatusConfigBefore, $currentOrderStatus, $orderStatusConfigCancel)
     {
-        if(!is_null($orderStatusConfig)){
-            if($orderStatusConfig != $currentOrderStatus){
-                return false;
-            }
-        }
+		if(!is_null($orderStatusConfigBefore)){
+			if($orderStatusConfigBefore == $currentOrderStatus){
+				return true;
+			}
+		}
+		
+		if(!is_null($orderStatusConfigCancel)){
+			if($orderStatusConfigCancel == $currentOrderStatus){
+				return true;
+			}
+		}
 
-        return true;
+		return false;
     }
 }
