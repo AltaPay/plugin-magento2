@@ -6,6 +6,16 @@ web shop.
 
 == Change log ==
 
+** Version 0.5.0
+
+    * Improvement: 
+            - Added failed message as order history comment for failed captures
+            - Payment statuses handled properly in the notification callback
+    * Bug fix:
+            - Handled correctly the cancelled payment status
+            - Added a fix for the percentage discounts, on item and cart level, for invoice payment methods. 
+            	-- Note: only one type of discounts (item or cart) can be used per order
+
 ** Version 0.4.2
 
     * Bug fix: 
