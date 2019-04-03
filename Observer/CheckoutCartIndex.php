@@ -99,10 +99,15 @@ class CheckoutCartIndex implements ObserverInterface
             $message = __(ConstantConfig::BROWSER_BK_BUTTON_MSG);
             $historyComment = __(ConstantConfig::BROWSER_BK_BUTTON_COMMENT);
             
-            if (strpos($errorCodeMerchant, 'failed') !== false || strpos($errorCodeMerchant, 'error') !== false) {
+            if (strpos($errorCodeMerchant, 'failed') !== false || strpos($errorCodeMerchant, 'error') !== false
+            || strpos($errorCodeMerchant, 'cancelled') !== false) {
 				  $consumerError = explode('|',$errorCodeMerchant);
                   $message = $consumerError[1];
                   $historyComment = $consumerError[1];
+                  if($message == __(ConstantConfig::UNKNOWN_PAYMENT_STATUS_MERCHANT)){
+                    $message = __(ConstantConfig::UNKNOWN_PAYMENT_STATUS_CONSUMER);
+                    $historyComment = __(ConstantConfig::UNKNOWN_PAYMENT_STATUS_CONSUMER);
+                  }
             }
 
             $orderStatusBefore = $this->systemConfig->getStatusConfig('before', $storeScope, $storeCode);
@@ -129,15 +134,16 @@ class CheckoutCartIndex implements ObserverInterface
                         $this->stockManagement->backItemQty($item->getProductId(), $qty, $item->getStore()->getWebsiteId());
                     }
                 }
-
-                if (strpos($historyComment, 'failed') !== false || strpos($historyComment, 'error') !== false ) {
-                  //set order status and comments
-                    $order->addStatusHistoryComment($historyComment, \Magento\Sales\Model\Order::STATE_CANCELED);
-                }
                 
                 if($orderStatusCancel){
 				  $orderStatusCancelUpdate = $orderStatusCancel;
 				}
+
+                if ($historyComment == __(ConstantConfig::BROWSER_BK_BUTTON_COMMENT)) {
+                  //set order status and comments
+                    $order->addStatusHistoryComment($historyComment, $orderStatusCancelUpdate);
+                }
+
 				$order->setState($orderStateCancelUpdate)->setStatus($orderStatusCancelUpdate);
                 $order->setIsNotified(false);
                 $order->getResource()->save($order);

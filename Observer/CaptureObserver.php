@@ -9,6 +9,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Logger\Monolog;
 use SDM\Altapay\Model\SystemConfig;
+use Magento\Sales\Model\Order;
 
 class CaptureObserver implements ObserverInterface
 {
@@ -21,11 +22,17 @@ class CaptureObserver implements ObserverInterface
      * @var Monolog
      */
     private $monolog;
+    
+    /**
+     * @var Order
+    */
+    private $order;
 
-    public function __construct(SystemConfig $systemConfig, Monolog $monolog)
+    public function __construct(SystemConfig $systemConfig, Monolog $monolog, Order $order)
     {
         $this->systemConfig = $systemConfig;
         $this->monolog = $monolog;
+        $this->order = $order;
     }
 
     /**
@@ -41,7 +48,9 @@ class CaptureObserver implements ObserverInterface
 
         /** @var \Magento\Sales\Model\Order\Invoice $invoice */
         $invoice = $observer['invoice'];
-
+        $orderIncrementId = $invoice->getOrder()->getIncrementId();
+        $orderObject = $this->order->loadByIncrementId($orderIncrementId);
+        
         $storeCode = $invoice->getStore()->getCode();
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
             $this->logPayment($payment, $invoice);
@@ -51,12 +60,11 @@ class CaptureObserver implements ObserverInterface
             foreach ($invoice->getItems() as $item) {
                 if ($item->getPriceInclTax()) {
                     $this->logItem($item);
-
                     $orderline = new OrderLine(
                         $item->getName(),
                         $item->getSku(),
                         $item->getQty(),
-                        $item->getPriceExclTax()
+                        $item->getPrice()
                     );
                     $orderline->setGoodsType('item');
                     $orderline->taxAmount = $item->getTaxAmount();
@@ -93,19 +101,25 @@ class CaptureObserver implements ObserverInterface
                 throw $e;
             } catch (\Exception $e) {
                 $this->monolog->addCritical('Exception: ' . $e->getMessage());
-                throw $e;
             }
 
             $rawresponse = $api->getRawResponse();
             $body = $rawresponse->getBody();
             $this->monolog->addInfo('Response body: ' . $body);
 
+            //Update comments if capture fail
+            $xml = simplexml_load_string($body);
+            if ($xml->Body->Result == 'Error' || $xml->Body->Result == 'Failed') {
+                $orderObject->addStatusHistoryComment('Capture failed: '. $xml->Body->MerchantErrorMessage)->setIsCustomerNotified(false);
+                $orderObject->getResource()->save($orderObject);
+            }
+            
             $headdata = [];
             foreach ($rawresponse->getHeaders() as $k => $v) {
                 $headdata[] = $k . ': ' . json_encode($v);
             }
             $this->monolog->addInfo('Response headers: ' . implode(", ", $headdata));
-
+            
             if ($response->Result != 'Success') {
                 throw new \InvalidArgumentException('Could not capture reservation');
             }

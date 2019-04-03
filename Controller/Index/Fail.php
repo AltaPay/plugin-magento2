@@ -38,7 +38,7 @@ class Fail extends Index
                 case 'cancelled':
                     //TODO: Overwrite the message
                     $msg = "Payment canceled";
-                    $this->generator->handleCancelStatusAction($this->getRequest());
+                    $this->generator->handleCancelStatusAction($this->getRequest(),$responseStatus);
                     break;
                 case ('failed' || 'error'):
                     $this->generator->handleFailedStatusAction($this->getRequest(), $msg, $merchantErrorMsg, $responseStatus);

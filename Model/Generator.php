@@ -148,19 +148,27 @@ class Generator
             $orderlines = [];
             /** @var \Magento\Sales\Model\Order\Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $taxAmount = ($item->getQtyOrdered() * $item->getPriceInclTax()) - ($item->getQtyOrdered() * $item->getPrice());
                 $orderline = new OrderLine(
                     $item->getName(),
                     $item->getSku(),
                     $item->getQtyOrdered(),
-                    $item->getPrice()
+                    $item->getOriginalPrice()
                 );
                 $orderline->setGoodsType('item');
-                $orderline->taxAmount = $taxAmount;
-                //$orderline->taxPercent = $item->getTaxPercent();
+                //in case of cart rule discount, send tax after discount
+                $orderline->taxAmount = $item->getTaxAmount();
+                
+                 if($item->getOriginalPrice() > $item->getPrice() && empty($order->getDiscountDescription())){
+				  $itemDiscountPercent = $item->getPrice()/$item->getOriginalPrice();
+				  $orderline->discount = abs(($itemDiscountPercent*100)-100);
+				  $taxBeforeDiscount = ($item->getOriginalPrice() * $item->getTaxPercent())/100;
+				  $taxAmount = $taxBeforeDiscount * $item->getQtyOrdered();
+				 //in case of catalog rule discount, send tax before discount
+                  $orderline->taxAmount = $taxAmount;
+				}
                 $orderlines[] = $orderline;
             }
-            if ($order->getDiscountAmount() > 0) {
+            if (abs($order->getDiscountAmount()) > 0) {
                 // Handling price reductions
                 $orderline = new OrderLine(
                     $order->getDiscountDescription(),
@@ -287,11 +295,15 @@ class Generator
     /**
      * @param RequestInterface $request
      */
-    public function handleCancelStatusAction(RequestInterface $request)
+    public function handleCancelStatusAction(RequestInterface $request,$responseStatus)
     {
         $stateWhenRedirectCancel = Order::STATE_CANCELED;
         $statusWhenRedirectCancel = Order::STATE_CANCELED;
-        $historyComment = __(ConstantConfig::CONSUMER_CANCEL_PAYMENT);
+        $responseComment = __(ConstantConfig::CONSUMER_CANCEL_PAYMENT);
+        if($responseStatus != 'cancelled'){
+		  $responseComment = __(ConstantConfig::UNKNOWN_PAYMENT_STATUS_MERCHANT);	
+		}
+        $historyComment = __(ConstantConfig::CANCELLED).'|'.$responseComment;
         //TODO: fetch the MerchantErrorMessage and use it as historyComment
         $callback = new Callback($request->getPostValue());
         $response = $callback->call();
