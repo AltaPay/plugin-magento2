@@ -158,13 +158,13 @@ class Generator
                 //in case of cart rule discount, send tax after discount
                 $orderline->taxAmount = $item->getTaxAmount();
                 
-                 if($item->getOriginalPrice() > $item->getPrice() && empty($order->getDiscountDescription())){
-				  $itemDiscountPercent = $item->getPrice()/$item->getOriginalPrice();
-				  $orderline->discount = abs(($itemDiscountPercent*100)-100);
-				  $taxBeforeDiscount = ($item->getOriginalPrice() * $item->getTaxPercent())/100;
-				  $taxAmount = $taxBeforeDiscount * $item->getQtyOrdered();
-				 //in case of catalog rule discount, send tax before discount
-                  $orderline->taxAmount = $taxAmount;
+                if($item->getOriginalPrice() > $item->getPrice() && empty($order->getDiscountDescription())){
+                    $itemDiscountPercent = $item->getPrice()/$item->getOriginalPrice();
+                    $orderline->discount = abs(($itemDiscountPercent*100)-100);
+                    //in case of catalog rule discount, send tax before discount
+                    $taxBeforeDiscount = ($item->getOriginalPrice() * $item->getTaxPercent())/100;
+                    $taxAmount = $taxBeforeDiscount * $item->getQtyOrdered();
+                    $orderline->taxAmount = $taxAmount;
 				}
                 $orderlines[] = $orderline;
             }
