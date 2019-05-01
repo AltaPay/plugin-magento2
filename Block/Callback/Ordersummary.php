@@ -114,10 +114,16 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
      * @return html
      */
 
-    public function getFormatedShippingAddress($address = '')
+    public function getFormattedAddress()
     {
         $order = $this->getOrder();
-        return $this->renderer->format($order->getShippingAddress(), 'html');
+        if($order->getShippingAddress()){
+           return $this->renderer->format($order->getShippingAddress(), 'html'); 
+        }
+        else{
+            return $this->renderer->format($order->getBillingAddress(), 'html'); 
+        }
+        
     }
 
     

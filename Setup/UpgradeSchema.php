@@ -36,7 +36,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'length' => 65536,
                     'nullable' => true,
                     'visible' => false,
-                    'comment' =>'Altapay Payment Form Url'
+                    'comment' =>'Valitor Payment Form Url'
                 ]
             );
 

@@ -104,8 +104,10 @@ class CaptureObserver implements ObserverInterface
             }
 
             $rawresponse = $api->getRawResponse();
-            $body = $rawresponse->getBody();
-            $this->monolog->addInfo('Response body: ' . $body);
+            if(!empty($rawresponse)){
+				$body = $rawresponse->getBody();
+				$this->monolog->addInfo('Response body: ' . $body);
+            }
 
             //Update comments if capture fail
             $xml = simplexml_load_string($body);

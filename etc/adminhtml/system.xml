@@ -10,7 +10,7 @@
         <section id="payment">
 
             <group id="sdm_altapay_config" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Altapay</label>
+                <label>Valitor</label>
                 <comment><![CDATA[]]></comment>
                 <attribute type="expanded">1</attribute>
 
@@ -39,13 +39,13 @@
 
                     <field id="api_test_connection" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                         <label>Test connection</label>
-                        <comment>Can we connect to Altapay</comment>
+                        <comment>Can we connect to Valitor</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Connection</source_model>
                     </field>
 
                     <field id="api_test_auth" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                         <label>Test authentication</label>
-                        <comment>Can we authenticate to Altapay - Remember to save after you have typed your API login and password</comment>
+                        <comment>Can we authenticate to Valitor - Remember to save after you have typed your API login and password</comment>
                         <source_model>SDM\Altapay\Model\Config\Source\Authentication</source_model>
                     </field>
 

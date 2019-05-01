@@ -9,6 +9,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Logger\Monolog;
 use SDM\Altapay\Model\SystemConfig;
+use Magento\Sales\Model\Order;
 
 class CreditmemoRefundObserver implements ObserverInterface
 {
@@ -22,11 +23,17 @@ class CreditmemoRefundObserver implements ObserverInterface
      * @var Monolog
      */
     private $monolog;
+    
+    /**
+     * @var Order
+    */
+    private $order;
 
-    public function __construct(SystemConfig $systemConfig, Monolog $monolog)
+    public function __construct(SystemConfig $systemConfig, Monolog $monolog, Order $order)
     {
         $this->systemConfig = $systemConfig;
         $this->monolog = $monolog;
+        $this->order = $order;
     }
 
     /**
@@ -41,10 +48,11 @@ class CreditmemoRefundObserver implements ObserverInterface
         $memo = $observer['creditmemo'];
         $orderlines = [];
         $creditOnline = $memo->getDoTransaction();
+
         if ($creditOnline) {
             /** @var \Magento\Sales\Model\Order $order */
             $order = $memo->getOrder();
-
+            $orderObject = $this->order->loadByIncrementId($order->getIncrementId());
             /** @var \Magento\Sales\Model\Order\Payment $payment */
             $payment = $order->getPayment();
             if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
@@ -54,7 +62,7 @@ class CreditmemoRefundObserver implements ObserverInterface
                             $item->getName(),
                             $item->getSku(),
                             $item->getQty(),
-                            $item->getPriceInclTax()
+                            $item->getPrice()
                         );
                         $orderline->setGoodsType('item');
                         $orderline->taxAmount = $item->getTaxAmount();
@@ -80,13 +88,27 @@ class CreditmemoRefundObserver implements ObserverInterface
                 /** @var RefundResponse $response */
                 try {
                     $response = $refund->call();
-                    if ($response->Result != 'Success') {
-                        throw new \InvalidArgumentException('Could not refund captured reservation');
-                    }
                 } catch (ResponseHeaderException $e) {
                     $this->monolog->addCritical('Response header exception: ' . $e->getMessage());
                     throw $e;
-                }
+                }catch (\Exception $e) {
+					$this->monolog->addCritical('Exception: ' . $e->getMessage());
+               }
+               
+               	$rawresponse = $refund->getRawResponse();
+				$body = $rawresponse->getBody();
+				$this->monolog->addInfo('Response body: ' . $body);
+				
+				//Update comments if refund fail
+				$xml = simplexml_load_string($body);
+				if ($xml->Body->Result == 'Error' || $xml->Body->Result == 'Failed') {
+					$orderObject->addStatusHistoryComment('Refund failed: '. $xml->Body->MerchantErrorMessage)->setIsCustomerNotified(false);
+					$orderObject->getResource()->save($orderObject);
+				}
+          
+				if ($xml->Body->Result != 'Success') {
+					throw new \InvalidArgumentException('Could not refund captured reservation');
+				}
             }
         }
     }

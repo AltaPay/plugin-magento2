@@ -22,10 +22,23 @@ use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use SDM\Altapay\Model\ConstantConfig;
+use Magento\Framework\Module\ModuleListInterface;
+use Magento\Framework\App\ProductMetadataInterface;
 
 class Generator
 {
 
+    const MODULE_CODE = 'SDM_Altapay';
+    /**
+     * @var ModuleListInterface
+     */
+    private $moduleList;
+    
+    /**
+     * @var ProductMetadataInterface
+     */
+    private $productMetadata;
+    
     /**
      * @var Quote
      */
@@ -80,7 +93,9 @@ class Generator
         Order $order,
         OrderSender $orderSender,
         SystemConfig $systemConfig,
-        Monolog $_logger
+        Monolog $_logger,
+        ModuleListInterface $moduleList,
+        ProductMetadataInterface $productMetadata
     ) {
         $this->quote = $quote;
         $this->urlInterface = $urlInterface;
@@ -91,6 +106,8 @@ class Generator
         $this->orderSender = $orderSender;
         $this->systemConfig = $systemConfig;
         $this->_logger = $_logger;
+        $this->moduleList = $moduleList;
+        $this->productMetadata = $productMetadata;
     }
 
     /**
@@ -106,6 +123,8 @@ class Generator
         if ($order->getId()) {
             $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
             $storeCode = $order->getStore()->getCode();
+            $storeName = $order->getStore()->getName();
+            $websiteNAme = $order->getStore()->getWebsite()->getName();
             //Test the conn with the Payment Gateway
             $auth = $this->systemConfig->getAuth($storeCode);
             $api = new TestAuthentication($auth);
@@ -117,6 +136,15 @@ class Generator
                 $requestParams['message'] = __(ConstantConfig::AUTH_MESSAGE);
                 return $requestParams;
             }
+            
+            $versionDetails = array(); 
+            $magentoVersion = $this->productMetadata->getVersion();
+            $moduleInfo = $this->moduleList->getOne(self::MODULE_CODE);
+            $versionDetails['ecomPlatform'] = 'Magento';
+            $versionDetails['ecomVersion'] = $magentoVersion;
+            $versionDetails['valitorPluginName'] = $moduleInfo['name'];
+            $versionDetails['valitorPluginVersion'] = $moduleInfo['setup_version'];
+            $versionDetails['otherInfo'] = 'websiteName - '.$websiteNAme.', storeName - '.$storeName;
 
             $terminalName = $this->systemConfig->getTerminalConfig($terminalId, 'terminalname', $storeScope, $storeCode);
             $request = new PaymentRequest($auth);
@@ -127,6 +155,7 @@ class Generator
                 ->setCurrency($order->getOrderCurrencyCode())
                 ->setCustomerInfo($this->setCustomer($order))
                 ->setConfig($this->setConfig())
+                ->setTransactionInfo($versionDetails)
             ;
 
             if ($fraud = $this->systemConfig->getTerminalConfig($terminalId, 'fraud', $storeScope, $storeCode)) {
@@ -179,16 +208,19 @@ class Generator
                 $orderline->setGoodsType('handling');
                 $orderlines[] = $orderline;
             }
-
             // Handling orderline
-            $data = $order->getShippingMethod(true);
-            $orderlines[] = (new OrderLine(
-                $data['method'],
-                $data['carrier_code'],
+            $shippingaddress = $order->getShippingMethod();
+            $method = isset($shippingaddress['method']) ? $shippingaddress['method'] : '';
+            $carrier_code = isset($shippingaddress['carrier_code']) ? $shippingaddress['carrier_code'] : '';
+            if(!empty($shippingaddress)){
+               $orderlines[] = (new OrderLine(
+                $method,
+                $carrier_code,
                 1,
                 $order->getShippingInclTax()
-            ))->setGoodsType('shipment');
-            $request->setOrderLines($orderlines);
+            ))->setGoodsType('shipment');  
+           }
+           $request->setOrderLines($orderlines);
             try {
                 /** @var \Altapay\Response\PaymentRequestResponse $response */
                 $response = $request->call();

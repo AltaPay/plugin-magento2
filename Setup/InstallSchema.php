@@ -113,7 +113,7 @@ class InstallSchema implements InstallSchemaInterface
             [self::COLUMN_TRANSACTION_ID]
         );
 
-        $table->setComment('Altapay transaction data');
+        $table->setComment('Valitor transaction data');
 
         $installer->getConnection()->createTable($table);
 

@@ -1,10 +1,21 @@
-# AltaPay Magento2 extension
+# Valitor Magento2-2 extension
 
-AltaPay has made it much easier for you as merchant/developer to receive secure payments in your Magento2
+Valitor has made it much easier for you as merchant/developer to receive secure payments in your Magento2
 web shop.
 
 
 == Change log ==
+
+** Version 0.6.0
+
+	* Improvements:
+			- Rebranding from Altapay to Valitor
+	        - Platform and plugin versioning information sent to the payment gateway
+	        - Added support for virtual products
+	* Bug fix:
+	        - Validation Error not been shown at back button from checkout page
+	        - Order Status stall in "Pending"
+	        - Payment capture often fails
 
 ** Version 0.5.0
 
