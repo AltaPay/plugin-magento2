@@ -149,13 +149,13 @@ class Generator
             $terminalName = $this->systemConfig->getTerminalConfig($terminalId, 'terminalname', $storeScope, $storeCode);
             $request = new PaymentRequest($auth);
             $request
-                ->setTerminal($terminalName)
-                ->setShopOrderId($order->getIncrementId())
-                ->setAmount((float) $order->getGrandTotal())
-                ->setCurrency($order->getOrderCurrencyCode())
-                ->setCustomerInfo($this->setCustomer($order))
-                ->setConfig($this->setConfig())
-                ->setTransactionInfo($versionDetails)
+            ->setTerminal($terminalName)
+            ->setShopOrderId($order->getIncrementId())
+            ->setAmount((float) $order->getGrandTotal())
+            ->setCurrency($order->getOrderCurrencyCode())
+            ->setCustomerInfo($this->setCustomer($order))
+            ->setConfig($this->setConfig())
+            ->setTransactionInfo($versionDetails)
             ;
 
             if ($fraud = $this->systemConfig->getTerminalConfig($terminalId, 'fraud', $storeScope, $storeCode)) {
@@ -173,16 +173,21 @@ class Generator
             if ($this->systemConfig->getTerminalConfig($terminalId, 'capture', $storeScope, $storeCode)) {
                 $request->setType('paymentAndCapture');
             }
-
             $orderlines = [];
+            $sendShipment = false;
             /** @var \Magento\Sales\Model\Order\Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
+                $product_type = $item->getProductType();
                 $orderline = new OrderLine(
                     $item->getName(),
                     $item->getSku(),
                     $item->getQtyOrdered(),
                     $item->getOriginalPrice()
                 );
+
+                if($product_type != 'virtual' && $product_type != 'downloadable'){
+                    $sendShipment = true;
+                }
                 $orderline->setGoodsType('item');
                 //in case of cart rule discount, send tax after discount
                 $orderline->taxAmount = $item->getTaxAmount();
@@ -194,7 +199,7 @@ class Generator
                     $taxBeforeDiscount = ($item->getOriginalPrice() * $item->getTaxPercent())/100;
                     $taxAmount = $taxBeforeDiscount * $item->getQtyOrdered();
                     $orderline->taxAmount = $taxAmount;
-				}
+                }
                 $orderlines[] = $orderline;
             }
             if (abs($order->getDiscountAmount()) > 0) {
@@ -208,11 +213,11 @@ class Generator
                 $orderline->setGoodsType('handling');
                 $orderlines[] = $orderline;
             }
-            // Handling orderline
-            $shippingaddress = $order->getShippingMethod();
-            $method = isset($shippingaddress['method']) ? $shippingaddress['method'] : '';
-            $carrier_code = isset($shippingaddress['carrier_code']) ? $shippingaddress['carrier_code'] : '';
-            if(!empty($shippingaddress)){
+            if($sendShipment){
+             $shippingAddress = $order->getShippingMethod(true);
+             $method = isset($shippingAddress['method']) ? $shippingAddress['method'] : '';
+             $carrier_code = isset($shippingAddress['carrier_code']) ? $shippingAddress['carrier_code'] : '';
+             if(!empty($shippingAddress)){
                $orderlines[] = (new OrderLine(
                 $method,
                 $carrier_code,
@@ -220,55 +225,56 @@ class Generator
                 $order->getShippingInclTax()
             ))->setGoodsType('shipment');  
            }
-           $request->setOrderLines($orderlines);
-            try {
-                /** @var \Altapay\Response\PaymentRequestResponse $response */
-                $response = $request->call();
-                $requestParams['result'] = __(ConstantConfig::SUCCESS);
-                $requestParams['formurl'] = $response->Url;
+       }          
+       $request->setOrderLines($orderlines);
+       try {
+        /** @var \Altapay\Response\PaymentRequestResponse $response */
+        $response = $request->call();
+        $requestParams['result'] = __(ConstantConfig::SUCCESS);
+        $requestParams['formurl'] = $response->Url;
                 // set before payment status
-                $orderStatusBefore = $this->systemConfig->getStatusConfig('before', $storeScope, $storeCode);
-                if ($orderStatusBefore) {
-                  $this->setCustomOrderStatus($order, Order::STATE_NEW, 'before');
-                }
+        $orderStatusBefore = $this->systemConfig->getStatusConfig('before', $storeScope, $storeCode);
+        if ($orderStatusBefore) {
+          $this->setCustomOrderStatus($order, Order::STATE_NEW, 'before');
+      }
                 // set notification
-                $order->addStatusHistoryComment(__(ConstantConfig::REDIRECT_TO_ALTAPAY) . $response->PaymentRequestId);
-                $extensionAttribute = $order->getExtensionAttributes();
-                if ($extensionAttribute && $extensionAttribute->getAltapayPaymentFormUrl()) {
-                    $extensionAttribute->setAltapayPaymentFormUrl($response->Url);
-                }
+      $order->addStatusHistoryComment(__(ConstantConfig::REDIRECT_TO_ALTAPAY) . $response->PaymentRequestId);
+      $extensionAttribute = $order->getExtensionAttributes();
+      if ($extensionAttribute && $extensionAttribute->getAltapayPaymentFormUrl()) {
+        $extensionAttribute->setAltapayPaymentFormUrl($response->Url);
+    }
 
-                $order->setAltapayPaymentFormUrl($response->Url);
+    $order->setAltapayPaymentFormUrl($response->Url);
 
-                $order->getResource()->save($order);
+    $order->getResource()->save($order);
 
                 //set check when user redirect
-                $this->checkoutSession->setAltapayCustomerRedirect(true);
+    $this->checkoutSession->setAltapayCustomerRedirect(true);
 
-                return $requestParams;
-            } catch (ClientException $e) {
-                $requestParams['result'] = __(ConstantConfig::ERROR);
-                $requestParams['message'] = $e->getResponse()->getBody();
-            } catch (ResponseHeaderException $e) {
-                $requestParams['result'] = __(ConstantConfig::ERROR);
-                $requestParams['message'] = $e->getHeader()->ErrorMessage;
-            } catch (ResponseMessageException $e) {
-                $requestParams['result'] = __(ConstantConfig::ERROR);
-                $requestParams['message'] = $e->getMessage();
-            } catch (\Exception $e) {
-                $requestParams['result'] = __(ConstantConfig::ERROR);
-                $requestParams['message'] = $e->getMessage();
-            }
+    return $requestParams;
+} catch (ClientException $e) {
+    $requestParams['result'] = __(ConstantConfig::ERROR);
+    $requestParams['message'] = $e->getResponse()->getBody();
+} catch (ResponseHeaderException $e) {
+    $requestParams['result'] = __(ConstantConfig::ERROR);
+    $requestParams['message'] = $e->getHeader()->ErrorMessage;
+} catch (ResponseMessageException $e) {
+    $requestParams['result'] = __(ConstantConfig::ERROR);
+    $requestParams['message'] = $e->getMessage();
+} catch (\Exception $e) {
+    $requestParams['result'] = __(ConstantConfig::ERROR);
+    $requestParams['message'] = $e->getMessage();
+}
 
-            $this->restoreOrderFromOrderId($order->getIncrementId());
-            return $requestParams;
-        }
+$this->restoreOrderFromOrderId($order->getIncrementId());
+return $requestParams;
+}
 
-        $this->restoreOrderFromOrderId($order->getIncrementId());
-        $requestParams['result']  = __(ConstantConfig::ERROR);
-        $requestParams['message'] = __(ConstantConfig::ERROR_MESSAGE);
-        return $requestParams;
-    }
+$this->restoreOrderFromOrderId($order->getIncrementId());
+$requestParams['result']  = __(ConstantConfig::ERROR);
+$requestParams['message'] = __(ConstantConfig::ERROR_MESSAGE);
+return $requestParams;
+}
 
     /**
      * @param $orderId
@@ -281,8 +287,8 @@ class Generator
         if ($order->getId()) {
             $quote = $this->quote->loadByIdWithoutStore($order->getQuoteId());
             $quote
-                ->setIsActive(1)
-                ->setReservedOrderId(null)
+            ->setIsActive(1)
+            ->setReservedOrderId(null)
             ;
             $quote->getResource()->save($quote);
             $this->checkoutSession->replaceQuote($quote);
@@ -303,9 +309,9 @@ class Generator
             if ($order->getQuoteId()) {
                 if ($quote = $this->quote->loadByIdWithoutStore($order->getQuoteId())) {
                     $quote
-                        ->setIsActive(1)
-                        ->setReservedOrderId(null)
-                        ->save()
+                    ->setIsActive(1)
+                    ->setReservedOrderId(null)
+                    ->save()
                     ;
                     $this->checkoutSession->replaceQuote($quote);
                     return true;
@@ -333,8 +339,8 @@ class Generator
         $statusWhenRedirectCancel = Order::STATE_CANCELED;
         $responseComment = __(ConstantConfig::CONSUMER_CANCEL_PAYMENT);
         if($responseStatus != 'cancelled'){
-		  $responseComment = __(ConstantConfig::UNKNOWN_PAYMENT_STATUS_MERCHANT);	
-		}
+            $responseComment = __(ConstantConfig::UNKNOWN_PAYMENT_STATUS_MERCHANT);	
+        }
         $historyComment = __(ConstantConfig::CANCELLED).'|'.$responseComment;
         //TODO: fetch the MerchantErrorMessage and use it as historyComment
         $callback = new Callback($request->getPostValue());
@@ -356,16 +362,16 @@ class Generator
          /**
      * @param RequestInterface $request
      */
-    public function handleFailedStatusAction(RequestInterface $request, $msg, $merchantErrorMsg, $responseStatus)
-    {
-        $historyComment = $responseStatus.'|'.$msg;
-        if(!is_null($merchantErrorMsg)){
-		   $historyComment = $responseStatus.'|'.$msg.'|'.$merchantErrorMsg;
-		}
-        $transInfo = null;
-        $callback = new Callback($request->getPostValue());
-        $response = $callback->call();
-        if ($response) {
+         public function handleFailedStatusAction(RequestInterface $request, $msg, $merchantErrorMsg, $responseStatus)
+         {
+            $historyComment = $responseStatus.'|'.$msg;
+            if(!is_null($merchantErrorMsg)){
+               $historyComment = $responseStatus.'|'.$msg.'|'.$merchantErrorMsg;
+           }
+           $transInfo = null;
+           $callback = new Callback($request->getPostValue());
+           $response = $callback->call();
+           if ($response) {
             $order = $this->loadOrderFromCallback($response);
             $transInfo = sprintf(
                 "Transaction ID: %s - Payment ID: %s - Credit card token: %s",
@@ -463,7 +469,7 @@ class Generator
             if (!$order->getEmailSent()) {
                 $this->orderSender->send($order);
             }
-           
+            
             //unset redirect if success
             $this->checkoutSession->unsAltapayCustomerRedirect();
 
@@ -475,7 +481,7 @@ class Generator
                     $storeScope,
                     $storeCode
                 ) === $response->Transactions[0]->Terminal
-                ) {
+            ) {
                     $isCaptured = $this->systemConfig->getTerminalConfigFromTerminalName($terminalName, 'capture', $storeScope, $storeCode);
                     break;
                 }
@@ -486,23 +492,23 @@ class Generator
                 $this->setCustomOrderStatus($order, Order::STATE_COMPLETE, 'complete');
                 $order->addStatusHistoryComment(__(ConstantConfig::PAYMENT_COMPLETE));
             }else{
-				if($orderStatusProcess){
-			    $this->setCustomOrderStatus($order, Order::STATE_PROCESSING, 'process');
-			  }	
-			}
+                if($orderStatusProcess){
+                 $this->setCustomOrderStatus($order, Order::STATE_PROCESSING, 'process');
+             }	
+         }
 
-            $order->addStatusHistoryComment(
-                sprintf(
-                    "Transaction ID: %s - Payment ID: %s - Credit card token: %s",
-                    $response->transactionId,
-                    $response->paymentId,
-                    $response->creditCardToken
-                )
-            );
-            $order->setIsNotified(false);
-            $order->getResource()->save($order);
-        }
-    }
+         $order->addStatusHistoryComment(
+            sprintf(
+                "Transaction ID: %s - Payment ID: %s - Credit card token: %s",
+                $response->transactionId,
+                $response->paymentId,
+                $response->creditCardToken
+            )
+        );
+         $order->setIsNotified(false);
+         $order->getResource()->save($order);
+     }
+ }
 
     /**
      * @param CallbackResponse $response
@@ -578,32 +584,39 @@ class Generator
         $customer = new Customer($billingAddress);
 
         if ($order->getShippingAddress()) {
-            $address = $order->getShippingAddress()->convertToArray();
-            $shippingAddress = new Address();
-            $shippingAddress->Email = $order->getShippingAddress()->getEmail();
-            $shippingAddress->Firstname = $address['firstname'];
-            $shippingAddress->Lastname = $address['lastname'];
-            $shippingAddress->Address = $address['street'];
-            $shippingAddress->City = $address['city'];
-            $shippingAddress->PostalCode = $address['postcode'];
-            $shippingAddress->Region = $address['region'] ?: '0';
-            $shippingAddress->Country = $address['country_id'];
-            $customer->setShipping($shippingAddress);
-        }
-
-        if ($order->getBillingAddress()) {
-            $customer->setEmail($order->getBillingAddress()->getEmail());
-            $customer->setPhone($order->getBillingAddress()->getTelephone());
-        } elseif ($order->getShippingAddress()) {
-            $customer->setEmail($order->getShippingAddress()->getEmail());
-            $customer->setPhone($order->getShippingAddress()->getTelephone());
-        }
-
-        return $customer;
+         $address = $order->getShippingAddress()->convertToArray();
+         $shippingAddress = new Address();
+         $shippingAddress->Email = $order->getShippingAddress()->getEmail();
+         $shippingAddress->Firstname = $address['firstname'];
+         $shippingAddress->Lastname = $address['lastname'];
+         $shippingAddress->Address = $address['street'];
+         $shippingAddress->City = $address['city'];
+         $shippingAddress->PostalCode = $address['postcode'];
+         $shippingAddress->Region = $address['region'] ?: '0';
+         $shippingAddress->Country = $address['country_id'];
+         $customer->setShipping($shippingAddress);
+     }
+     else{
+        $customer->setShipping($billingAddress);
     }
 
-    public function getCheckoutSession()
-    {
-        return $this->checkoutSession;
+    if ($order->getBillingAddress()) {
+        $customer->setEmail($order->getBillingAddress()->getEmail());
+        $customer->setPhone($order->getBillingAddress()->getTelephone());
+    } elseif ($order->getShippingAddress()) {
+        $customer->setEmail($order->getShippingAddress()->getEmail());
+        $customer->setPhone($order->getShippingAddress()->getTelephone());
     }
+    else {
+        $customer->setEmail($order->getBillingAddress()->getEmail());
+        $customer->setPhone($order->getBillingAddress()->getTelephone());
+    } 
+
+    return $customer;
+}
+
+public function getCheckoutSession()
+{
+    return $this->checkoutSession;
+}
 }

@@ -9,7 +9,7 @@ web shop.
 ** Version 0.6.0
 
 	* Improvements:
-			- Rebranding from Altapay to Valitor
+            - Rebranding from Altapay to Valitor
 	        - Platform and plugin versioning information sent to the payment gateway
 	        - Added support for virtual products
 	* Bug fix:
