@@ -8,7 +8,7 @@
       "role": "Developer"
     }
   ],
-  "description": "Altapay payment",
+  "description": "Valitor-Omni: we make buying and selling easy",
   "require": {
     "php": "^5.5|^7.0",
     "lsv/altapay-php-api": "^1.0"

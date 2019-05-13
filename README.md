@@ -6,6 +6,19 @@ web shop.
 
 == Change log ==
 
+** Version 0.7.0
+
+	* Improvements:
+            - Invoice automated generated when autocapture or ePayment is used
+            - Added section for order status when AutoCapture is on
+	* Bug fix:
+	        - Notification flow broken
+	        - Wrong module version sent to the payment gateway
+	            -- before installing this version please ran:
+	                ```sh
+	                    $ bin/magento module:uninstall SDM_Altapay -r
+	                ```
+
 ** Version 0.6.0
 
 	* Improvements:
