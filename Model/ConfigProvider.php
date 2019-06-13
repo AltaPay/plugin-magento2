@@ -17,7 +17,7 @@ use Altapay\Authentication;
  */
 class ConfigProvider implements ConfigProviderInterface
 {
-    const CODE  = 'sdm_altapay';
+    const CODE  = 'sdm_valitor';
 
     /**
      * @var Data

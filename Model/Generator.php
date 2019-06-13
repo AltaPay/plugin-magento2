@@ -31,6 +31,7 @@ use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Order\Invoice;
 use Magento\Shipping\Model\ShipmentNotifier;
 use Magento\Framework\DB\TransactionFactory;
+use SDM\Altapay\Helper\Data;
 class Generator
 {
 
@@ -39,7 +40,10 @@ class Generator
      * @var ModuleListInterface
      */
     private $moduleList;
-    
+        /**
+     * @var Helper Data
+     */
+    private $helper;
     /**
      * @var ProductMetadataInterface
      */
@@ -136,7 +140,8 @@ class Generator
         Transaction $transaction,
         OrderRepositoryInterface $orderRepository,
         ShipmentNotifier $shipmentNotifier,
-        TransactionFactory $transactionFactory
+        TransactionFactory $transactionFactory,
+        Data $helper
     ) {
         $this->quote = $quote;
         $this->urlInterface = $urlInterface;
@@ -155,6 +160,7 @@ class Generator
         $this->invoiceSender = $invoiceSender;
         $this->_shipmentNotifier = $shipmentNotifier;
         $this->transactionFactory = $transactionFactory;
+        $this->helper = $helper;
     }
 
     /**
@@ -183,16 +189,9 @@ class Generator
                 $requestParams['message'] = __(ConstantConfig::AUTH_MESSAGE);
                 return $requestParams;
             }
-            
-            $versionDetails = array(); 
-            $magentoVersion = $this->productMetadata->getVersion();
-            $moduleInfo = $this->moduleList->getOne(self::MODULE_CODE);
-            $versionDetails['ecomPlatform'] = 'Magento';
-            $versionDetails['ecomVersion'] = $magentoVersion;
-            $versionDetails['valitorPluginName'] = $moduleInfo['name'];
-            $versionDetails['valitorPluginVersion'] = $moduleInfo['setup_version'];
-            $versionDetails['otherInfo'] = 'websiteName - '.$websiteNAme.', storeName - '.$storeName;
-
+            //Transaction Info
+            $transactionDetail = $this->helper->transactionDetail($orderId); 
+                   
             $terminalName = $this->systemConfig->getTerminalConfig($terminalId, 'terminalname', $storeScope, $storeCode);
             $request = new PaymentRequest($auth);
             $request
@@ -202,7 +201,7 @@ class Generator
             ->setCurrency($order->getOrderCurrencyCode())
             ->setCustomerInfo($this->setCustomer($order))
             ->setConfig($this->setConfig())
-            ->setTransactionInfo($versionDetails);
+            ->setTransactionInfo($transactionDetail);
             
 
             if ($fraud = $this->systemConfig->getTerminalConfig($terminalId, 'fraud', $storeScope, $storeCode)) {
@@ -226,11 +225,13 @@ class Generator
             /** @var \Magento\Sales\Model\Order\Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
                 $product_type = $item->getProductType();
+                $productOriginalPriceWithOrWithoutTax = $item->getBaseOriginalPrice();
+                $productSpecialPrice = $item->getPrice();
                 $orderline = new OrderLine(
                     $item->getName(),
                     $item->getSku(),
                     $item->getQtyOrdered(),
-                    $item->getOriginalPrice()
+                    $productOriginalPriceWithOrWithoutTax
                 );
 
                 if($product_type != 'virtual' && $product_type != 'downloadable'){
@@ -240,13 +241,11 @@ class Generator
                 //in case of cart rule discount, send tax after discount
                 $orderline->taxAmount = $item->getTaxAmount();
                 
-                if($item->getOriginalPrice() > $item->getPrice() && empty($order->getDiscountDescription())){
-                    $itemDiscountPercent = $item->getPrice()/$item->getOriginalPrice();
-                    $orderline->discount = abs(($itemDiscountPercent*100)-100);
-                    //in case of catalog rule discount, send tax before discount
-                    $taxBeforeDiscount = ($item->getOriginalPrice() * $item->getTaxPercent())/100;
-                    $taxAmount = $taxBeforeDiscount * $item->getQtyOrdered();
-                    $orderline->taxAmount = $taxAmount;
+                if($productSpecialPrice != null && $productOriginalPriceWithOrWithoutTax > $productSpecialPrice && empty($order->getDiscountDescription())){
+                    $orderline->discount = (($productOriginalPriceWithOrWithoutTax-$productSpecialPrice)/$productOriginalPriceWithOrWithoutTax)*100;
+                    //In case of catalog rule discount, send tax before discount
+                    $taxBeforeDiscount = ($productOriginalPriceWithOrWithoutTax * $item->getTaxPercent())/100;
+                    $orderline->taxAmount = $taxBeforeDiscount * $item->getQtyOrdered();
                 }
                 $orderlines[] = $orderline;
             }
@@ -286,18 +285,18 @@ class Generator
           $this->setCustomOrderStatus($order, Order::STATE_NEW, 'before');
       }
                 // set notification
-      $order->addStatusHistoryComment(__(ConstantConfig::REDIRECT_TO_ALTAPAY) . $response->PaymentRequestId);
+      $order->addStatusHistoryComment(__(ConstantConfig::REDIRECT_TO_VALITOR) . $response->PaymentRequestId);
       $extensionAttribute = $order->getExtensionAttributes();
-      if ($extensionAttribute && $extensionAttribute->getAltapayPaymentFormUrl()) {
-        $extensionAttribute->setAltapayPaymentFormUrl($response->Url);
+      if ($extensionAttribute && $extensionAttribute->getValitorPaymentFormUrl()) {
+        $extensionAttribute->setValitorPaymentFormUrl($response->Url);
     }
 
-    $order->setAltapayPaymentFormUrl($response->Url);
+    $order->setValitorPaymentFormUrl($response->Url);
 
     $order->getResource()->save($order);
 
                 //set check when user redirect
-    $this->checkoutSession->setAltapayCustomerRedirect(true);
+    $this->checkoutSession->setValitorCustomerRedirect(true);
 
     return $requestParams;
 } catch (ClientException $e) {
@@ -534,7 +533,7 @@ return $requestParams;
             }
             
             //unset redirect if success
-            $this->checkoutSession->unsAltapayCustomerRedirect();
+            $this->checkoutSession->unsValitorCustomerRedirect();
 
             $isCaptured = false;
             foreach (SystemConfig::getTerminalCodes() as $terminalName) {
@@ -550,13 +549,15 @@ return $requestParams;
                 }
             }
             $orderStatusAfterPayment = $this->systemConfig->getStatusConfig('process', $storeScope, $storeCode);
-            $orderStatusCapture = $this->systemConfig->getStatusConfig('autocapture', $storeScope, $storeCode);
+            $orderStatus_capture = $this->systemConfig->getStatusConfig('autocapture', $storeScope, $storeCode);
 
             if ($isCaptured) {
-                if($orderStatusCapture == "complete"){
+                if($orderStatus_capture == "complete"){
                     $this->setCustomOrderStatus($order, Order::STATE_COMPLETE, 'autocapture');
                     $order->addStatusHistoryComment(__(ConstantConfig::PAYMENT_COMPLETE));  
-                } else{
+                }
+
+                else{
                     $this->setCustomOrderStatus($order, Order::STATE_PROCESSING, 'process');
                 }
 
@@ -629,13 +630,13 @@ return $requestParams;
     private function setConfig()
     {
         $config = new Config();
-        $config->setCallbackOk($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_OK));
-        $config->setCallbackFail($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_FAIL));
-        $config->setCallbackRedirect($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_REDIRECT));
-        $config->setCallbackOpen($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_OPEN));
-        $config->setCallbackNotification($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_NOTIFICATION));
+        $config->setCallbackOk($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_OK));
+        $config->setCallbackFail($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_FAIL));
+        $config->setCallbackRedirect($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_REDIRECT));
+        $config->setCallbackOpen($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_OPEN));
+        $config->setCallbackNotification($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_NOTIFICATION));
         //$config->setCallbackVerifyOrder($this->urlInterface->getDirectUrl(ConstantConfig::VERIFY_ORDER));
-        $config->setCallbackForm($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_CALLBACK));
+        $config->setCallbackForm($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_CALLBACK));
         return $config;
     }
 

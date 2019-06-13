@@ -3,7 +3,7 @@
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
-                <item name="sdm_altapay_config_provider" xsi:type="object">SDM\Altapay\Model\ConfigProvider</item>
+                <item name="sdm_valitor_config_provider" xsi:type="object">SDM\Altapay\Model\ConfigProvider</item>
             </argument>
         </arguments>
     </type>

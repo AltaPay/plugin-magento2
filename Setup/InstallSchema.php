@@ -9,7 +9,7 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 class InstallSchema implements InstallSchemaInterface
 {
 
-    const TABLE_NAME = 'sdm_altapay';
+    const TABLE_NAME = 'sdm_valitor';
     const TABLE_IDENTIFIER = 'id';
 
     const COLUMN_ID = self::TABLE_IDENTIFIER;

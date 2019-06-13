@@ -59,10 +59,10 @@ define(
 
             return storage.post(serviceUrl, JSON.stringify(payload))
                 .done(function (data) {
-                    $('#altapay-error-message').text('');
+                    $('#valitor-error-message').text('');
                     $.ajax({
                         method: "POST",
-                        url: window.checkoutConfig.payment['sdm_altapay'].url,
+                        url: window.checkoutConfig.payment['sdm_valitor'].url,
                         data: {
                             paytype: method,
                             cartid: quote.getQuoteId(),
@@ -76,8 +76,8 @@ define(
                                 window.location.href = jsonResponse.formurl;
                             } else {
                                 fullScreenLoader.stopLoader();
-                                $(".payment-method._active").find('#altapay-error-message').css('display','block');
-                                $(".payment-method._active").find('#altapay-error-message').text(jsonResponse.message);
+                                $(".payment-method._active").find('#valitor-error-message').css('display','block');
+                                $(".payment-method._active").find('#valitor-error-message').text(jsonResponse.message);
                                 return false;
                             }
                         });

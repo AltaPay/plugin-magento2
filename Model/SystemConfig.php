@@ -115,7 +115,7 @@ class SystemConfig
         }
         return $this->scopeConfig->getValue(
             sprintf(
-                'payment/altapay_status/%s',
+                'payment/valitor_status/%s',
                 $configKey
             ),
             $storeScope,
@@ -176,7 +176,7 @@ class SystemConfig
         }
         return $this->scopeConfig->getValue(
             sprintf(
-                'payment/altapay_config/%s',
+                'payment/valitor_config/%s',
                 $configKey
             ),
             $storeScope,

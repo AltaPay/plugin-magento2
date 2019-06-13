@@ -17,7 +17,7 @@
                                                         <item name="renders" xsi:type="array">
                                                             <!-- merge payment method renders here -->
                                                             <item name="children" xsi:type="array">
-                                                                <item name="sdm_altapay" xsi:type="array">
+                                                                <item name="sdm_valitor" xsi:type="array">
                                                                     <item name="component" xsi:type="string">SDM_Altapay/js/view/payment/terminal</item>
                                                                     <item name="methods" xsi:type="array">
                                                                         <item name="terminal1" xsi:type="array">

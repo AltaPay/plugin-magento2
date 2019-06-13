@@ -6,6 +6,18 @@ web shop.
 
 == Change log ==
 
+** Version 0.8.0
+
+	* Improvements:
+		- New database table according to the branding changes                  
+		- Several refactored files                     
+		- Database update for cleanup job after the rebranding changes
+		- Added a second batch of branding changes (renamed layout files and references)
+	* Bug fix:
+		- Error not showing on browser back buton usage.
+		- Discounts not handled properly due to unitPrice and discount percentage (the reason for the Klarna failed payments)
+		- PHP 7.2 limitation has been removed
+
 ** Version 0.7.0
 
 	* Improvements:

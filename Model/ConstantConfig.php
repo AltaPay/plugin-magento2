@@ -11,7 +11,7 @@ namespace SDM\Altapay\Model;
 abstract class ConstantConfig
 {
     /* order history comments */
-    const REDIRECT_TO_ALTAPAY                   = 'Redirected to Valitor - Payment request ID: ';
+    const REDIRECT_TO_VALITOR                   = 'Redirected to Valitor - Payment request ID: ';
     const NOTIFICATION_CALLBACK                 = 'Notification callback from Valitor';
     const CONSUMER_CANCEL_PAYMENT               = 'Consumer has canceled the payment';
     const DECLINED_PAYMENT_FORM                 = 'Card declined, consumer redirected to the payment form';
@@ -22,13 +22,13 @@ abstract class ConstantConfig
     const BROWSER_BK_BUTTON_COMMENT             = 'Payment failed! Consumer has pressed the back button from the payment page.';
 
     /* config url */
-    const ALTAPAY_OK                            = 'sdmaltapay/index/ok';
-    const ALTAPAY_FAIL                          = 'sdmaltapay/index/fail';
-    const ALTAPAY_REDIRECT                      = 'sdmaltapay/index/redirect';
-    const ALTAPAY_OPEN                          = 'sdmaltapay/index/open';
-    const ALTAPAY_NOTIFICATION                  = 'sdmaltapay/index/notification';
-    const ALTAPAY_CALLBACK                      = 'sdmaltapay/index/callbackform';
-    const VERIFY_ORDER                          = 'sdmaltapay/index/verifyorder';
+    const VALITOR_OK                            = 'sdmvalitor/index/ok';
+    const VALITOR_FAIL                          = 'sdmvalitor/index/fail';
+    const VALITOR_REDIRECT                      = 'sdmvalitor/index/redirect';
+    const VALITOR_OPEN                          = 'sdmvalitor/index/open';
+    const VALITOR_NOTIFICATION                  = 'sdmvalitor/index/notification';
+    const VALITOR_CALLBACK                      = 'sdmvalitor/index/callbackform';
+    const VERIFY_ORDER                          = 'sdmvalitor/index/verifyorder';
 
     /* error and success message */
     const ERROR                                 = 'error';

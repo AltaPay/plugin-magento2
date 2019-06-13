@@ -31,12 +31,12 @@ define(
             redirectAfterPlaceOrder: false,
 
             placeOrder: function () {
-                $('#altapay-error-message').text('');
+                $('#valitor-error-message').text('');
                 var auth = window.checkoutConfig.payment[this.getDefaultCode()].auth;
                 var connection = window.checkoutConfig.payment[this.getDefaultCode()].connection;
                 if (!auth || !connection) {
-                    $(".payment-method._active").find('#altapay-error-message').css('display','block');
-                    $(".payment-method._active").find('#altapay-error-message').text('Could not authenticate with API');
+                    $(".payment-method._active").find('#valitor-error-message').css('display','block');
+                    $(".payment-method._active").find('#valitor-error-message').text('Could not authenticate with API');
                     return false;
                 }
 
@@ -51,7 +51,7 @@ define(
             },
 
             getDefaultCode: function () {
-                return 'sdm_altapay';
+                return 'sdm_valitor';
             }
         });
     }

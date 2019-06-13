@@ -13,7 +13,7 @@
                 <title />
                 <payment_action>true</payment_action>
                 <model>SDM\Altapay\Model\Terminal1</model>
-                <place_order_url>sdmaltapay/index/request</place_order_url>
+                <place_order_url>sdmvalitor/index/request</place_order_url>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
                 <can_capture_partial>1</can_capture_partial>
@@ -30,7 +30,7 @@
                 <title />
                 <payment_action>true</payment_action>
                 <model>SDM\Altapay\Model\Terminal2</model>
-                <place_order_url>sdmaltapay/index/request</place_order_url>
+                <place_order_url>sdmvalitor/index/request</place_order_url>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
                 <can_capture_partial>1</can_capture_partial>
@@ -47,7 +47,7 @@
                 <title />
                 <payment_action>true</payment_action>
                 <model>SDM\Altapay\Model\Terminal3</model>
-                <place_order_url>sdmaltapay/index/request</place_order_url>
+                <place_order_url>sdmvalitor/index/request</place_order_url>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
                 <can_capture_partial>1</can_capture_partial>
@@ -64,7 +64,7 @@
                 <title />
                 <payment_action>true</payment_action>
                 <model>SDM\Altapay\Model\Terminal4</model>
-                <place_order_url>sdmaltapay/index/request</place_order_url>
+                <place_order_url>sdmvalitor/index/request</place_order_url>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
                 <can_capture_partial>1</can_capture_partial>
@@ -81,7 +81,7 @@
                 <title />
                 <payment_action>true</payment_action>
                 <model>SDM\Altapay\Model\Terminal5</model>
-                <place_order_url>sdmaltapay/index/request</place_order_url>
+                <place_order_url>sdmvalitor/index/request</place_order_url>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
                 <can_capture_partial>1</can_capture_partial>

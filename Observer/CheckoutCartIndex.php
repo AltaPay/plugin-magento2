@@ -88,7 +88,7 @@ class CheckoutCartIndex implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        if ($this->session->getAltapayCustomerRedirect()) {
+        if ($this->session->getValitorCustomerRedirect()) {
             $order = $this->session->getLastRealOrder();
             $quote = $this->quoteFactory->create()->load($order->getQuoteId());
             $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
@@ -150,7 +150,7 @@ class CheckoutCartIndex implements ObserverInterface
             }
             //show fail message
             $this->messageManager->addErrorMessage($message);
-            $this->session->unsAltapayCustomerRedirect();
+            $this->session->unsValitorCustomerRedirect();
         }
     }
 
