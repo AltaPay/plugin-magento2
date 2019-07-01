@@ -6,6 +6,13 @@ web shop.
 
 == Change log ==
 
+** Version 0.9.0
+
+    * Improvement:
+        - Added more details in the history comment for failed orders
+    * Note:
+        - Only discounts in percentage, two digits, are supported for payments made with Klarna
+		
 ** Version 0.8.0
 
 	* Improvements:
@@ -13,7 +20,7 @@ web shop.
 		- Several refactored files                     
 		- Database update for cleanup job after the rebranding changes
 		- Added a second batch of branding changes (renamed layout files and references)
-	* Bug fix:
+	* Bug fixes:
 		- Error not showing on browser back buton usage.
 		- Discounts not handled properly due to unitPrice and discount percentage (the reason for the Klarna failed payments)
 		- PHP 7.2 limitation has been removed
@@ -23,13 +30,15 @@ web shop.
 	* Improvements:
             - Invoice automatically generated when autocapture or ePayment is used
             - Added section for order status when AutoCapture is on
-	* Bug fix:
+	* Bug fixes:
 	        - Notification flow broken
 	        - Wrong module version sent to the payment gateway
-	            -- before installing this version please run:
-	                ```sh
-	                    $ bin/magento module:uninstall SDM_Altapay -r
-	                ```
+	            
+	* Note:
+	        - before installing this version please run:
+                ```sh
+                    $ bin/magento module:uninstall SDM_Altapay -r
+                ```
 
 ** Version 0.6.0
 
@@ -37,7 +46,7 @@ web shop.
             - Rebranding from Altapay to Valitor
 	        - Platform and plugin versioning information sent to the payment gateway
 	        - Added support for virtual products
-	* Bug fix:
+	* Bug fixes:
 	        - Validation Error not been shown at back button from checkout page
 	        - Order Status stall in "Pending"
 	        - Payment capture often fails
@@ -47,14 +56,14 @@ web shop.
     * Improvement: 
             - Added failed message as order history comment for failed captures
             - Payment statuses handled properly in the notification callback
-    * Bug fix:
+    * Bug fixes:
             - Handled correctly the cancelled payment status
             - Added a fix for the percentage discounts, on item and cart level, for invoice payment methods. 
             	-- Note: only one type of discounts (item or cart) can be used per order
 
 ** Version 0.4.2
 
-    * Bug fix: 
+    * Bug fixes: 
             - Item unit price sent when capture
             - Order status set according to the configuration from the admin panel
             - Localization files encoding
@@ -62,7 +71,7 @@ web shop.
 
 ** Version 0.4.1
 
-    * Bug fix: 
+    * Bug fixes: 
             - Wrong reference (namespace) for the plugin
             - Module failing in rendering the callback form
 
@@ -76,28 +85,28 @@ web shop.
 ** Version 0.3.3
 
     * Improvement: Revert the usage of a cupon if the payment is canceled by the consumer through the back button
-    * Bug fix:
+    * Bug fixes:
             - Fix the order-cleanup script to be aplicable only to Altapay transactions
             - Fix the order status show in the history comments from the order view
 
 ** Version 0.3.2
 
-    * Bug fix:
+    * Bug fixes:
             - Fix the order-cleanup script to be applicable only to Altapay orders
             - Fix the terminal name in the order view, according to store level
 
 ** Version 0.3.1
 
-    * Bug fix: cancel the order if the consumer moves away from the payment form by using the back button in the browser
+    * Bug fixes: cancel the order if the consumer moves away from the payment form by using the back button in the browser
 
 ** Version 0.3.0
     
     * Improvement: payment form with the order details 
-    * Bug fix: empty cart if consumer uses the back button from the payment form
+    * Bug fixes: empty cart if consumer uses the back button from the payment form
 
 ** Version 0.2.1
 
-    * Bug fix: 
+    * Bug fixes: 
             - Terms and Condition checkbox in checkout page
             - Order status, before payment, set according to the setting from the store
 
@@ -121,7 +130,7 @@ web shop.
 
 ** Version 0.1.9
 
-    * Bug fixes: error message not shown in case of a payment gateway error
+    * Bug fix: error message not shown in case of a payment gateway error
     * Client library updated: new element in the XML response for CreatePaymentRequest
 
 ** Version 0.1.8
@@ -135,4 +144,3 @@ web shop.
 ** Version 0.1.6
 
     * Support for tax information in the order lines
-
