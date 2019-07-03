@@ -511,7 +511,7 @@ return $requestParams;
      * @throws \Exception
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
-    private function completeCheckout($comment, RequestInterface $request)
+    protected function completeCheckout($comment, RequestInterface $request)
     {
         $callback = new Callback($request->getParams());
         $response = $callback->call();
@@ -591,7 +591,7 @@ return $requestParams;
      * @param CallbackResponse $response
      * @return Order
      */
-    private function loadOrderFromCallback(CallbackResponse $response)
+    protected function loadOrderFromCallback(CallbackResponse $response)
     {
         return $this->loadOrderFromOrderId($response->shopOrderId);
     }
@@ -600,7 +600,7 @@ return $requestParams;
      * @param string $orderId
      * @return Order
      */
-    private function loadOrderFromOrderId($orderId)
+    protected function loadOrderFromOrderId($orderId)
     {
         $order = $this->order->loadByIncrementId($orderId);
         return $order;
@@ -613,7 +613,7 @@ return $requestParams;
      * @throws \Exception
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
-    private function setCustomOrderStatus(Order $order, $state, $statusKey)
+    protected function setCustomOrderStatus(Order $order, $state, $statusKey)
     {
         $order->setState($state);
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
@@ -627,7 +627,7 @@ return $requestParams;
     /**
      * @return Config
      */
-    private function setConfig()
+    protected function setConfig()
     {
         $config = new Config();
         $config->setCallbackOk($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_OK));
@@ -644,7 +644,7 @@ return $requestParams;
      * @param Order $order
      * @return Customer
      */
-    private function setCustomer(Order $order)
+    protected function setCustomer(Order $order)
     {
         $billingAddress = new Address();
         if ($order->getBillingAddress()) {
