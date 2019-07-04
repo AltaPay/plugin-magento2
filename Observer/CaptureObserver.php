@@ -131,7 +131,7 @@ class CaptureObserver implements ObserverInterface
     /**
      * @param \Magento\Sales\Model\Order\Invoice\Item $item
      */
-    private function logItem($item)
+    protected function logItem($item)
     {
         $this->monolog->addInfo(
             sprintf(
@@ -161,7 +161,7 @@ class CaptureObserver implements ObserverInterface
      * @param \Magento\Sales\Model\Order\Payment $payment
      * @param \Magento\Sales\Model\Order\Invoice $invoice
      */
-    private function logPayment($payment, $invoice)
+    protected function logPayment($payment, $invoice)
     {
         $logs = [
             'invoice.getTransactionId: %s',

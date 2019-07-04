@@ -61,7 +61,7 @@ class Notification extends Index
         return $resultRedirect;
     }
     
-     private function prepareRedirect($routePath, $routeParams = null, $message = '')
+     protected function prepareRedirect($routePath, $routeParams = null, $message = '')
     {
         if ($message != '') {
             $this->messageManager->addErrorMessage(__($message));

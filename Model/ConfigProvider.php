@@ -108,7 +108,7 @@ class ConfigProvider implements ConfigProviderInterface
     /**
      * @return \Magento\Payment\Model\MethodInterface
      */
-    private function getData()
+    protected function getData()
     {
         return $this->data->getMethodInstance('terminal1');
     }
