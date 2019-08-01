@@ -6,6 +6,18 @@ web shop.
 
 == Change log ==
 
+** Version 0.10.0
+
+    * Improvements:
+        - Added support for coupons
+        - Browser back button improvements
+        - Separate order line for cart rules sent the payment gateway
+        - Improvements on handling discounts on price including tax
+        - Changed private methods to protected to allow easier rewrites(credits to Martin René Sørensen, through pull request)
+    * Bug fixes:
+        - Unit price not fetched correctly on price including taxes
+        - Order status history comment added when consumer gets redirected to the payment gateway
+
 ** Version 0.9.0
 
     * Improvement:
@@ -126,7 +138,6 @@ web shop.
     * Improvements: 
             - orderLines (including taxAmount) added in the Refund request
             - taxAmount added to Capture request
-
 
 ** Version 0.1.9
 

@@ -10,6 +10,8 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Logger\Monolog;
 use SDM\Altapay\Model\SystemConfig;
 use Magento\Sales\Model\Order;
+use Magento\Catalog\Model\ProductFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class CaptureObserver implements ObserverInterface
 {
@@ -17,6 +19,11 @@ class CaptureObserver implements ObserverInterface
      * @var SystemConfig
      */
     private $systemConfig;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
 
     /**
      * @var Monolog
@@ -28,11 +35,26 @@ class CaptureObserver implements ObserverInterface
     */
     private $order;
 
-    public function __construct(SystemConfig $systemConfig, Monolog $monolog, Order $order)
+    /**
+     * @var productFactory
+    */
+    private $productFactory;
+
+    public function __construct(SystemConfig $systemConfig, Monolog $monolog, Order $order, ProductFactory $productFactory
+    ,ScopeConfigInterface $scopeConfig)
     {
         $this->systemConfig = $systemConfig;
         $this->monolog = $monolog;
         $this->order = $order;
+        $this->productFactory = $productFactory;
+        $this->scopeConfig = $scopeConfig;
+    }
+
+    public function getProductPrice($id)
+    {
+    $product = $this->productFactory->create();
+    $productPriceById = $product->load($id)->getPrice();
+    return $productPriceById;
     }
 
     /**
@@ -50,26 +72,62 @@ class CaptureObserver implements ObserverInterface
         $invoice = $observer['invoice'];
         $orderIncrementId = $invoice->getOrder()->getIncrementId();
         $orderObject = $this->order->loadByIncrementId($orderIncrementId);
-        
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
         $storeCode = $invoice->getStore()->getCode();
+        
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
             $this->logPayment($payment, $invoice);
 
             $orderlines = [];
+            $appliedRule = $invoice->getAppliedRuleIds();
+            $couponCode = $invoice->getDiscountDescription();
+            $couponCodeAmount = $invoice->getDiscountAmount();
             /** @var \Magento\Sales\Model\Order\Invoice\Item $item */
             foreach ($invoice->getItems() as $item) {
+                $id = $item->getProductId();
+                $productOriginalPrice = $this->getProductPrice($id);
+                $priceExcTax = $item->getPrice();
+                $quantity = $item->getQty();
+                if ((int) $this->scopeConfig->getValue('tax/calculation/price_includes_tax', $storeScope) === 1) {
+                    //Handle only if we have coupon Code
+                    if(empty($couponCode)){
+                        $taxPercent = $item->getOrderItem()->getTaxPercent();
+                        $taxCalculatedAmount = $priceExcTax *  ($taxPercent/100);
+                        $taxAmount = (number_format($taxCalculatedAmount, 2, '.', '') * $quantity);
+                    } else{
+                        $taxAmount = ($productOriginalPrice - $priceExcTax) * $quantity;
+                    }
+                }else{
+                    $taxAmount = $item->getTaxAmount();
+                }
                 if ($item->getPriceInclTax()) {
+                    $taxPercent = $item->getTaxPercent();
                     $this->logItem($item);
                     $orderline = new OrderLine(
                         $item->getName(),
                         $item->getSku(),
-                        $item->getQty(),
+                        $quantity,
                         $item->getPrice()
                     );
                     $orderline->setGoodsType('item');
-                    $orderline->taxAmount = $item->getTaxAmount();
+                    $orderline->taxAmount = $taxAmount;
                     $orderlines[] = $orderline;
                 }
+            }
+            
+            if ((abs($couponCodeAmount) > 0) || !(empty($appliedRules))) {
+                if(empty($couponCode)){
+                    $couponCode = 'Cart Price Rule';
+                }
+                // Handling price reductions
+                $orderline = new OrderLine(
+                    $couponCode,
+                    'discount',
+                    1,
+                    $couponCodeAmount
+                );
+                $orderline->setGoodsType('handling');
+                $orderlines[] = $orderline;
             }
 
             if ($invoice->getShippingInclTax()) {
