@@ -79,7 +79,7 @@ class CaptureObserver implements ObserverInterface
             $this->logPayment($payment, $invoice);
 
             $orderlines = [];
-            $appliedRule = $invoice->getAppliedRuleIds();
+            $appliedRules = $invoice->getAppliedRuleIds();
             $couponCode = $invoice->getDiscountDescription();
             $couponCodeAmount = $invoice->getDiscountAmount();
             $compAmount = $invoice->getShippingDiscountTaxCompensationAmount();
