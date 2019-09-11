@@ -95,8 +95,7 @@ class CheckoutCartIndex implements ObserverInterface
             $storeCode = $order->getStore()->getCode();
             $statusHistoryItem = $order->getStatusHistoryCollection()->getFirstItem();
             $errorCodeMerchant = $statusHistoryItem->getData('comment');
-
-            $message = __(ConstantConfig::BROWSER_BK_BUTTON_MSG);
+            
             $historyComment = __(ConstantConfig::BROWSER_BK_BUTTON_COMMENT);
             $browserBackbtn = false;
 
@@ -118,6 +117,8 @@ class CheckoutCartIndex implements ObserverInterface
                     $message = __(ConstantConfig::UNKNOWN_PAYMENT_STATUS_CONSUMER);
                     $historyComment = __(ConstantConfig::UNKNOWN_PAYMENT_STATUS_CONSUMER);
                   }
+                //show fail message
+                $this->messageManager->addErrorMessage($message);
             }else{
                 $browserBackbtn = true;
             }
@@ -154,14 +155,14 @@ class CheckoutCartIndex implements ObserverInterface
                 if ($browserBackbtn == true) {
                   //set order status and comments
                     $order->addStatusHistoryComment($historyComment, $orderStatusCancelUpdate);
+                    $message = __(ConstantConfig::BROWSER_BK_BUTTON_MSG);
+                    $this->messageManager->addErrorMessage($message);
                 }
 
 				$order->setState($orderStateCancelUpdate)->setStatus($orderStatusCancelUpdate);
                 $order->setIsNotified(false);
                 $order->getResource()->save($order);
             }
-            //show fail message
-            $this->messageManager->addErrorMessage($message);
             $this->session->unsValitorCustomerRedirect();
         }
     }

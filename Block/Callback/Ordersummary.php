@@ -4,6 +4,7 @@ namespace SDM\Altapay\Block\Callback;
 
 use Magento\Customer\Model\Context;
 use Magento\Sales\Model\Order;
+use \Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Ordersummary extends \Magento\Framework\View\Element\Template
 {
@@ -46,7 +47,10 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
      * @var \Magento\Framework\Pricing\Helper\Data $priceHelper
      */
     protected $priceHelper;
-
+    /**
+     * @var ScopeConfigInterface
+     */
+    protected $_appConfigScopeConfigInterface;
 
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
@@ -70,6 +74,7 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
         \Magento\Sales\Model\Order\Address\Renderer $renderer,
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
+        ScopeConfigInterface $appConfigScopeConfigInterface,
         array $data = []
     ) {
         
@@ -82,6 +87,7 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
         $this->renderer = $renderer;
         $this->productRepository = $productRepository;
         $this->priceHelper=$priceHelper;
+        $this->_appConfigScopeConfigInterface = $appConfigScopeConfigInterface;
     }
 
     /**
@@ -131,12 +137,25 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
      * Get order payemet title
      * @return string
      */
-    public function getPaymentMethodtitle()
+    public function getPaymentMethodTitle()
     {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
         $order = $this->getOrder();
         $payment = $order->getPayment();
         $method = $payment->getMethodInstance();
-        return $method->getTitle();
+        $storeCode = $order->getStore()->getCode();
+                $storeId = $order->getStore()->getId();
+                $payment = $order->getPayment();
+                $method = $payment->getMethodInstance();
+                $title = $method->getConfigData('title', $storeId);;
+                $terminalID = $payment->getMethod();
+                    if($title == null){
+                        $terminalTitle = $this->_appConfigScopeConfigInterface
+                        ->getValue('payment/'.$terminalID.'/terminalname',$storeScope); 
+                    } else{
+                        $terminalTitle = $title; 
+                    }
+        return $terminalTitle;
     }
 
     public function getProductImage()

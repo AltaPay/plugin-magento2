@@ -82,6 +82,8 @@ class CaptureObserver implements ObserverInterface
             $appliedRule = $invoice->getAppliedRuleIds();
             $couponCode = $invoice->getDiscountDescription();
             $couponCodeAmount = $invoice->getDiscountAmount();
+            $compAmount = $invoice->getShippingDiscountTaxCompensationAmount();
+
             /** @var \Magento\Sales\Model\Order\Invoice\Item $item */
             foreach ($invoice->getItems() as $item) {
                 $id = $item->getProductId();
@@ -135,7 +137,7 @@ class CaptureObserver implements ObserverInterface
                     'Shipping',
                     'shipping',
                     1,
-                    $invoice->getShippingInclTax()
+                    $invoice->getShippingAmount() + $compAmount
                 );
                 $orderline->setGoodsType('shipment');
                 $orderline->taxAmount = $invoice->getShippingTaxAmount();
@@ -146,8 +148,7 @@ class CaptureObserver implements ObserverInterface
             if ($invoice->getTransactionId()) {
                 $api->setInvoiceNumber($invoice->getTransactionId());
             }
-
-            $api->setAmount((float) $invoice->getGrandTotal());
+            $api->setAmount((float) number_format($invoice->getGrandTotal(), 2, '.', ''));
             $api->setOrderLines($orderlines);
             $api->setTransaction($payment->getLastTransId());
             /** @var CaptureReservationResponse $response */

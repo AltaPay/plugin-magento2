@@ -6,36 +6,51 @@ web shop.
 
 == Change log ==
 
+** Version 0.11.0
+
+    * Improvements:
+            - List of supported languages is dynamicaly fetched; only supported by the payment gateway are available
+            - Terminal dropdown list with default option
+            - Added support discounts applied to shipping
+            - Handle correctly virtual and downloadable products at checkout completion
+    * Bug fixes:
+            - Payment method not always shown correctly, according to the store configuration
+            - Multiple issues on shipping orderline
+            - Terminal enabled based on Default instead of Store configuration level
+            - Capture and refund failing on certain cases
+            - Amounts having more than two digits not handled correctly
+            - Error message related to the back button shown when successful payment
+
 ** Version 0.10.0
 
     * Improvements:
-        - Added support for coupons
-        - Browser back button improvements
-        - Separate order line for cart rules sent the payment gateway
-        - Improvements on handling discounts on price including tax
-        - Changed private methods to protected to allow easier rewrites(credits to Martin René Sørensen, through pull request)
+            - Added support for coupons
+            - Browser back button improvements
+            - Separate order line for cart rules sent the payment gateway
+            - Improvements on handling discounts on price including tax
+            - Changed private methods to protected to allow easier rewrites(credits to Martin René Sørensen, through pull request)
     * Bug fixes:
-        - Unit price not fetched correctly on price including taxes
-        - Order status history comment added when consumer gets redirected to the payment gateway
+            - Unit price not fetched correctly on price including taxes
+            - Order status history comment added when consumer gets redirected to the payment gateway
 
 ** Version 0.9.0
 
     * Improvement:
-        - Added more details in the history comment for failed orders
+            - Added more details in the history comment for failed orders
     * Note:
-        - Only discounts in percentage, two digits, are supported for payments made with Klarna
+            - Only discounts in percentage, two digits, are supported for payments made with Klarna
 		
 ** Version 0.8.0
 
 	* Improvements:
-		- New database table according to the branding changes                  
-		- Several refactored files                     
-		- Database update for cleanup job after the rebranding changes
-		- Added a second batch of branding changes (renamed layout files and references)
+            - New database table according to the branding changes                  
+            - Several refactored files                     
+            - Database update for cleanup job after the rebranding changes
+            - Added a second batch of branding changes (renamed layout files and references)
 	* Bug fixes:
-		- Error not showing on browser back buton usage.
-		- Discounts not handled properly due to unitPrice and discount percentage (the reason for the Klarna failed payments)
-		- PHP 7.2 limitation has been removed
+            - Error not showing on browser back buton usage.
+            - Discounts not handled properly due to unitPrice and discount percentage (the reason for the Klarna failed payments)
+            - PHP 7.2 limitation has been removed
 
 ** Version 0.7.0
 
@@ -96,7 +111,8 @@ web shop.
 
 ** Version 0.3.3
 
-    * Improvement: Revert the usage of a cupon if the payment is canceled by the consumer through the back button
+    * Improvement: 
+            - Revert the usage of a cupon if the payment is canceled by the consumer through the back button
     * Bug fixes:
             - Fix the order-cleanup script to be aplicable only to Altapay transactions
             - Fix the order status show in the history comments from the order view
@@ -109,12 +125,15 @@ web shop.
 
 ** Version 0.3.1
 
-    * Bug fixes: cancel the order if the consumer moves away from the payment form by using the back button in the browser
+    * Bug fix: 
+            - Cancel the order if the consumer moves away from the payment form by using the back button in the browser
 
 ** Version 0.3.0
     
-    * Improvement: payment form with the order details 
-    * Bug fixes: empty cart if consumer uses the back button from the payment form
+    * Improvement: 
+            - Payment form with the order details 
+    * Bug fix: 
+            - Empty cart if consumer uses the back button from the payment form
 
 ** Version 0.2.1
 
@@ -125,32 +144,36 @@ web shop.
 ** Version 0.2.0
 
     * Improvements: 
-            - update the order with the correct status and state in accordance to the payment gateway response 
-            - use StoreScope on all connections to the payment gateway
-            - add Enable option for terminals on store level
+            - Update the order with the correct status and state in accordance to the payment gateway response 
+            - Use StoreScope on all connections to the payment gateway
+            - Add Enable option for terminals on store level
 
 ** Version 0.1.11
 
-    * Bug fix: Support for scope
+    * Bug fix: 
+            - Support for store scope
 
 ** Version 0.1.10
 
     * Improvements: 
-            - orderLines (including taxAmount) added in the Refund request
-            - taxAmount added to Capture request
+            - OrderLines (including taxAmount) added in the Refund request
+            - Tax amount added to Capture request
 
 ** Version 0.1.9
 
-    * Bug fix: error message not shown in case of a payment gateway error
+    * Bug fix: 
+            - Error message not shown in case of a payment gateway error
     * Client library updated: new element in the XML response for CreatePaymentRequest
 
 ** Version 0.1.8
 
-    * Bug fix: amount type set to float
+    * Bug fix: 
+            - Amount type set to float
     
 ** Version 0.1.7
 
-    * Bug fix: unit price and "handling" GoodsType
+    * Bug fix: 
+            - Unit price and "handling" GoodsType
     
 ** Version 0.1.6
 

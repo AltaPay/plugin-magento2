@@ -30,6 +30,7 @@ class Terminals implements ArrayInterface
             $call = new \Altapay\Api\Others\Terminals($this->systemConfig->getAuth());
             /** @var TerminalsResponse $response */
             $response = $call->call();
+            $terminals[] = ['value' => ' ', 'label' => '-- Select one --'];
             foreach ($response->Terminals as $terminal) {
                 $terminals[] = ['value' => $terminal->Title, 'label' => $terminal->Title];
             }
