@@ -9,7 +9,7 @@ web shop.
 ** Version 0.11.0
 
     * Improvements:
-            - List of supported languages is dynamicaly fetched; only supported by the payment gateway are available
+            - List of supported languages is dynamically fetched; only supported by the payment gateway are available
             - Terminal dropdown list with default option
             - Added support discounts applied to shipping
             - Handle correctly virtual and downloadable products at checkout completion
