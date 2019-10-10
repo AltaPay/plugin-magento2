@@ -6,6 +6,11 @@ web shop.
 
 == Change log ==
 
+** Version 0.12.0
+
+    * Improvement:
+            - Added support for configurable products
+
 ** Version 0.11.0
 
     * Improvements:

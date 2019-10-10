@@ -83,7 +83,6 @@ class CaptureObserver implements ObserverInterface
             $couponCode = $invoice->getDiscountDescription();
             $couponCodeAmount = $invoice->getDiscountAmount();
             $compAmount = $invoice->getShippingDiscountTaxCompensationAmount();
-
             /** @var \Magento\Sales\Model\Order\Invoice\Item $item */
             foreach ($invoice->getItems() as $item) {
                 $id = $item->getProductId();
@@ -92,13 +91,9 @@ class CaptureObserver implements ObserverInterface
                 $quantity = $item->getQty();
                 if ((int) $this->scopeConfig->getValue('tax/calculation/price_includes_tax', $storeScope) === 1) {
                     //Handle only if we have coupon Code
-                    if(empty($couponCode)){
                         $taxPercent = $item->getOrderItem()->getTaxPercent();
                         $taxCalculatedAmount = $priceExcTax *  ($taxPercent/100);
                         $taxAmount = (number_format($taxCalculatedAmount, 2, '.', '') * $quantity);
-                    } else{
-                        $taxAmount = ($productOriginalPrice - $priceExcTax) * $quantity;
-                    }
                 }else{
                     $taxAmount = $item->getTaxAmount();
                 }
