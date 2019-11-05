@@ -6,6 +6,19 @@ web shop.
 
 == Change log ==
 
+** Version 0.13.0
+
+    * Improvements: 
+            - Revamp orderlines on various coupon scenarios
+            - New enhancements related to various types of discounts and tax scenarios
+            - Compensation amount with shipping
+            - Added support for:
+                - catalog discounts in relation to the latest updates on orderlines 
+                - applied discount on virtual products
+    * Bug fixes:
+            - Partial captures failing on certain cases when Klarna used as payment method
+            - Exception thrown on certain cases when refunds are made 
+
 ** Version 0.12.0
 
     * Improvement:
