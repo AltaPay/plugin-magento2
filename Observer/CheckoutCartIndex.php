@@ -1,5 +1,5 @@
 <?php
-namespace SDM\Altapay\Observer;
+namespace SDM\Valitor\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -8,9 +8,9 @@ use Magento\Sales\Model\Order;
 use Magento\SalesRule\Model\Coupon;
 use Magento\SalesRule\Model\ResourceModel\Coupon\Usage as CouponUsage;
 use Magento\CatalogInventory\Api\StockManagementInterface;
-use SDM\Altapay\Model\SystemConfig;
+use SDM\Valitor\Model\SystemConfig;
 use Magento\Framework\Session\SessionManagerInterface;
-use SDM\Altapay\Model\ConstantConfig;
+use SDM\Valitor\Model\ConstantConfig;
 
 class CheckoutCartIndex implements ObserverInterface
 {

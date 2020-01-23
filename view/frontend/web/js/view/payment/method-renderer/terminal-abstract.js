@@ -17,14 +17,14 @@ define(
         'jquery',
         'Magento_Checkout/js/view/payment/default',
         'Magento_Customer/js/customer-data',
-        'SDM_Altapay/js/action/set-payment'
+        'SDM_Valitor/js/action/set-payment'
     ],
     function ($, Component, storage, Action) {
         'use strict';
 
         return Component.extend({
             defaults: {
-                template: 'SDM_Altapay/payment/terminal',
+                template: 'SDM_Valitor/payment/terminal',
                 terminal: '1'
             },
 

@@ -1,9 +1,9 @@
 <?php
-namespace SDM\Altapay\Model\Config\Source;
+namespace SDM\Valitor\Model\Config\Source;
 
-use Altapay\Api\Test\TestAuthentication;
+use Valitor\Api\Test\TestAuthentication;
 use Magento\Framework\Option\ArrayInterface;
-use SDM\Altapay\Model\SystemConfig;
+use SDM\Valitor\Model\SystemConfig;
 
 class Authentication implements ArrayInterface
 {

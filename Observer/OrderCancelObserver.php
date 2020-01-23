@@ -1,12 +1,12 @@
 <?php
-namespace SDM\Altapay\Observer;
+namespace SDM\Valitor\Observer;
 
-use Altapay\Api\Payments\ReleaseReservation;
-use Altapay\Exceptions\ResponseHeaderException;
-use Altapay\Response\ReleaseReservationResponse;
+use Valitor\Api\Payments\ReleaseReservation;
+use Valitor\Exceptions\ResponseHeaderException;
+use Valitor\Response\ReleaseReservationResponse;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use SDM\Altapay\Model\SystemConfig;
+use SDM\Valitor\Model\SystemConfig;
 
 class OrderCancelObserver implements ObserverInterface
 {

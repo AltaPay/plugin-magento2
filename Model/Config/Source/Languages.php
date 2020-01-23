@@ -1,9 +1,9 @@
 <?php
-namespace SDM\Altapay\Model\Config\Source;
+namespace SDM\Valitor\Model\Config\Source;
 
 use Magento\Config\Model\Config\Source\Locale;
 use Magento\Framework\Option\ArrayInterface;
-use Altapay\Types\LanguageTypes;
+use Valitor\Types\LanguageTypes;
 
 class Languages extends Locale implements ArrayInterface
 {

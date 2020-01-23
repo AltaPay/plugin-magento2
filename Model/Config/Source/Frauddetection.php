@@ -1,5 +1,5 @@
 <?php
-namespace SDM\Altapay\Model\Config\Source;
+namespace SDM\Valitor\Model\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 

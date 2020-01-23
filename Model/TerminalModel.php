@@ -1,5 +1,5 @@
 <?php
-namespace SDM\Altapay\Model;
+namespace SDM\Valitor\Model;
 
 abstract class TerminalModel extends \Magento\Payment\Model\Method\AbstractMethod
 {

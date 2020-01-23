@@ -1,9 +1,9 @@
 <?php
-namespace SDM\Altapay\Controller\Index;
+namespace SDM\Valitor\Controller\Index;
 
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultFactory;
-use SDM\Altapay\Controller\Index;
+use SDM\Valitor\Controller\Index;
 
 class Fail extends Index
 {

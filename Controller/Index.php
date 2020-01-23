@@ -1,5 +1,5 @@
 <?php
-namespace SDM\Altapay\Controller;
+namespace SDM\Valitor\Controller;
 
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
@@ -8,7 +8,7 @@ use Magento\Framework\View\Result\PageFactory;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
-use SDM\Altapay\Model\Generator;
+use SDM\Valitor\Model\Generator;
 
 abstract class Index extends Action
 {

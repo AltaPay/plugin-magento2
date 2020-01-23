@@ -2,6 +2,6 @@
 
 \Magento\Framework\Component\ComponentRegistrar::register(
     \Magento\Framework\Component\ComponentRegistrar::MODULE,
-    'SDM_Altapay',
+    'SDM_Valitor',
     __DIR__
 );

@@ -1,5 +1,5 @@
 <?php
-namespace SDM\Altapay\Block;
+namespace SDM\Valitor\Block;
 
 use Magento\Payment\Block\Info as BaseInfo;
 

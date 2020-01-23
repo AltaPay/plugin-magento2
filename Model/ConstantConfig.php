@@ -1,11 +1,11 @@
 <?php
 
-namespace SDM\Altapay\Model;
+namespace SDM\Valitor\Model;
 
 /**
  * Class ConstantConfig
  *
- * @package SDM\Altapay\Model
+ * @package SDM\Valitor\Model
  * Comment history constants
  */
 abstract class ConstantConfig

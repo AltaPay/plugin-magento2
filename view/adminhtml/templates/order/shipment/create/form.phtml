@@ -10,7 +10,7 @@
 <form id="edit_form" method="post" action="<?= /* @escapeNotVerified */ $block->getSaveUrl() ?>">
     <?= $block->getBlockHtml('formkey') ?>
     <?php  $_order = $block->getShipment()->getOrder() ?>
-    <?php $helper = $this->helper('SDM\Altapay\Helper\Data'); ?>
+    <?php $helper = $this->helper('SDM\Valitor\Helper\Data'); ?>
     <?= $block->getChildHtml('order_info') ?>
     <div class="admin__page-section">
         <div class="admin__page-section-title">

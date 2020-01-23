@@ -1,8 +1,8 @@
 <?php
 
-namespace SDM\Altapay\Model;
+namespace SDM\Valitor\Model;
 
-use Altapay\Authentication;
+use Valitor\Authentication;
 use Magento\Config\Model\Config\Backend\Encrypted;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -12,7 +12,7 @@ use Magento\Store\Model\StoreResolver;
 
 /**
  * Class SystemConfig
- * @package SDM\Altapay\Model
+ * @package SDM\Valitor\Model
  */
 class SystemConfig
 {

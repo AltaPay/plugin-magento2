@@ -6,6 +6,17 @@ web shop.
 
 == Change log ==
 
+** Version 0.14.0
+
+    * Improvements:
+            - Completed the rebranding changes
+            - Revamped orderlines for capture and refund calls
+            - Added support for bundle product and multiple tax rules
+    * Bug fixtures:
+            - Failed order when coupon code applied only to shipping
+            - Duplicated confirmation email sent when e-payments
+            - Rounding mismatch issue on compensation amounts
+        
 ** Version 0.13.0
 
     * Improvements: 

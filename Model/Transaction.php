@@ -1,9 +1,9 @@
 <?php
-namespace SDM\Altapay\Model;
+namespace SDM\Valitor\Model;
 
 use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Framework\Model\AbstractModel;
-use SDM\Altapay\Setup\InstallSchema;
+use SDM\Valitor\Setup\InstallSchema;
 
 class Transaction extends AbstractModel implements IdentityInterface
 {
@@ -15,7 +15,7 @@ class Transaction extends AbstractModel implements IdentityInterface
      */
     protected function _construct()
     {
-        $this->_init('SDM\Altapay\Model\ResourceModel\Transaction');
+        $this->_init('SDM\Valitor\Model\ResourceModel\Transaction');
     }
 
     /**

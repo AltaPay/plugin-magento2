@@ -3,7 +3,7 @@
     <referenceBlock name="content">
         <block
             template="callback_verify.phtml"
-            class="SDM\Altapay\Block\Callback\Verify"
+            class="SDM\Valitor\Block\Callback\Verify"
             name="sdm_valitor_callback_verify"
         />
     </referenceBlock>

@@ -1,5 +1,5 @@
 <?php
-namespace SDM\Altapay\Setup;
+namespace SDM\Valitor\Setup;
 
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\InstallSchemaInterface;

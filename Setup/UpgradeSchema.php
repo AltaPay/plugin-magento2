@@ -6,7 +6,7 @@
  * Time: 2:57 PM
  */
 
-namespace SDM\Altapay\Setup;
+namespace SDM\Valitor\Setup;
 
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;

@@ -1,10 +1,10 @@
 <?php
-namespace SDM\Altapay\Model\ResourceModel\Transaction;
+namespace SDM\Valitor\Model\ResourceModel\Transaction;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
-use SDM\Altapay\Model\Transaction as Model;
-use SDM\Altapay\Model\ResourceModel\Transaction as ResourceModel;
-use SDM\Altapay\Setup\InstallSchema;
+use SDM\Valitor\Model\Transaction as Model;
+use SDM\Valitor\Model\ResourceModel\Transaction as ResourceModel;
+use SDM\Valitor\Setup\InstallSchema;
 
 class Collection extends AbstractCollection
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace SDM\Altapay\Block\Callback;
+namespace SDM\Valitor\Block\Callback;
 
 use Magento\Customer\Model\Context;
 use Magento\Sales\Model\Order;

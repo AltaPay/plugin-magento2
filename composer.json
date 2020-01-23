@@ -3,21 +3,21 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Martin Aarhof",
-      "email": "maa@scandesigns.dk",
+      "name": "Simion Zafiu",
+      "email": "simion.zafiu@valitor.com",
       "role": "Developer"
     }
   ],
   "description": "Valitor-Omni: we make buying and selling easy",
   "require": {
     "php": "^5.5.0|^7.0.0",
-    "lsv/altapay-php-api": "^1.0"
+    "lsv/altapay-php-api": ">=2.0"
   },
   "type": "magento2-module",
   "autoload": {
     "files": [ "registration.php" ],
     "psr-4": {
-      "SDM\\Altapay\\": ""
+      "SDM\\Valitor\\": ""
     }
   }
 }

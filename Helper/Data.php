@@ -1,6 +1,6 @@
 <?php
 
-namespace SDM\Altapay\Helper;
+namespace SDM\Valitor\Helper;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
@@ -9,7 +9,7 @@ use \Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Data extends AbstractHelper
 {
-	const MODULE_CODE = 'SDM_Altapay';
+	const MODULE_CODE = 'SDM_Valitor';
     /**
      * @var moduleList
      */

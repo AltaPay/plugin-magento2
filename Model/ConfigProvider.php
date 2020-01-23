@@ -1,22 +1,22 @@
 <?php
 
-namespace SDM\Altapay\Model;
+namespace SDM\Valitor\Model;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Framework\Escaper;
 use Magento\Framework\UrlInterface;
 use Magento\Payment\Helper\Data;
-use Altapay\Api\Test\TestAuthentication;
-use Altapay\Api\Test\TestConnection;
-use SDM\Altapay\Model\SystemConfig;
-use Altapay\Authentication;
+use Valitor\Api\Test\TestAuthentication;
+use Valitor\Api\Test\TestConnection;
+use SDM\Valitor\Model\SystemConfig;
+use Valitor\Authentication;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Payment\Model\Config;
 use Magento\Payment\Model\Config\Source\Allmethods;
 
 /**
  * Class ConfigProvider
- * @package SDM\Altapay\Model
+ * @package SDM\Valitor\Model
  */
 class ConfigProvider implements ConfigProviderInterface
 {

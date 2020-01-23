@@ -6,7 +6,7 @@
 /*global define*/
 define(
     [
-        'SDM_Altapay/js/view/payment/method-renderer/terminal-abstract'
+        'SDM_Valitor/js/view/payment/method-renderer/terminal-abstract'
     ],
     function (Component) {
         'use strict';

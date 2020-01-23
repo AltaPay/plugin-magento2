@@ -1,10 +1,10 @@
 <?php
-namespace SDM\Altapay\Observer;
+namespace SDM\Valitor\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\Order;
-use SDM\Altapay\Model\SystemConfig;
+use SDM\Valitor\Model\SystemConfig;
 
 class BeforePaymentObserver implements ObserverInterface
 {

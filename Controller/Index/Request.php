@@ -1,9 +1,9 @@
 <?php
-namespace SDM\Altapay\Controller\Index;
+namespace SDM\Valitor\Controller\Index;
 
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\DataObject;
-use SDM\Altapay\Controller\Index;
+use SDM\Valitor\Controller\Index;
 
 class Request extends Index
 {

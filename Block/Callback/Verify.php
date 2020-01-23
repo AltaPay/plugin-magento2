@@ -1,5 +1,5 @@
 <?php
-namespace SDM\Altapay\Block\Callback;
+namespace SDM\Valitor\Block\Callback;
 
 use Magento\Framework\View\Element\Template;
 

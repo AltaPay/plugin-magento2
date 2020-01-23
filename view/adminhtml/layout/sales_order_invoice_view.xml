@@ -3,7 +3,7 @@
     <body>
         <referenceBlock name="form">
             <action method="setTemplate">
-                <argument name="template" xsi:type="string">SDM_Altapay::order/invoice/view/form.phtml</argument>
+                <argument name="template" xsi:type="string">SDM_Valitor::order/invoice/view/form.phtml</argument>
             </action>
         </referenceBlock>
     </body>

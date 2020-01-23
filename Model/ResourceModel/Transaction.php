@@ -1,8 +1,8 @@
 <?php
-namespace SDM\Altapay\Model\ResourceModel;
+namespace SDM\Valitor\Model\ResourceModel;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use SDM\Altapay\Setup\InstallSchema;
+use SDM\Valitor\Setup\InstallSchema;
 
 class Transaction extends AbstractDb
 {

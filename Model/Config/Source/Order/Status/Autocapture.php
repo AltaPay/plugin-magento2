@@ -9,14 +9,14 @@
  * @category  payment
  * @package   valitor
  */
-namespace SDM\Altapay\Model\Config\Source\Order\Status;
+namespace SDM\Valitor\Model\Config\Source\Order\Status;
 
 use Magento\Sales\Model\Config\Source\Order\Status;
 use Magento\Sales\Model\Order;
 
 /**
  * Class autoCapture
- * @package SDM\Altapay\Model\Config\Source\Order\Status
+ * @package SDM\Valitor\Model\Config\Source\Order\Status
  */
 class autoCapture extends Status
 {
