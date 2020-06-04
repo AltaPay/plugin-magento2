@@ -1,4 +1,12 @@
 <?php
+/**
+ * Valitor Module for Magento 2.x.
+ *
+ * Copyright © 2020 Valitor. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace SDM\Valitor\Controller\Index;
 
 use Magento\Framework\App\ResponseInterface;
@@ -17,34 +25,41 @@ class Fail extends Index
     public function execute()
     {
         $this->writeLog();
-
+        $status = '';
         try {
             $this->generator->restoreOrderFromRequest($this->getRequest());
-            $post = $this->getRequest()->getPostValue();
-            $merchantErrorMsg = '';
-            $responseStatus = '';
-            if (isset($post['error_message'])) {
+            $post                         = $this->getRequest()->getPostValue();
+            $merchantError                = '';
+            $status                       = strtolower($post['status']);
+            $cardHolderMessageMustBeShown = false;
+
+            if (isset($post['cardholder_message_must_be_shown'])) {
+                $cardHolderMessageMustBeShown = $post['cardholder_message_must_be_shown'];
+            }
+
+            if (isset($post['error_message']) && isset($post['merchant_error_message'])) {
+                if ($post['error_message'] != $post['merchant_error_message']) {
+                    $merchantError = $post['merchant_error_message'];
+                }
+            }
+
+            if (isset($post['error_message']) && $cardHolderMessageMustBeShown == "true") {
                 $msg = $post['error_message'];
-                if($post['error_message'] != $post['merchant_error_message']){
-				  $merchantErrorMsg = $post['merchant_error_message'];
-				}
-                $responseStatus = $post['status'];
             } else {
-                $msg = 'Unknown response';
+                $msg = "Error with the Payment.";
             }
 
             //Set order status, if available from the payment gateway
-            switch ($post['status']) {
-                case 'cancelled':
+            switch ($status) {
+                case "cancelled":
                     //TODO: Overwrite the message
                     $msg = "Payment canceled";
-                    $this->generator->handleCancelStatusAction($this->getRequest(),$responseStatus);
+                    $this->generator->handleCancelStatusAction($this->getRequest(), $status);
                     break;
                 case "failed":
                 case "error":
-                    $this->generator->handleFailedStatusAction($this->getRequest(), $msg, $merchantErrorMsg, $responseStatus);
+                    $this->generator->handleFailedStatusAction($this->getRequest(), $msg, $merchantError, $status);
                     break;
-
                 default:
                     $this->generator->handleOrderStateAction($this->getRequest());
             }
@@ -52,22 +67,29 @@ class Fail extends Index
             $msg = $e->getMessage();
         }
 
-        if ($post['status'] == 'failed' || $post['status'] == 'error') {
-            $resultRedirect = $this->prepareRedirect('checkout/cart', array(), $msg);
+        if ($status == 'failed' || $status == 'error') {
+            $resultRedirect = $this->prepareRedirect('checkout/cart', [], $msg);
         } else {
-            $resultRedirect = $this->prepareRedirect('checkout', array('_fragment' => 'payment'), $msg);
+            $resultRedirect = $this->prepareRedirect('checkout', ['_fragment' => 'payment'], $msg);
         }
 
         return $resultRedirect;
     }
+
+    /**
+     * @param        $routePath
+     * @param null   $routeParams
+     * @param string $message
+     *
+     * @return mixed
+     */
     protected function prepareRedirect($routePath, $routeParams = null, $message = '')
     {
-        if ($message != '') {
+        if (!empty($message)) {
             $this->messageManager->addErrorMessage(__($message));
         }
         $resultRedirect = $this->resultRedirectFactory->create();
-        $customerRedirUrl = $this->_url->getUrl($routePath, $routeParams);
-        $resultRedirect->setPath($customerRedirUrl);
+        $resultRedirect->setPath($this->_url->getUrl($routePath, $routeParams));
 
         return $resultRedirect;
     }

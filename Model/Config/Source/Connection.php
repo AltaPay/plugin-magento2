@@ -1,4 +1,12 @@
 <?php
+/**
+ * Valitor Module for Magento 2.x.
+ *
+ * Copyright © 2020 Valitor. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace SDM\Valitor\Model\Config\Source;
 
 use Valitor\Api\Test\TestConnection;
@@ -13,6 +21,11 @@ class Connection implements ArrayInterface
      */
     private $systemConfig;
 
+    /**
+     * Connection constructor.
+     *
+     * @param SystemConfig $systemConfig
+     */
     public function __construct(SystemConfig $systemConfig)
     {
         $this->systemConfig = $systemConfig;
@@ -27,7 +40,7 @@ class Connection implements ArrayInterface
     {
         try {
             $response = new TestConnection($this->systemConfig->getApiConfig('productionurl'));
-            if (! $response) {
+            if (!$response) {
                 $result = false;
             } else {
                 $result = $response->call();

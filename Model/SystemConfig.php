@@ -1,4 +1,11 @@
 <?php
+/**
+ * Valitor Module for Magento 2.x.
+ *
+ * Copyright © 2020 Valitor. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace SDM\Valitor\Model;
 
@@ -10,10 +17,6 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\State;
 use Magento\Store\Model\StoreResolver;
 
-/**
- * Class SystemConfig
- * @package SDM\Valitor\Model
- */
 class SystemConfig
 {
     /**
@@ -51,6 +54,16 @@ class SystemConfig
      */
     protected $storeResolver;
 
+    /**
+     * SystemConfig constructor.
+     *
+     * @param ScopeConfigInterface  $scopeConfig
+     * @param Encrypted             $encrypter
+     * @param RequestInterface      $request
+     * @param State                 $state
+     * @param StoreManagerInterface $storeManager
+     * @param StoreResolver         $storeResolver
+     */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         Encrypted $encrypter,
@@ -59,12 +72,12 @@ class SystemConfig
         StoreManagerInterface $storeManager,
         StoreResolver $storeResolver
     ) {
-        $this->scopeConfig = $scopeConfig;
-        $this->encrypter = $encrypter;
-        $this->request = $request;
-        $this->state = $state;
+        $this->scopeConfig  = $scopeConfig;
+        $this->encrypter    = $encrypter;
+        $this->request      = $request;
+        $this->state        = $state;
         $this->storeManager = $storeManager;
-        $this->storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $this->storeScope   = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
     }
 
     /**
@@ -82,19 +95,21 @@ class SystemConfig
     }
 
     /**
+     * @param null $storeCode
+     *
      * @return Authentication
      */
     public function getAuth($storeCode = null)
     {
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
 
-        if (is_null($storeCode)) {
+        if ($storeCode === null) {
             $storeCode = $this->resolveCurrentStoreCode();
         }
 
-        $login = $this->getApiConfig('api_log_in', $storeScope, $storeCode);
+        $login    = $this->getApiConfig('api_log_in', $storeScope, $storeCode);
         $password = $this->encrypter->processValue($this->getApiConfig('api_pass_word', $storeScope, $storeCode));
-        $baseurl = $this->getApiConfig('productionurl', $storeScope, $storeCode);
+        $baseurl  = $this->getApiConfig('productionurl', $storeScope, $storeCode);
         if (empty($baseurl)) {
             $baseurl = null;
         }
@@ -103,16 +118,16 @@ class SystemConfig
     }
 
     /**
-     * @param string $configKey
+     * @param string               $configKey
      * @param ScopeConfigInterface $storeScope
-     * @param null|string $storeCode
+     * @param null|string          $storeCode
+     *
      * @return string
      */
     public function getStatusConfig($configKey, $storeScope = null, $storeCode = null)
     {
-        if (is_null($storeScope)) {
-            $storeScope = $this->storeScope;
-        }
+        $storeScope = $this->checkStoreScope($storeScope);
+
         return $this->scopeConfig->getValue(
             sprintf(
                 'payment/valitor_status/%s',
@@ -124,10 +139,11 @@ class SystemConfig
     }
 
     /**
-     * @param int $terminalId
-     * @param string $configKey
+     * @param int                  $terminalId
+     * @param string               $configKey
      * @param ScopeConfigInterface $storeScope
-     * @param null|string $storeCode
+     * @param null|string          $storeCode
+     *
      * @return \Magento\Payment\Model\MethodInterface
      */
     public function getTerminalConfig($terminalId, $configKey, $storeScope = null, $storeCode = null)
@@ -141,17 +157,17 @@ class SystemConfig
     }
 
     /**
-     * @param string $terminalName
-     * @param string $configKey
+     * @param string               $terminalName
+     * @param string               $configKey
      * @param ScopeConfigInterface $storeScope
-     * @param null|string $storeCode
+     * @param null|string          $storeCode
+     *
      * @return \Magento\Payment\Model\MethodInterface
      */
     public function getTerminalConfigFromTerminalName($terminalName, $configKey, $storeScope = null, $storeCode = null)
     {
-        if (is_null($storeScope)) {
-            $storeScope = $this->storeScope;
-        }
+        $storeScope = $this->checkStoreScope($storeScope);
+
         return $this->scopeConfig->getValue(
             sprintf(
                 'payment/%s/%s',
@@ -164,16 +180,16 @@ class SystemConfig
     }
 
     /**
-     * @param string $configKey
+     * @param string               $configKey
      * @param ScopeConfigInterface $storeScope
-     * @param null|string $storeCode
+     * @param null|string          $storeCode
+     *
      * @return \Magento\Payment\Model\MethodInterface
      */
     public function getApiConfig($configKey, $storeScope = null, $storeCode = null)
     {
-        if (is_null($storeScope)) {
-            $storeScope = $this->storeScope;
-        }
+        $storeScope = $this->checkStoreScope($storeScope);
+
         return $this->scopeConfig->getValue(
             sprintf(
                 'payment/valitor_config/%s',
@@ -193,12 +209,26 @@ class SystemConfig
     {
         if ($this->state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
             //Admin area
-            $storeId = (int) $this->request->getParam('store', 0);
+            $storeId = (int)$this->request->getParam('store', 0);
         } else {
             //Frontend area
             $storeId = $this->storeManager->getStore()->getId();
         }
 
         return $this->storeManager->getStore($storeId)->getCode();
+    }
+
+    /**
+     * @param null|string $storeScope
+     *
+     * @return string|null
+     */
+    private function checkStoreScope($storeScope = null)
+    {
+        if ($storeScope === null) {
+            $storeScope = $this->storeScope;
+        }
+
+        return $storeScope;
     }
 }

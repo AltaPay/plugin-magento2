@@ -1,4 +1,12 @@
 <?php
+/**
+ * Valitor Module for Magento 2.x.
+ *
+ * Copyright © 2020 Valitor. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace SDM\Valitor\Controller;
 
 use Magento\Checkout\Model\Session;
@@ -43,6 +51,17 @@ abstract class Index extends Action
      */
     protected $pageFactory;
 
+    /**
+     * Index constructor.
+     *
+     * @param Context         $context
+     * @param PageFactory     $pageFactory
+     * @param Order           $order
+     * @param Quote           $quote
+     * @param Session         $checkoutSession
+     * @param Generator       $generator
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         Context $context,
         PageFactory $pageFactory,
@@ -61,11 +80,17 @@ abstract class Index extends Action
         $this->pageFactory = $pageFactory;
     }
 
+    /**
+     * @return mixed
+     */
     public function checkPost()
     {
         return $this->getRequest()->isPost();
     }
 
+    /**
+     * Write the logs to the valitoe logger.
+     */
     protected function writeLog()
     {
         $calledClass = get_called_class();

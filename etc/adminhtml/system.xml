@@ -1,10 +1,14 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2015 Magento. All rights reserved.
- * See COPYING.txt for license details.
+ * Valitor Module for Magento 2.x.
+ *
+ * Copyright © 2020 Valitor. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 -->
+
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="payment">
@@ -19,6 +23,10 @@
 
                     <label>API login</label>
                     <comment><![CDATA[For enabling capture/cancel in backend, you need to provide your API username and password]]></comment>
+                    <field id="version" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Version</label>
+                        <frontend_model>SDM\Valitor\Block\Adminhtml\Render\Version</frontend_model>
+                    </field>
                     <field id="api_log_in" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>API Login:</label>
                         <comment>Your username to use API</comment>
@@ -72,7 +80,7 @@
                     </field>
 
                     <field id="orderstatus_fraud_detected" translate="label comment" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Order status - fraud detected</label>
+                        <label>Order status - Fraud detected</label>
                         <comment>The status on the order if fraud is detected</comment>
                         <source_model>SDM\Valitor\Model\Config\Source\Order\Status\Fraud</source_model>
                         <config_path>payment/valitor_status/fraud</config_path>

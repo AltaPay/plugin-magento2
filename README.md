@@ -6,13 +6,30 @@ web shop.
 
 == Change log ==
 
+** Version 1.0.0
+
+    * Improvements:
+            - Added plugin disclaimer
+            - Code refactored according to latest coding standards
+            - Added support for Klarna Payments (Klarna reintegration) and credit card token
+            - Added the option of choosing a logo for each payment method
+            - Added new parameters, according to the payment gateway Klarna Payments updates, for the following:
+                - Create payment request
+                - Capture and refund
+            - Added support for AVS
+            - Added support for fixed amount and Buy X get Y free discount type
+    * Bug fixes:
+            - Discount applied to shipping not sent to the payment gateway accordingly
+            - Order details dependent on the current tax configuration rather than the one at the time when order was placed
+
+
 ** Version 0.14.0
 
     * Improvements:
             - Completed the rebranding changes
             - Revamped orderlines for capture and refund calls
             - Added support for bundle product and multiple tax rules
-    * Bug fixtures:
+    * Bug fixes:
             - Failed order when coupon code applied only to shipping
             - Duplicated confirmation email sent when e-payments
             - Rounding mismatch issue on compensation amounts

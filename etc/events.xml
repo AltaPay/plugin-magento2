@@ -1,4 +1,14 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * Valitor Module for Magento 2.x.
+ *
+ * Copyright © 2020 Valitor. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+-->
+
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="sales_order_payment_place_start">
         <observer name="SDM_Valitor_Order_Before_Payment" instance="SDM\Valitor\Observer\BeforePaymentObserver" />

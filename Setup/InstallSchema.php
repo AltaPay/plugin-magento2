@@ -1,4 +1,12 @@
 <?php
+/**
+ * Valitor Module for Magento 2.x.
+ *
+ * Copyright © 2020 Valitor. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace SDM\Valitor\Setup;
 
 use Magento\Framework\DB\Ddl\Table;
@@ -23,16 +31,15 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * Installs DB schema for a module
      *
-     * @param SchemaSetupInterface $setup
+     * @param SchemaSetupInterface   $setup
      * @param ModuleContextInterface $context
+     *
      * @return void
      */
     public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $installer = $setup;
-
         $installer->startSetup();
-
         // Create transaction data schema
         $table = $installer->getConnection()->newTable($installer->getTable(self::TABLE_NAME));
 
@@ -44,7 +51,7 @@ class InstallSchema implements InstallSchemaInterface
                 'identity' => true,
                 'unsigned' => true,
                 'nullable' => false,
-                'primary' => true
+                'primary'  => true
             ],
             'id'
         );
@@ -114,9 +121,7 @@ class InstallSchema implements InstallSchemaInterface
         );
 
         $table->setComment('Valitor transaction data');
-
         $installer->getConnection()->createTable($table);
-
         $installer->endSetup();
     }
 }

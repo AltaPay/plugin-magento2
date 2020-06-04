@@ -1,19 +1,21 @@
 /**
- * Copyright © 2015 Magento. All rights reserved.
- * See COPYING.txt for license details.
+ * Valitor Module for Magento 2.x.
+ *
+ * Copyright © 2020 Valitor. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 /*browser:true*/
 /*global define*/
+
 define(
     [
         'uiComponent',
         'Magento_Checkout/js/model/payment/renderer-list'
-    ],
-    function (
-        Component,
-        rendererList
-    ) {
+    ], function (Component, rendererList) {
         'use strict';
+
         rendererList.push(
             {
                 type: 'terminal1',
