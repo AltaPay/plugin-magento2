@@ -1,13 +1,13 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Observer;
+namespace SDM\Altapay\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -16,9 +16,9 @@ use Magento\Sales\Model\Order;
 use Magento\SalesRule\Model\Coupon;
 use Magento\SalesRule\Model\ResourceModel\Coupon\Usage as CouponUsage;
 use Magento\CatalogInventory\Api\StockManagementInterface;
-use SDM\Valitor\Model\SystemConfig;
+use SDM\Altapay\Model\SystemConfig;
 use Magento\Framework\Session\SessionManagerInterface;
-use SDM\Valitor\Model\ConstantConfig;
+use SDM\Altapay\Model\ConstantConfig;
 
 class CheckoutCartIndex implements ObserverInterface
 {
@@ -96,7 +96,7 @@ class CheckoutCartIndex implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        if ($this->session->getValitorCustomerRedirect()) {
+        if ($this->session->getAltapayCustomerRedirect()) {
             $order = $this->session->getLastRealOrder();
             $quote = $this->quoteFactory->create()->load($order->getQuoteId());
             $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
@@ -171,7 +171,7 @@ class CheckoutCartIndex implements ObserverInterface
                 $order->setIsNotified(false);
                 $order->getResource()->save($order);
             }
-            $this->session->unsValitorCustomerRedirect();
+            $this->session->unsAltapayCustomerRedirect();
         }
     }
 

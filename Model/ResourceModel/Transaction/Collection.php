@@ -1,18 +1,18 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Model\ResourceModel\Transaction;
+namespace SDM\Altapay\Model\ResourceModel\Transaction;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
-use SDM\Valitor\Model\Transaction as Model;
-use SDM\Valitor\Model\ResourceModel\Transaction as ResourceModel;
-use SDM\Valitor\Setup\InstallSchema;
+use SDM\Altapay\Model\Transaction as Model;
+use SDM\Altapay\Model\ResourceModel\Transaction as ResourceModel;
+use SDM\Altapay\Setup\InstallSchema;
 
 class Collection extends AbstractCollection
 {

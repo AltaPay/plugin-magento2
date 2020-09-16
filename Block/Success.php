@@ -1,18 +1,18 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Block;
+namespace SDM\Altapay\Block;
 
 use Magento\Framework\View\Element\Template;
-use SDM\Valitor\Model\TokenFactory;
+use SDM\Altapay\Model\TokenFactory;
 use Magento\Payment\Helper\Data;
-use SDM\Valitor\Model\ConfigProvider;
+use SDM\Altapay\Model\ConfigProvider;
 
 class Success extends \Magento\Checkout\Block\Onepage\Success
 {

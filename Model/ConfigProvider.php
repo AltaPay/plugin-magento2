@@ -1,32 +1,32 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Model;
+namespace SDM\Altapay\Model;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Framework\Escaper;
 use Magento\Framework\UrlInterface;
 use Magento\Payment\Helper\Data;
-use Valitor\Api\Test\TestAuthentication;
-use Valitor\Api\Test\TestConnection;
-use SDM\Valitor\Model\SystemConfig;
-use Valitor\Authentication;
+use Altapay\Api\Test\TestAuthentication;
+use Altapay\Api\Test\TestConnection;
+use SDM\Altapay\Model\SystemConfig;
+use Altapay\Authentication;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Payment\Model\Config;
 use Magento\Payment\Model\Config\Source\Allmethods;
 use Magento\Framework\View\Asset\Repository;
-use SDM\Valitor\Model\TokenFactory;
+use SDM\Altapay\Model\TokenFactory;
 use Magento\Customer\Model\Session;
 
 class ConfigProvider implements ConfigProviderInterface
 {
-    const CODE = 'sdm_valitor';
+    const CODE = 'SDM_Altapay';
 
     /**
      * @var Data
@@ -197,7 +197,7 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getLogoFilePath($name)
     {
-        $fileId = 'SDM_Valitor::images/' . $name . '.png';
+        $fileId = 'SDM_Altapay::images/' . $name . '.png';
         $params = ['area' => 'frontend'];
         $asset  = $this->assetRepository->createAsset($fileId, $params);
         try {

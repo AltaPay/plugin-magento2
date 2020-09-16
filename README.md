@@ -6,6 +6,15 @@ web shop.
 
 == Change log ==
 
+** Version 1.1.0
+
+    * Improvements:
+            - Rebranding from Valitor to Altapay
+            - Supporting fixed product tax configurations
+    * Bug fixes:
+            - Fixed order creation issue with free shipping
+            - Fixed translation issue for status code
+            
 ** Version 1.0.0
 
     * Improvements:

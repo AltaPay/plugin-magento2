@@ -1,23 +1,23 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Model\Handler;
+namespace SDM\Altapay\Model\Handler;
 
-use Valitor\Request\Address;
-use Valitor\Request\Customer;
+use Altapay\Request\Address;
+use Altapay\Request\Customer;
 use Magento\Sales\Model\Order;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 
 /**
  * Class CustomerHandler
  * To handle the customer information for
- * create payment request at valitor.
+ * create payment request at altapay.
  */
 class CustomerHandler
 {

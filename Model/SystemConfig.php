@@ -1,15 +1,15 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Model;
+namespace SDM\Altapay\Model;
 
-use Valitor\Authentication;
+use Altapay\Authentication;
 use Magento\Config\Model\Config\Backend\Encrypted;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -130,7 +130,7 @@ class SystemConfig
 
         return $this->scopeConfig->getValue(
             sprintf(
-                'payment/valitor_status/%s',
+                'payment/altapay_status/%s',
                 $configKey
             ),
             $storeScope,
@@ -192,7 +192,7 @@ class SystemConfig
 
         return $this->scopeConfig->getValue(
             sprintf(
-                'payment/valitor_config/%s',
+                'payment/altapay_config/%s',
                 $configKey
             ),
             $storeScope,

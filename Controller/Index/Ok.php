@@ -1,16 +1,16 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Controller\Index;
+namespace SDM\Altapay\Controller\Index;
 
 use Magento\Framework\App\ResponseInterface;
-use SDM\Valitor\Controller\Index;
+use SDM\Altapay\Controller\Index;
 
 class Ok extends Index
 {

@@ -1,23 +1,16 @@
 {
   "name": "altapay/magento2-payment",
   "license": "MIT",
-  "authors": [
-    {
-      "name": "Simion Zafiu",
-      "email": "simion.zafiu@valitor.com",
-      "role": "Developer"
-    }
-  ],
-  "description": "Valitor-Omni: we make buying and selling easy",
+  "description": "Altapay: Payments less complicated",
   "require": {
-    "php": "^5.5.0|^7.0.0",
+    "php": ">=5.6",
     "lsv/altapay-php-api": "^2.1.0"
   },
   "type": "magento2-module",
   "autoload": {
     "files": [ "registration.php" ],
     "psr-4": {
-      "SDM\\Valitor\\": ""
+      "SDM\\Altapay\\": ""
     }
   }
 }

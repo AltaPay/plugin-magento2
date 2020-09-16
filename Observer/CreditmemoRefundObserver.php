@@ -1,27 +1,27 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Observer;
+namespace SDM\Altapay\Observer;
 
-use Valitor\Api\Payments\RefundCapturedReservation;
-use Valitor\Exceptions\ResponseHeaderException;
-use Valitor\Response\RefundResponse;
+use Altapay\Api\Payments\RefundCapturedReservation;
+use Altapay\Exceptions\ResponseHeaderException;
+use Altapay\Response\RefundResponse;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Logger\Monolog;
-use SDM\Valitor\Model\SystemConfig;
+use SDM\Altapay\Model\SystemConfig;
 use Magento\Sales\Model\Order;
-use SDM\Valitor\Helper\Data;
-use SDM\Valitor\Helper\Config as storeConfig;
-use SDM\Valitor\Model\Handler\OrderLinesHandler;
-use SDM\Valitor\Model\Handler\PriceHandler;
-use SDM\Valitor\Model\Handler\DiscountHandler;
+use SDM\Altapay\Helper\Data;
+use SDM\Altapay\Helper\Config as storeConfig;
+use SDM\Altapay\Model\Handler\OrderLinesHandler;
+use SDM\Altapay\Model\Handler\PriceHandler;
+use SDM\Altapay\Model\Handler\DiscountHandler;
 
 /**
  * Class CreditmemoRefundObserver
@@ -144,6 +144,10 @@ class CreditmemoRefundObserver implements ObserverInterface
             //order lines for shipping
             $orderLines[] = $this->orderLines->handleShipping($storePriceIncTax, $memo, $discountAllItems, false);
         }
+        if(!empty($this->fixedProductTax($memo))){
+            //order lines for FPT
+            $orderLines[] = $this->orderLines->fixedProductTaxOrderLine($this->fixedProductTax($memo));
+        }
 
         return $orderLines;
     }
@@ -255,7 +259,7 @@ class CreditmemoRefundObserver implements ObserverInterface
 
         $rawresponse = $refund->getRawResponse();
         $body        = $rawresponse->getBody();
-        //add information to the valitor log
+        //add information to the altapay log
         $this->monolog->addInfo('Response body: ' . $body);
 
         //Update comments if refund fail
@@ -269,5 +273,20 @@ class CreditmemoRefundObserver implements ObserverInterface
         if ($xml->Body->Result != 'Success') {
             throw new \InvalidArgumentException('Could not refund captured reservation');
         }
+    }
+    
+    /**
+     * @param $order
+     *
+     * @return float|int
+     */
+    public function fixedProductTax($memo){
+
+        $weeTaxAmount = 0;
+        foreach ($memo->getAllItems() as $item) {
+           $weeTaxAmount +=  $item->getWeeeTaxAppliedRowAmount();
+        }
+
+       return $weeTaxAmount;
     }
 }

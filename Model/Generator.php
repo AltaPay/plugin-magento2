@@ -1,22 +1,22 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Model;
+namespace SDM\Altapay\Model;
 
-use Valitor\Api\Ecommerce\Callback;
-use Valitor\Api\Ecommerce\PaymentRequest;
-use Valitor\Api\Test\TestAuthentication;
-use Valitor\Exceptions\ClientException;
-use Valitor\Exceptions\ResponseHeaderException;
-use Valitor\Exceptions\ResponseMessageException;
-use Valitor\Request\Config;
-use Valitor\Response\CallbackResponse;
+use Altapay\Api\Ecommerce\Callback;
+use Altapay\Api\Ecommerce\PaymentRequest;
+use Altapay\Api\Test\TestAuthentication;
+use Altapay\Exceptions\ClientException;
+use Altapay\Exceptions\ResponseHeaderException;
+use Altapay\Exceptions\ResponseMessageException;
+use Altapay\Request\Config;
+use Altapay\Response\CallbackResponse;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\RequestInterface;
@@ -27,14 +27,14 @@ use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Framework\DB\TransactionFactory;
 use Magento\Sales\Model\Service\InvoiceService;
-use SDM\Valitor\Helper\Data;
-use SDM\Valitor\Helper\Config as storeConfig;
-use SDM\Valitor\Model\Handler\OrderLinesHandler;
-use SDM\Valitor\Model\Handler\CustomerHandler;
-use SDM\Valitor\Model\Handler\PriceHandler;
-use SDM\Valitor\Model\Handler\DiscountHandler;
-use SDM\Valitor\Model\Handler\CreatePaymentHandler;
-use SDM\Valitor\Model\TokenFactory;
+use SDM\Altapay\Helper\Data;
+use SDM\Altapay\Helper\Config as storeConfig;
+use SDM\Altapay\Model\Handler\OrderLinesHandler;
+use SDM\Altapay\Model\Handler\CustomerHandler;
+use SDM\Altapay\Model\Handler\PriceHandler;
+use SDM\Altapay\Model\Handler\DiscountHandler;
+use SDM\Altapay\Model\Handler\CreatePaymentHandler;
+use SDM\Altapay\Model\TokenFactory;
 use Magento\Sales\Model\OrderFactory;
 
 /**
@@ -185,7 +185,7 @@ class Generator
     }
 
     /**
-     * createRequest to valitor
+     * createRequest to altapay
      *
      * @param int    $terminalId
      * @param string $orderId
@@ -206,6 +206,9 @@ class Generator
             }
             if ($discountAllItems && abs($couponCodeAmount) > 0) {
                 $orderLines[] = $this->orderLines->discountOrderLine($couponCodeAmount, $couponCode);
+            }
+            if(!empty($this->fixedProductTax($order))){
+                $orderLines[] = $this->orderLines->fixedProductTaxOrderLine($this->fixedProductTax($order));
             }
             $request = $this->preparePaymentRequest($order, $orderLines, $orderId, $terminalId);
             if ($request) {
@@ -443,7 +446,7 @@ class Generator
                 //send order confirmation email
                 $this->sendOrderConfirmationEmail($comment, $order);
                 //unset redirect if success
-                $this->checkoutSession->unsValitorCustomerRedirect();
+                $this->checkoutSession->unsAltapayCustomerRedirect();
 
                 $orderStatusAfterPayment = $this->systemConfig->getStatusConfig('process', $storeScope, $storeCode);
                 $orderStatusCapture      = $this->systemConfig->getStatusConfig('autocapture', $storeScope, $storeCode);
@@ -503,12 +506,12 @@ class Generator
     private function setConfig()
     {
         $config = new Config();
-        $config->setCallbackOk($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_OK));
-        $config->setCallbackFail($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_FAIL));
-        $config->setCallbackRedirect($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_REDIRECT));
-        $config->setCallbackOpen($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_OPEN));
-        $config->setCallbackNotification($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_NOTIFICATION));
-        $config->setCallbackForm($this->urlInterface->getDirectUrl(ConstantConfig::VALITOR_CALLBACK));
+        $config->setCallbackOk($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_OK));
+        $config->setCallbackFail($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_FAIL));
+        $config->setCallbackRedirect($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_REDIRECT));
+        $config->setCallbackOpen($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_OPEN));
+        $config->setCallbackNotification($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_NOTIFICATION));
+        $config->setCallbackForm($this->urlInterface->getDirectUrl(ConstantConfig::ALTAPAY_CALLBACK));
 
         return $config;
     }
@@ -517,6 +520,21 @@ class Generator
     {
         return $this->checkoutSession;
     }
+    /**
+     * @param $order
+     *
+     * @return float|int
+     */
+    public function fixedProductTax($order){
+
+        $weeTaxAmount = 0;
+        foreach ($order->getAllItems() as $item) {
+           $weeTaxAmount +=  $item->getWeeeTaxAppliedRowAmount();
+        }
+
+       return $weeTaxAmount;
+    }
+
 
     /**
      * @param $couponCodeAmount
@@ -565,7 +583,7 @@ class Generator
                     $dataForPrice["discount"]
                 );
                 $catalogDiscount      = $dataForPrice["catalogDiscount"];
-                $itemTaxAmount        = $taxAmount + $item->getWeeeTaxAppliedRowAmount();
+                $itemTaxAmount        = $taxAmount;
                 $orderLines[]         = $this->orderLines->itemOrderLine(
                     $item,
                     $unitPrice,
@@ -607,14 +625,14 @@ class Generator
     private function restoreOrderAndReturnError($order)
     {
         $this->restoreOrderFromOrderId($order->getIncrementId());
-        $requestParams['result']  = __(ConstantConfig::ERROR);
+        $requestParams['result']  = ConstantConfig::ERROR;
         $requestParams['message'] = __(ConstantConfig::ERROR_MESSAGE);
 
         return $requestParams;
     }
 
     /**
-     * Prepare request to the valitor, sets the necessary parameters.
+     * Prepare request to the altapay, sets the necessary parameters.
      *
      * @param $order
      * @param $orderLines
@@ -681,7 +699,7 @@ class Generator
     }
 
     /**
-     * Send payment request to the valitor.
+     * Send payment request to the altapay.
      *
      * @param $order
      * @param $request
@@ -694,38 +712,38 @@ class Generator
         $storeCode  = $order->getStore()->getCode();
 
         try {
-            /** @var \Valitor\Response\PaymentRequestResponse $response */
+            /** @var \Altapay\Response\PaymentRequestResponse $response */
             $response                 = $request->call();
-            $requestParams['result']  = __(ConstantConfig::SUCCESS);
+            $requestParams['result']  = ConstantConfig::SUCCESS;
             $requestParams['formurl'] = $response->Url;
             // set before payment status
             if ($this->systemConfig->getStatusConfig('before', $storeScope, $storeCode)) {
                 $this->paymentHandler->setCustomOrderStatus($order, Order::STATE_NEW, 'before');
             }
             // set notification
-            $order->addStatusHistoryComment(__(ConstantConfig::REDIRECT_TO_VALITOR) . $response->PaymentRequestId);
+            $order->addStatusHistoryComment(__(ConstantConfig::REDIRECT_TO_ALTAPAY) . $response->PaymentRequestId);
             $extensionAttribute = $order->getExtensionAttributes();
-            if ($extensionAttribute && $extensionAttribute->getValitorPaymentFormUrl()) {
-                $extensionAttribute->setValitorPaymentFormUrl($response->Url);
+            if ($extensionAttribute && $extensionAttribute->getAltapayPaymentFormUrl()) {
+                $extensionAttribute->setAltapayPaymentFormUrl($response->Url);
             }
-            $order->setValitorPaymentFormUrl($response->Url);
-            $order->setValitorPriceIncludesTax($this->storeConfig->storePriceIncTax());
+            $order->setAltapayPaymentFormUrl($response->Url);
+            $order->setAltapayPriceIncludesTax($this->storeConfig->storePriceIncTax());
             $order->getResource()->save($order);
-            //set flag if customer redirect to Valitor
-            $this->checkoutSession->setValitorCustomerRedirect(true);
+            //set flag if customer redirect to Altapay
+            $this->checkoutSession->setAltapayCustomerRedirect(true);
 
             return $requestParams;
         } catch (ClientException $e) {
-            $requestParams['result']  = __(ConstantConfig::ERROR);
+            $requestParams['result']  = ConstantConfig::ERROR;
             $requestParams['message'] = $e->getResponse()->getBody();
         } catch (ResponseHeaderException $e) {
-            $requestParams['result']  = __(ConstantConfig::ERROR);
+            $requestParams['result']  = ConstantConfig::ERROR;
             $requestParams['message'] = $e->getHeader()->ErrorMessage;
         } catch (ResponseMessageException $e) {
-            $requestParams['result']  = __(ConstantConfig::ERROR);
+            $requestParams['result']  = ConstantConfig::ERROR;
             $requestParams['message'] = $e->getMessage();
         } catch (\Exception $e) {
-            $requestParams['result']  = __(ConstantConfig::ERROR);
+            $requestParams['result']  = ConstantConfig::ERROR;
             $requestParams['message'] = $e->getMessage();
         }
 

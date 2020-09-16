@@ -1,13 +1,13 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Setup;
+namespace SDM\Altapay\Setup;
 
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\InstallSchemaInterface;
@@ -17,7 +17,7 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 class InstallSchema implements InstallSchemaInterface
 {
 
-    const TABLE_NAME = 'sdm_valitor';
+    const TABLE_NAME = 'sdm_altapay';
     const TABLE_IDENTIFIER = 'id';
 
     const COLUMN_ID = self::TABLE_IDENTIFIER;
@@ -40,6 +40,12 @@ class InstallSchema implements InstallSchemaInterface
     {
         $installer = $setup;
         $installer->startSetup();
+        /**
+         * Replace database table from sdm_valitor to sdm_altapay
+        */
+        if ($setup->getConnection()->isTableExists($setup->getTable('sdm_valitor')) == true) {
+            $setup->getConnection()->renameTable($setup->getTable('sdm_valitor'), $setup->getTable('sdm_altapay'));
+        } else {
         // Create transaction data schema
         $table = $installer->getConnection()->newTable($installer->getTable(self::TABLE_NAME));
 
@@ -120,8 +126,9 @@ class InstallSchema implements InstallSchemaInterface
             [self::COLUMN_TRANSACTION_ID]
         );
 
-        $table->setComment('Valitor transaction data');
+        $table->setComment('Altapay transaction data');
         $installer->getConnection()->createTable($table);
+    }
         $installer->endSetup();
     }
 }

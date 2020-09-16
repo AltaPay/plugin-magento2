@@ -1,17 +1,17 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Model\Config\Source;
+namespace SDM\Altapay\Model\Config\Source;
 
-use Valitor\Response\TerminalsResponse;
+use Altapay\Response\TerminalsResponse;
 use Magento\Framework\Option\ArrayInterface;
-use SDM\Valitor\Model\SystemConfig;
+use SDM\Altapay\Model\SystemConfig;
 
 class Terminals implements ArrayInterface
 {
@@ -39,7 +39,7 @@ class Terminals implements ArrayInterface
     {
         $terminals = [];
         try {
-            $call = new \Valitor\Api\Others\Terminals($this->systemConfig->getAuth());
+            $call = new \Altapay\Api\Others\Terminals($this->systemConfig->getAuth());
             /** @var TerminalsResponse $response */
             $response    = $call->call();
             $terminals[] = ['value' => ' ', 'label' => '-- Please Select --'];
