@@ -44,7 +44,7 @@ class InstallSchema implements InstallSchemaInterface
          * Replace database table from sdm_valitor to sdm_altapay
         */
         if ($setup->getConnection()->isTableExists($setup->getTable('sdm_valitor')) == true) {
-            $setup->getConnection()->renameTable($setup->getTable('sdm_valitor'), $setup->getTable('sdm_altapay'));
+            $setup->getConnection()->renameTable($setup->getTable('sdm_valitor'), $setup->getTable(self::TABLE_NAME));
         } else {
         // Create transaction data schema
         $table = $installer->getConnection()->newTable($installer->getTable(self::TABLE_NAME));
