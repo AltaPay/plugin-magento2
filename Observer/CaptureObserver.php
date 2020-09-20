@@ -1,27 +1,27 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Observer;
+namespace SDM\Altapay\Observer;
 
-use Valitor\Api\Payments\CaptureReservation;
-use Valitor\Exceptions\ResponseHeaderException;
-use Valitor\Response\CaptureReservationResponse;
+use Altapay\Api\Payments\CaptureReservation;
+use Altapay\Exceptions\ResponseHeaderException;
+use Altapay\Response\CaptureReservationResponse;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Logger\Monolog;
-use SDM\Valitor\Model\SystemConfig;
+use SDM\Altapay\Model\SystemConfig;
 use Magento\Sales\Model\Order;
-use SDM\Valitor\Helper\Data;
-use SDM\Valitor\Helper\Config as storeConfig;
-use SDM\Valitor\Model\Handler\OrderLinesHandler;
-use SDM\Valitor\Model\Handler\PriceHandler;
-use SDM\Valitor\Model\Handler\DiscountHandler;
+use SDM\Altapay\Helper\Data;
+use SDM\Altapay\Helper\Config as storeConfig;
+use SDM\Altapay\Model\Handler\OrderLinesHandler;
+use SDM\Altapay\Model\Handler\PriceHandler;
+use SDM\Altapay\Model\Handler\DiscountHandler;
 
 /**
  * Class CaptureObserver
@@ -139,7 +139,11 @@ class CaptureObserver implements ObserverInterface
             //order lines for shipping
             $orderLines[] = $this->orderLines->handleShipping($storePriceIncTax, $invoice, $discountAllItems, false);
         }
-
+        if(!empty($this->fixedProductTax($invoice))){
+            //order lines for FPT
+            $orderLines[] = $this->orderLines->fixedProductTaxOrderLine($this->fixedProductTax($invoice));
+        }
+        
         return $orderLines;
     }
 
@@ -298,5 +302,20 @@ class CaptureObserver implements ObserverInterface
         if (!isset($response->Result) || $response->Result != 'Success') {
             throw new \InvalidArgumentException('Could not capture reservation');
         }
+    }
+
+    /**
+     * @param $order
+     *
+     * @return float|int
+     */
+    public function fixedProductTax($invoice){
+
+        $weeTaxAmount = 0;
+        foreach ($invoice->getAllItems() as $item) {
+           $weeTaxAmount +=  $item->getWeeeTaxAppliedRowAmount();
+        }
+
+       return $weeTaxAmount;
     }
 }

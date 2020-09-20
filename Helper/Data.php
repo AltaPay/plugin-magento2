@@ -1,13 +1,13 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Helper;
+namespace SDM\Altapay\Helper;
 
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleListInterface;
@@ -21,7 +21,7 @@ use Magento\Sales\Model\ResourceModel\Order\Tax\Item;
  */
 class Data extends AbstractHelper
 {
-    const MODULE_CODE = 'SDM_Valitor';
+    const MODULE_CODE = 'SDM_Altapay';
     /**
      * @var moduleList
      */
@@ -83,8 +83,8 @@ class Data extends AbstractHelper
             $versionDetails                         = [];
             $versionDetails['ecomPlatform']         = 'Magento';
             $versionDetails['ecomVersion']          = $this->productMetadata->getVersion();
-            $versionDetails['valitorPluginName']    = $moduleInfo['name'];
-            $versionDetails['valitorPluginVersion'] = $moduleInfo['setup_version'];
+            $versionDetails['ecomPluginName']       = $moduleInfo['name'];
+            $versionDetails['ecomPluginVersion']    = $moduleInfo['setup_version'];
             $versionDetails['otherInfo']            = 'websiteName - ' . $websiteName . ', storeName - ' . $storeName;
 
             return $versionDetails;

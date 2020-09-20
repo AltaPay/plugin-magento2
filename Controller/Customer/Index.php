@@ -1,18 +1,18 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Controller\Customer;
+namespace SDM\Altapay\Controller\Customer;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Customer\Model\Session;
-use SDM\Valitor\Model\TokenFactory;
+use SDM\Altapay\Model\TokenFactory;
 use Magento\Framework\Controller\ResultFactory;
 
 class Index extends Action

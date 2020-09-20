@@ -1,17 +1,17 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Model\Config\Source;
+namespace SDM\Altapay\Model\Config\Source;
 
-use Valitor\Api\Test\TestConnection;
+use Altapay\Api\Test\TestConnection;
 use Magento\Framework\Option\ArrayInterface;
-use SDM\Valitor\Model\SystemConfig;
+use SDM\Altapay\Model\SystemConfig;
 
 class Connection implements ArrayInterface
 {

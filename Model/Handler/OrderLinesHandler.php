@@ -1,17 +1,17 @@
 <?php
 /**
- * Valitor Module for Magento 2.x.
+ * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Valitor. All rights reserved.
+ * Copyright © 2020 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace SDM\Valitor\Model\Handler;
+namespace SDM\Altapay\Model\Handler;
 
-use SDM\Valitor\Helper\Data;
-use SDM\Valitor\Helper\Config as storeConfig;
-use Valitor\Request\OrderLine;
+use SDM\Altapay\Helper\Data;
+use SDM\Altapay\Helper\Config as storeConfig;
+use Altapay\Request\OrderLine;
 use Magento\Framework\Escaper;
 
 /**
@@ -101,7 +101,18 @@ class OrderLinesHandler
 
         return $orderLine;
     }
+    /**
+     * @param $fixedTaxAmount
+     *
+     * @return OrderLine
+     */
+    public function fixedProductTaxOrderLine($fixedTaxAmount)
+    {
+        $orderLine = new OrderLine('FPT', 'FPT', 1, $fixedTaxAmount);
+        $orderLine->setGoodsType('handling');
 
+        return $orderLine;
+    }
     /**
      * @param $shippingAmount
      * @param $method
@@ -193,30 +204,29 @@ class OrderLinesHandler
     public function handleShipping($priceIncEnable, $order, $discountOnAllItems, $newOrder)
     {
         //add shipping tax amount in separate column of request
+        $discount       = 0;
         $shippingTax    = $order->getShippingTaxAmount();
         $shippingAmount = $order->getShippingAmount();
         $orderId        = $order->getId();
         $shipping       = $order->getShippingMethod(true);
-        $appliedRule    = $order->getAppliedRuleIds();
         if ($newOrder == false) {
-            $orderId     = $order->getOrder()->getId();
-            $shipping    = $order->getOrder()->getShippingMethod(true);
-            $appliedRule = $order->getOrder()->getAppliedRuleIds();
+            $orderId  = $order->getOrder()->getId();
+            $shipping = $order->getOrder()->getShippingMethod(true);
         }
-        $taxPercent        = $this->helper->getOrderShippingTax($orderId);
-        $method            = isset($shipping['method']) ? $shipping['method'] : '';
-        $carrier_code      = isset($shipping['carrier_code']) ? $shipping['carrier_code'] : '';
-        
+        $taxPercent   = $this->helper->getOrderShippingTax($orderId);
+        $method       = isset($shipping['method']) ? $shipping['method'] : '';
+        $carrier_code = isset($shipping['carrier_code']) ? $shipping['carrier_code'] : '';
         if ($discountOnAllItems) {
             $discount = 0;
-        }  else {
-            $discount = ($order->getShippingDiscountAmount() / $order->getShippingAmount()) * 100;
+        } else {
+            if ($shippingAmount > 0) {
+                $discount = ($order->getShippingDiscountAmount() / $shippingAmount) * 100;
+            }
         }
         if ($taxPercent > 0) {
             $shippingTax = $shippingAmount * ($taxPercent / 100);
             $shippingTax = number_format($shippingTax, 2, '.', '');
         }
-        
         return $this->shippingOrderLine($shippingAmount, $method, $carrier_code, $shippingTax, $taxPercent, $discount);
     }
 
