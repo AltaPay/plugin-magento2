@@ -4,7 +4,7 @@
   "description": "Altapay: Payments less complicated",
   "require": {
     "php": ">=5.6",
-    "lsv/altapay-php-api": "^2.1.0"
+    "altapay/api-php": "^3.0.0"
   },
   "type": "magento2-module",
   "autoload": {
