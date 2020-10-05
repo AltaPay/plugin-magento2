@@ -6,6 +6,11 @@ web shop.
 
 == Change log ==
 
+** Version 1.1.1
+
+    * Improvements:
+            - Update plugin using the new altapay/api-php dependency
+
 ** Version 1.1.0
 
     * Improvements:
