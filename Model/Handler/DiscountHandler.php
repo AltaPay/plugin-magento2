@@ -43,9 +43,11 @@ class DiscountHandler
     }
 
     /**
-     * @param $discountArr
+     * @param $discountAmount
+     * @param $productOriginalPrice
+     * @param $quantity
      *
-     * @return float|int|mixed
+     * @return float|int
      */
     public function getItemDiscount($discountAmount, $productOriginalPrice, $quantity)
     {

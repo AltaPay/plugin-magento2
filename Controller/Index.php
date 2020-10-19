@@ -72,12 +72,12 @@ abstract class Index extends Action
         LoggerInterface $logger
     ) {
         parent::__construct($context);
-        $this->order = $order;
-        $this->quote = $quote;
+        $this->order           = $order;
+        $this->quote           = $quote;
         $this->checkoutSession = $checkoutSession;
-        $this->generator = $generator;
-        $this->logger = $logger;
-        $this->pageFactory = $pageFactory;
+        $this->generator       = $generator;
+        $this->logger          = $logger;
+        $this->pageFactory     = $pageFactory;
     }
 
     /**

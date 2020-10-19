@@ -14,7 +14,7 @@
         <block
             template="callback_verify.phtml"
             class="SDM\Altapay\Block\Callback\Verify"
-            name="SDM_Altapay_callback_verify"
+            name="sdm_altapay_callback_verify"
         />
     </referenceBlock>
 </page>

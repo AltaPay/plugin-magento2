@@ -25,12 +25,13 @@ class Ok extends Index
     {
         $this->writeLog();
         $checkAvs = false;
-        $post    = $this->getRequest()->getPostValue();
-        if(isset($post['avs_code']) && isset($post['avs_text'])){
-            $checkAvs = $this->generator->avsCheck($this->getRequest(), 
-                                                strtolower($post['avs_code']), 
-                                                strtolower($post['avs_text'])
-                                            );
+        $post     = $this->getRequest()->getPostValue();
+        if (isset($post['avs_code']) && isset($post['avs_text'])) {
+            $checkAvs = $this->generator->avsCheck(
+                $this->getRequest(),
+                strtolower($post['avs_code']),
+                strtolower($post['avs_text'])
+            );
         }
         if ($this->checkPost() && $checkAvs == false) {
             $this->generator->handleOkAction($this->getRequest());

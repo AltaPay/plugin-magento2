@@ -53,7 +53,7 @@ class Transaction extends AbstractModel implements IdentityInterface
 
     public function getPaymentId()
     {
-        return $this->getData(InstallSchema::COLUMN_PAYMENT_ID);
+        return (string)$this->getData(InstallSchema::COLUMN_PAYMENT_ID);
     }
 
     public function getTransactionData()

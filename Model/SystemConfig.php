@@ -11,11 +11,12 @@ namespace SDM\Altapay\Model;
 
 use Altapay\Authentication;
 use Magento\Config\Model\Config\Backend\Encrypted;
+use Magento\Framework\App\Area;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\State;
-use Magento\Store\Model\StoreResolver;
 
 class SystemConfig
 {
@@ -50,11 +51,6 @@ class SystemConfig
     private $storeScope;
 
     /**
-     * @var StoreResolver
-     */
-    protected $storeResolver;
-
-    /**
      * SystemConfig constructor.
      *
      * @param ScopeConfigInterface  $scopeConfig
@@ -62,22 +58,20 @@ class SystemConfig
      * @param RequestInterface      $request
      * @param State                 $state
      * @param StoreManagerInterface $storeManager
-     * @param StoreResolver         $storeResolver
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         Encrypted $encrypter,
         RequestInterface $request,
         State $state,
-        StoreManagerInterface $storeManager,
-        StoreResolver $storeResolver
+        StoreManagerInterface $storeManager
     ) {
         $this->scopeConfig  = $scopeConfig;
         $this->encrypter    = $encrypter;
         $this->request      = $request;
         $this->state        = $state;
         $this->storeManager = $storeManager;
-        $this->storeScope   = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $this->storeScope   = ScopeInterface::SCOPE_STORES;
     }
 
     /**
@@ -86,11 +80,11 @@ class SystemConfig
     public static function getTerminalCodes()
     {
         return [
-             Terminal1::METHOD_CODE,
-             Terminal2::METHOD_CODE,
-             Terminal3::METHOD_CODE,
-             Terminal4::METHOD_CODE,
-             Terminal5::METHOD_CODE
+            Terminal1::METHOD_CODE,
+            Terminal2::METHOD_CODE,
+            Terminal3::METHOD_CODE,
+            Terminal4::METHOD_CODE,
+            Terminal5::METHOD_CODE
         ];
     }
 
@@ -101,7 +95,7 @@ class SystemConfig
      */
     public function getAuth($storeCode = null)
     {
-        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+        $storeScope = ScopeInterface::SCOPE_STORE;
 
         if ($storeCode === null) {
             $storeCode = $this->resolveCurrentStoreCode();
@@ -207,7 +201,7 @@ class SystemConfig
      */
     public function resolveCurrentStoreCode()
     {
-        if ($this->state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
+        if ($this->state->getAreaCode() == Area::AREA_ADMINHTML) {
             //Admin area
             $storeId = (int)$this->request->getParam('store', 0);
         } else {

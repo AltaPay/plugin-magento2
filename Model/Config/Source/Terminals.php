@@ -12,6 +12,7 @@ namespace SDM\Altapay\Model\Config\Source;
 use Altapay\Response\TerminalsResponse;
 use Magento\Framework\Option\ArrayInterface;
 use SDM\Altapay\Model\SystemConfig;
+use Psr\Log\LoggerInterface;
 
 class Terminals implements ArrayInterface
 {
@@ -21,13 +22,20 @@ class Terminals implements ArrayInterface
     private $systemConfig;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * Terminals constructor.
      *
-     * @param SystemConfig $systemConfig
+     * @param SystemConfig    $systemConfig
+     * @param LoggerInterface $logger
      */
-    public function __construct(SystemConfig $systemConfig)
+    public function __construct(SystemConfig $systemConfig, LoggerInterface $logger)
     {
         $this->systemConfig = $systemConfig;
+        $this->logger       = $logger;
     }
 
     /**
@@ -47,6 +55,7 @@ class Terminals implements ArrayInterface
                 $terminals[] = ['value' => $terminal->Title, 'label' => $terminal->Title];
             }
         } catch (\Exception $e) {
+            $this->logger->debug('Exception', $e->getMessage());
         }
         // Sort the terminals alphabetically
         array_multisort(array_column($terminals, 'label'), SORT_ASC, SORT_NUMERIC, $terminals);

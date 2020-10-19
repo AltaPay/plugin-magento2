@@ -26,7 +26,9 @@ use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Framework\DB\TransactionFactory;
+use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\Service\InvoiceService;
+use Magento\Store\Model\ScopeInterface;
 use SDM\Altapay\Helper\Data;
 use SDM\Altapay\Helper\Config as storeConfig;
 use SDM\Altapay\Model\Handler\OrderLinesHandler;
@@ -195,19 +197,18 @@ class Generator
     public function createRequest($terminalId, $orderId)
     {
         $order = $this->order->load($orderId);
-        $storePriceIncTax = $this->storeConfig->storePriceIncTax();
         if ($order->getId()) {
             $couponCode       = $order->getDiscountDescription();
             $couponCodeAmount = $order->getDiscountAmount();
             $discountAllItems = $this->discountHandler->allItemsHaveDiscount($order->getAllVisibleItems());
             $orderLines       = $this->itemOrderLines($couponCodeAmount, $order, $discountAllItems);
             if ($this->orderLines->sendShipment($order) && !empty($order->getShippingMethod(true))) {
-                $orderLines[] = $this->orderLines->handleShipping($storePriceIncTax, $order, $discountAllItems, true);
+                $orderLines[] = $this->orderLines->handleShipping($order, $discountAllItems, true);
             }
             if ($discountAllItems && abs($couponCodeAmount) > 0) {
                 $orderLines[] = $this->orderLines->discountOrderLine($couponCodeAmount, $couponCode);
             }
-            if(!empty($this->fixedProductTax($order))){
+            if (!empty($this->fixedProductTax($order))) {
                 $orderLines[] = $this->orderLines->fixedProductTaxOrderLine($this->fixedProductTax($order));
             }
             $request = $this->preparePaymentRequest($order, $orderLines, $orderId, $terminalId);
@@ -242,9 +243,9 @@ class Generator
     public function createInvoice($order, $requireCapture = false)
     {
         if (filter_var($requireCapture, FILTER_VALIDATE_BOOLEAN) === true) {
-            $captureType = \Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE;
+            $captureType = Invoice::CAPTURE_ONLINE;
         } else {
-            $captureType = \Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE;
+            $captureType = Invoice::CAPTURE_OFFLINE;
         }
 
         if (!$order->getInvoiceCollection()->count()) {
@@ -310,7 +311,7 @@ class Generator
             //check if order status set in configuration
             $statusKey         = Order::STATE_CANCELED;
             $storeCode         = $order->getStore()->getCode();
-            $storeScope        = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+            $storeScope        = ScopeInterface::SCOPE_STORE;
             $orderStatusCancel = $this->systemConfig->getStatusConfig('cancel', $storeScope, $storeCode);
 
             if ($orderStatusCancel) {
@@ -343,7 +344,7 @@ class Generator
             //check if order status set in configuration
             $statusKey         = Order::STATE_CANCELED;
             $storeCode         = $order->getStore()->getCode();
-            $storeScope        = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+            $storeScope        = ScopeInterface::SCOPE_STORE;
             $orderStatusCancel = $this->systemConfig->getStatusConfig('cancel', $storeScope, $storeCode);
 
             if ($orderStatusCancel) {
@@ -420,7 +421,7 @@ class Generator
         $requireCapture = $response->requireCapture;
         if ($response) {
             $order      = $this->loadOrderFromCallback($response);
-            $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+            $storeScope = ScopeInterface::SCOPE_STORE;
             $storeCode  = $order->getStore()->getCode();
             if ($order->getId()) {
                 $cardType = '';
@@ -520,19 +521,21 @@ class Generator
     {
         return $this->checkoutSession;
     }
+
     /**
      * @param $order
      *
      * @return float|int
      */
-    public function fixedProductTax($order){
+    public function fixedProductTax($order)
+    {
 
         $weeTaxAmount = 0;
         foreach ($order->getAllItems() as $item) {
-           $weeTaxAmount +=  $item->getWeeeTaxAppliedRowAmount();
+            $weeTaxAmount += $item->getWeeeTaxAppliedRowAmount();
         }
 
-       return $weeTaxAmount;
+        return $weeTaxAmount;
     }
 
 
@@ -553,7 +556,6 @@ class Generator
             $productType          = $item->getProductType();
             $productOriginalPrice = $item->getBaseOriginalPrice();
             $taxPercent           = $item->getTaxPercent();
-            $appliedRule          = $this->discountHandler->getAppliedDiscounts($item);
             $discountAmount       = $item->getBaseDiscountAmount();
             $parentItemType       = "";
 
@@ -818,8 +820,8 @@ class Generator
         $response           = $callback->call();
         if ($response) {
             $order                 = $this->loadOrderFromCallback($response);
-            $storeScope            = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
-            $storeCode             = $order->getStore()->getCode();            
+            $storeScope            = ScopeInterface::SCOPE_STORE;
+            $storeCode             = $order->getStore()->getCode();
             $transInfo             = sprintf(
                 "Transaction ID: %s - Payment ID: %s - Credit card token: %s",
                 $response->transactionId,

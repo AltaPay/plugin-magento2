@@ -13,6 +13,8 @@ use Altapay\Request\Address;
 use Altapay\Request\Customer;
 use Magento\Sales\Model\Order;
 use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Framework\App\Request\Http;
+use Magento\Framework\Session\SessionManagerInterface;
 
 /**
  * Class CustomerHandler
@@ -29,19 +31,34 @@ class CustomerHandler
      * @var CustomerRepositoryInterface
      */
     private $customerRepositoryInterface;
+    /**
+     * @var Http
+     */
+    private $request;
+
+    /**
+     * @var SessionManagerInterface
+     */
+    protected $session;
 
     /**
      * Gateway constructor.
      *
      * @param Order                       $order
      * @param CustomerRepositoryInterface $customerRepositoryInterface
+     * @param Http                        $request
+     * @param SessionManagerInterface     $session
      */
     public function __construct(
         Order $order,
-        CustomerRepositoryInterface $customerRepositoryInterface
+        CustomerRepositoryInterface $customerRepositoryInterface,
+        Http $request,
+        SessionManagerInterface $session
     ) {
         $this->order                       = $order;
         $this->customerRepositoryInterface = $customerRepositoryInterface;
+        $this->request                     = $request;
+        $this->session                     = $session;
     }
 
     /**
@@ -78,6 +95,10 @@ class CustomerHandler
 
         $customer->setEmail($customerEmail);
         $customer->setPhone(str_replace(' ', '', $customerPhone));
+        $customer->setClientIP($this->request->getServer('REMOTE_ADDR'));
+        $customer->setClientAcceptLanguage(substr($this->request->getServer('HTTP_ACCEPT_LANGUAGE'), 0, 2));
+        $customer->setHttpUserAgent($this->request->getServer('HTTP_USER_AGENT'));
+        $customer->setClientSessionID(crypt($this->session->getSessionId(), '$5$rounds=5000$customersessionid$'));
 
         if (!$order->getCustomerIsGuest()) {
             $customer->setUsername($order->getCustomerId());

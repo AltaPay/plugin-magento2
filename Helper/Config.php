@@ -11,7 +11,9 @@ namespace SDM\Altapay\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\UrlInterface;
 use Magento\SalesRule\Model\RuleFactory;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Class Config for getting store configrations information.
@@ -68,7 +70,7 @@ class Config extends AbstractHelper
      */
     public function getStoreScope()
     {
-        return \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+        return ScopeInterface::SCOPE_STORE;
     }
 
     /**
@@ -103,7 +105,7 @@ class Config extends AbstractHelper
         if ($image) {
             if (is_string($image)) {
                 $url = $order->getStore()->getBaseUrl(
-                        \Magento\Framework\UrlInterface::URL_TYPE_MEDIA
+                        UrlInterface::URL_TYPE_MEDIA
                     ) . 'catalog/product/' . $image;
             }
         }

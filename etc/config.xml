@@ -14,7 +14,7 @@
         <payment>
             <terminal1>
                 <active>0</active>
-                <title />
+                <title/>
                 <payment_action>true</payment_action>
                 <model>SDM\Altapay\Model\Terminal1</model>
                 <place_order_url>sdmaltapay/index/request</place_order_url>
@@ -31,7 +31,7 @@
             </terminal1>
             <terminal2>
                 <active>0</active>
-                <title />
+                <title/>
                 <payment_action>true</payment_action>
                 <model>SDM\Altapay\Model\Terminal2</model>
                 <place_order_url>sdmaltapay/index/request</place_order_url>
@@ -48,7 +48,7 @@
             </terminal2>
             <terminal3>
                 <active>0</active>
-                <title />
+                <title/>
                 <payment_action>true</payment_action>
                 <model>SDM\Altapay\Model\Terminal3</model>
                 <place_order_url>sdmaltapay/index/request</place_order_url>
@@ -65,7 +65,7 @@
             </terminal3>
             <terminal4>
                 <active>0</active>
-                <title />
+                <title/>
                 <payment_action>true</payment_action>
                 <model>SDM\Altapay\Model\Terminal4</model>
                 <place_order_url>sdmaltapay/index/request</place_order_url>
@@ -82,7 +82,7 @@
             </terminal4>
             <terminal5>
                 <active>0</active>
-                <title />
+                <title/>
                 <payment_action>true</payment_action>
                 <model>SDM\Altapay\Model\Terminal5</model>
                 <place_order_url>sdmaltapay/index/request</place_order_url>

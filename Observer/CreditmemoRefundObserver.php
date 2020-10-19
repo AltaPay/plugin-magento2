@@ -104,7 +104,6 @@ class CreditmemoRefundObserver implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $memo = $observer['creditmemo'];
-        $storePriceIncTax = $this->storeConfig->storePriceIncTax($memo->getOrder());
         //proceed if online refund
         if ($memo->getDoTransaction()) {
             $orderIncrementId = $memo->getOrder()->getIncrementId();
@@ -114,7 +113,7 @@ class CreditmemoRefundObserver implements ObserverInterface
             //If payment method belongs to terminal codes
             if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
                 //Create orderlines from order items
-                $orderLines = $this->processRefundOrderItems($storePriceIncTax, $memo);
+                $orderLines = $this->processRefundOrderItems($memo);
                 //Send request for payment refund
                 $this->sendRefundRequest($memo, $orderLines, $orderObject, $payment, $storeCode);
             }
@@ -127,7 +126,7 @@ class CreditmemoRefundObserver implements ObserverInterface
      * @return array
      */
 
-    private function processRefundOrderItems($storePriceIncTax, $memo)
+    private function processRefundOrderItems($memo)
     {
         $couponCode       = $memo->getDiscountDescription();
         $couponCodeAmount = $memo->getDiscountAmount();
@@ -142,9 +141,9 @@ class CreditmemoRefundObserver implements ObserverInterface
         }
         if ($memo->getShippingInclTax() > 0) {
             //order lines for shipping
-            $orderLines[] = $this->orderLines->handleShipping($storePriceIncTax, $memo, $discountAllItems, false);
+            $orderLines[] = $this->orderLines->handleShipping($memo, $discountAllItems, false);
         }
-        if(!empty($this->fixedProductTax($memo))){
+        if (!empty($this->fixedProductTax($memo))) {
             //order lines for FPT
             $orderLines[] = $this->orderLines->fixedProductTaxOrderLine($this->fixedProductTax($memo));
         }
@@ -257,8 +256,8 @@ class CreditmemoRefundObserver implements ObserverInterface
             $this->monolog->addCritical('Exception: ' . $e->getMessage());
         }
 
-        $rawresponse = $refund->getRawResponse();
-        $body        = $rawresponse->getBody();
+        $rawResponse = $refund->getRawResponse();
+        $body        = $rawResponse->getBody();
         //add information to the altapay log
         $this->monolog->addInfo('Response body: ' . $body);
 
@@ -274,19 +273,20 @@ class CreditmemoRefundObserver implements ObserverInterface
             throw new \InvalidArgumentException('Could not refund captured reservation');
         }
     }
-    
+
     /**
      * @param $order
      *
      * @return float|int
      */
-    public function fixedProductTax($memo){
+    public function fixedProductTax($memo)
+    {
 
         $weeTaxAmount = 0;
         foreach ($memo->getAllItems() as $item) {
-           $weeTaxAmount +=  $item->getWeeeTaxAppliedRowAmount();
+            $weeTaxAmount += $item->getWeeeTaxAppliedRowAmount();
         }
 
-       return $weeTaxAmount;
+        return $weeTaxAmount;
     }
 }

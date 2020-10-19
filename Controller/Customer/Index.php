@@ -47,16 +47,16 @@ class Index extends Action
         $action = $this->getRequest()->getParam('action');
         $model  = $this->tokenFactory->create();
         if ($action == "delete") {
-            $response = array('status' => 'error');
+            $response = ['status' => 'error'];
             $tokenId  = $this->getRequest()->getParam('token_id');
             $token    = $model->load($tokenId);
             if ($token->getId()) {
                 if ($this->checkoutSession->getCustomer()->getId() == $token->getCustomerId()) {
                     try {
                         $model->load($tokenId)->delete();
-                        $response = array('status' => 'deleted');
+                        $response = ['status' => 'deleted'];
                     } catch (\Exception $e) {
-                        $response = array('status' => 'error');
+                        $response = ['status' => 'error'];
                     }
                 }
             }
@@ -67,7 +67,7 @@ class Index extends Action
                                            'status'       => $response
                                        ]);
         } elseif ($action == "primary") {
-            $response = array('status' => 'error');
+            $response = ['status' => 'error'];
             $tokenId  = $this->getRequest()->getParam('token_id');
             $token    = $model->load($tokenId);
             if ($token->getId()) {
@@ -78,14 +78,14 @@ class Index extends Action
                         $model->save();
                         $collection = $this->tokenFactory->create()->getCollection()
                                                          ->addFieldToFilter('customer_id', $token->getCustomerId())
-                                                         ->addFieldToFilter('id', array('neq' => $token->getId()))
+                                                         ->addFieldToFilter('id', ['neq' => $token->getId()])
                                                          ->addFieldToFilter('primary', 1);
                         foreach ($collection as $model) {
                             $model->setPrimary(0)->save();
                         }
-                        $response = array('status' => 'updated');
+                        $response = ['status' => 'updated'];
                     } catch (Exception $e) {
-                        $response = array('status' => 'error');
+                        $response = ['status' => 'error'];
                     }
                 }
             }
@@ -95,9 +95,8 @@ class Index extends Action
                                            'Content-type' => 'text/json; charset=UTF-8',
                                            'status'       => $response
                                        ]);
-        } else {
-            $this->_view->loadLayout();
-            $this->_view->renderLayout();
         }
+        $this->_view->loadLayout();
+        $this->_view->renderLayout();
     }
 }

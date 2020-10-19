@@ -9,10 +9,12 @@
 
 namespace SDM\Altapay\Model;
 
-class Token extends \Magento\Framework\Model\AbstractModel
+use Magento\Framework\Model\AbstractModel;
+
+class Token extends AbstractModel
 {
     public function _construct()
     {
-        $this->_init(\SDM\Altapay\Model\ResourceModel\Token::class);
+        $this->_init(ResourceModel\Token::class);
     }
 }

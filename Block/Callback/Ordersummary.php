@@ -9,24 +9,33 @@
 
 namespace SDM\Altapay\Block\Callback;
 
+use Magento\Catalog\Model\ProductRepository;
 use Magento\Customer\Model\Context;
+use Magento\Framework\App\Request\Http;
+use Magento\Framework\Pricing\Helper\Data;
+use Magento\Framework\View\Element\Template;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Sales\Model\Order\Address\Renderer;
+use Magento\Sales\Model\Order\Config;
+use Magento\Sales\Model\OrderFactory;
+use Magento\Store\Model\ScopeInterface;
 
-class Ordersummary extends \Magento\Framework\View\Element\Template
+class Ordersummary extends Template
 {
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var OrderFactory
      */
     protected $orderFactory;
 
     /**
-     * @var \Magento\Framework\App\Request\Http
+     * @var Http
      */
     protected $request;
 
     /**
-     * @var \Magento\Sales\Model\Order\Config
+     * @var Config
      */
     protected $orderConfig;
 
@@ -36,22 +45,22 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
     protected $httpContext;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var OrderRepositoryInterface
      */
     protected $orderRepository;
 
     /**
-     * @var \Magento\Sales\Model\Order\Address\Renderer
+     * @var Renderer
      */
     protected $renderer;
 
     /**
-     * @var \Magento\Catalog\Model\ProductRepository
+     * @var ProductRepository
      */
     protected $productRepository;
 
     /**
-     * @var \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @var Data $priceHelper
      */
     protected $priceHelper;
     /**
@@ -63,26 +72,26 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
      * OrderSummary constructor.
      *
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Magento\Sales\Model\OrderFactory                $orderFactory
-     * @param \Magento\Framework\App\Request\Http              $request
-     * @param \Magento\Sales\Model\Order\Config                $orderConfig
+     * @param OrderFactory                                     $orderFactory
+     * @param Http                                             $request
+     * @param Config                                           $orderConfig
      * @param \Magento\Framework\App\Http\Context              $httpContext
-     * @param \Magento\Sales\Api\OrderRepositoryInterface      $orderRepository
+     * @param OrderRepositoryInterface                         $orderRepository
      * @param \Magento\Framework\App\Http\Context              $renderer
-     * @param \Magento\Catalog\Model\ProductRepository         $productRepository
-     * @param \Magento\Framework\Pricing\Helper\Data
+     * @param ProductRepository                                $productRepository
+     * @param Data
      * @param array                                            $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Framework\App\Request\Http $request,
-        \Magento\Sales\Model\Order\Config $orderConfig,
+        OrderFactory $orderFactory,
+        Http $request,
+        Config $orderConfig,
         \Magento\Framework\App\Http\Context $httpContext,
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \Magento\Sales\Model\Order\Address\Renderer $renderer,
-        \Magento\Catalog\Model\ProductRepository $productRepository,
-        \Magento\Framework\Pricing\Helper\Data $priceHelper,
+        OrderRepositoryInterface $orderRepository,
+        Renderer $renderer,
+        ProductRepository $productRepository,
+        Data $priceHelper,
         ScopeConfigInterface $appConfigScopeConfigInterface,
         array $data = []
     ) {
@@ -102,7 +111,7 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
     /**
      * Get orderif from param
      *
-     * @return id
+     * @return mixed
      */
     public function getOrderId()
     {
@@ -112,7 +121,7 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
     /**
      * Load order
      *
-     * @return $this
+     * @return string
      */
 
     public function getOrder()
@@ -147,7 +156,7 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
      */
     public function getPaymentMethodTitle()
     {
-        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+        $storeScope = ScopeInterface::SCOPE_STORE;
         $order      = $this->getOrder();
         $storeId    = $order->getStore()->getId();
         $payment    = $order->getPayment();
@@ -164,16 +173,12 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
         return $terminalTitle;
     }
 
-    public function getProductImage()
-    {
-    }
-
     /**
      * Load product from productId
      *
-     * @param int $id Product id
+     * @param $id
      *
-     * @return $this
+     * @return mixed
      */
     public function getProductById($id)
     {
@@ -183,9 +188,9 @@ class Ordersummary extends \Magento\Framework\View\Element\Template
     /**
      * Get Formated Price
      *
-     * @param fload price
+     * @param string $price
      *
-     * @return boolean
+     * @return mixed
      */
     public function getFormatedPrice($price = '')
     {

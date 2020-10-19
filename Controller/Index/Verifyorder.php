@@ -23,9 +23,6 @@ class Verifyorder extends Index
      */
     public function execute()
     {
-        $this->writeLog();
-        // @TODO: verify order
-        echo 'OKAY';
-        exit;
+        return $this->writeLog();
     }
 }

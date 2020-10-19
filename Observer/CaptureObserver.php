@@ -108,10 +108,9 @@ class CaptureObserver implements ObserverInterface
         $orderIncrementId = $invoice->getOrder()->getIncrementId();
         $orderObject      = $this->order->loadByIncrementId($orderIncrementId);
         $storeCode        = $invoice->getStore()->getCode();
-        $storePriceIncTax = $this->storeConfig->storePriceIncTax($invoice->getOrder());
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
             //Create orderlines from order items
-            $orderLines = $this->processInvoiceOrderLines($storePriceIncTax, $invoice);
+            $orderLines = $this->processInvoiceOrderLines($invoice);
             //Send request for payment refund
             $this->sendInvoiceRequest($invoice, $orderLines, $orderObject, $payment, $storeCode);
         }
@@ -122,11 +121,11 @@ class CaptureObserver implements ObserverInterface
      *
      * @return array
      */
-    private function processInvoiceOrderLines($storePriceIncTax, $invoice)
+    private function processInvoiceOrderLines($invoice)
     {
         $couponCode       = $invoice->getDiscountDescription();
         $couponCodeAmount = $invoice->getDiscountAmount();
-        //Return true if disocunt enabled on all items
+        //Return true if discount enabled on all items
         $discountAllItems = $this->discountHandler->allItemsHaveDiscount($invoice->getOrder()->getAllVisibleItems());
         //order lines for items
         $orderLines = $this->itemOrderLines($couponCodeAmount, $invoice, $discountAllItems);
@@ -137,13 +136,13 @@ class CaptureObserver implements ObserverInterface
         }
         if ($invoice->getShippingInclTax() > 0) {
             //order lines for shipping
-            $orderLines[] = $this->orderLines->handleShipping($storePriceIncTax, $invoice, $discountAllItems, false);
+            $orderLines[] = $this->orderLines->handleShipping($invoice, $discountAllItems, false);
         }
-        if(!empty($this->fixedProductTax($invoice))){
+        if (!empty($this->fixedProductTax($invoice))) {
             //order lines for FPT
             $orderLines[] = $this->orderLines->fixedProductTaxOrderLine($this->fixedProductTax($invoice));
         }
-        
+
         return $orderLines;
     }
 
@@ -309,13 +308,14 @@ class CaptureObserver implements ObserverInterface
      *
      * @return float|int
      */
-    public function fixedProductTax($invoice){
+    public function fixedProductTax($invoice)
+    {
 
         $weeTaxAmount = 0;
         foreach ($invoice->getAllItems() as $item) {
-           $weeTaxAmount +=  $item->getWeeeTaxAppliedRowAmount();
+            $weeTaxAmount += $item->getWeeeTaxAppliedRowAmount();
         }
 
-       return $weeTaxAmount;
+        return $weeTaxAmount;
     }
 }
