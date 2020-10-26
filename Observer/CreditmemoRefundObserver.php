@@ -121,7 +121,7 @@ class CreditmemoRefundObserver implements ObserverInterface
     }
 
     /**
-     * @param object $memo
+     * @param Magento\Sales\Api\Data\CreditmemoInterface $memo
      *
      * @return array
      */

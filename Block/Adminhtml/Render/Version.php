@@ -13,7 +13,7 @@ use Altapay\Api\Others\Terminals;
 use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
-use Magento\Framework\Logger\Monolog;
+use Psr\Log\LoggerInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use SDM\Altapay\Model\SystemConfig;
 use SDM\Altapay\Response\TerminalsResponse;
@@ -31,9 +31,9 @@ class Version extends Field
      */
     private $systemConfig;
     /**
-     * @var Logger
+     * @var LoggerInterface
      */
-    private $altapayLogger;
+    private $logger;
 
     /**
      * Version constructor.
@@ -41,18 +41,18 @@ class Version extends Field
      * @param Context             $context
      * @param ModuleListInterface $moduleList
      * @param SystemConfig        $systemConfig
-     * @param Monolog             $altapayLogger
+     * @param LoggerInterface     $logger
      */
     public function __construct(
         Context $context,
         ModuleListInterface $moduleList,
         SystemConfig $systemConfig,
-        Monolog $altapayLogger
+        LoggerInterface $logger
     ) {
         $this->moduleList = $moduleList;
         parent::__construct($context);
-        $this->systemConfig  = $systemConfig;
-        $this->altapayLogger = $altapayLogger;
+        $this->systemConfig = $systemConfig;
+        $this->logger       = $logger;
     }
 
     /**
@@ -93,7 +93,7 @@ class Version extends Field
             $html .= "</tr>";
 
         } catch (\Exception $e) {
-            $this->altapayLogger->addCriticalLog('Exception', $e->getMessage());
+            $this->logger->critical('Exception :'. $e->getMessage());
         }
 
         $html .= '<tr id="row_' . $element->getHtmlId() . '">';

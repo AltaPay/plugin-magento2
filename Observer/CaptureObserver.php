@@ -247,10 +247,10 @@ class CaptureObserver implements ObserverInterface
 
     /**
      * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
-     * @param $orderLines
-     * @param $orderObject
-     * @param $payment
-     * @param $storeCode
+     * @param array $orderLines
+     * @param Magento\Sales\Model\Order $orderObject
+     * @param Magento\Sales\Model\Order\Payment $payment
+     * @param Magento\Store\Model\StoreManagerInterface $storeCode
      *
      * @throws ResponseHeaderException
      */

@@ -9,8 +9,12 @@
 
 namespace SDM\Altapay\Observer;
 
+use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Message\ManagerInterface;
+use Magento\Quote\Model\QuoteFactory;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\Order;
 use Magento\SalesRule\Model\Coupon;
@@ -23,13 +27,13 @@ use SDM\Altapay\Model\ConstantConfig;
 class CheckoutCartIndex implements ObserverInterface
 {
 
-    /** @var \Magento\Checkout\Model\Session */
+    /** @var Session */
     private $session;
 
-    /** @var \Magento\Quote\Model\QuoteFactory */
+    /** @var QuoteFactory */
     private $quoteFactory;
 
-    /** @var \Magento\Framework\Message\ManagerInterface */
+    /** @var ManagerInterface */
     protected $messageManager;
 
     /** @var OrderFactory */
@@ -55,23 +59,23 @@ class CheckoutCartIndex implements ObserverInterface
     protected $systemConfig;
 
     /**
-     * Constructor
+     * CheckoutCartIndex constructor.
      *
-     * @param \Magento\Framework\App\Action\Context       $context
-     * @param \Magento\Checkout\Model\Session             $session
-     * @param \Magento\Framework\Message\ManagerInterface $messageManager
-     * @param \Magento\Quote\Model\QuoteFactory           $quoteFactory
-     * @param OrderFactory                                $orderFactory
-     * @param Coupon                                      $coupon
-     * @param CouponUsage                                 $couponUsage
-     * @param StockManagementInterface                    $stockManagement
-     * @param SystemConfig                                $systemConfig
+     * @param Context                  $context
+     * @param Session                  $session
+     * @param ManagerInterface         $messageManager
+     * @param QuoteFactory             $quoteFactory
+     * @param OrderFactory             $orderFactory
+     * @param Coupon                   $coupon
+     * @param CouponUsage              $couponUsage
+     * @param StockManagementInterface $stockManagement
+     * @param SystemConfig             $systemConfig
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Checkout\Model\Session $session,
-        \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Magento\Quote\Model\QuoteFactory $quoteFactory,
+        Context $context,
+        Session $session,
+        ManagerInterface $messageManager,
+        QuoteFactory $quoteFactory,
         OrderFactory $orderFactory,
         Coupon $coupon,
         CouponUsage $couponUsage,
@@ -90,12 +94,11 @@ class CheckoutCartIndex implements ObserverInterface
 
 
     /**
-     * @param Observer                          $observer
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return void
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         if ($this->session->getAltapayCustomerRedirect()) {
             $order             = $this->session->getLastRealOrder();
@@ -138,7 +141,7 @@ class CheckoutCartIndex implements ObserverInterface
             $orderStateCancelUpdate  = Order::STATE_CANCELED;
 
             if ($quote->getId() && $this->verifyIfOrderStatus($orderStatusBefore, $order->getStatus(), $orderStatusCancel)) {
-              //get quote Id from order and set as active
+                //get quote Id from order and set as active
                 $quote->setIsActive(1)->setReservedOrderId(null)->save();
                 $this->session->replaceQuote($quote)->unsLastRealOrderId();
 
@@ -197,8 +200,11 @@ class CheckoutCartIndex implements ObserverInterface
     }
 
     /**
-     * @param orderStatusConfig
-     * @param currentOrderStatus
+     * @param string $orderStatusConfigBefore
+     * @param string $currentOrderStatus
+     * @param string $orderStatusConfigCancel
+     *
+     * @return bool
      */
     public function verifyIfOrderStatus($orderStatusConfigBefore, $currentOrderStatus, $orderStatusConfigCancel)
     {

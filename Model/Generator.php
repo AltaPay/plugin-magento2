@@ -523,7 +523,7 @@ class Generator
     }
 
     /**
-     * @param order $order
+     * @param Magento\Sales\Model\Order  $order
      *
      * @return float|int
      */
