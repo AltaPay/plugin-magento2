@@ -121,7 +121,7 @@ class CreditmemoRefundObserver implements ObserverInterface
     }
 
     /**
-     * @param $memo
+     * @param object $memo
      *
      * @return array
      */
@@ -154,7 +154,7 @@ class CreditmemoRefundObserver implements ObserverInterface
     /**
      * @param $couponCodeAmount
      * @param $discountAllItems
-     * @param $memo
+     * @param \Magento\Sales\Api\Data\CreditmemoInterface $memo
      *
      * @return array
      */
@@ -231,7 +231,7 @@ class CreditmemoRefundObserver implements ObserverInterface
     }
 
     /**
-     * @param $memo
+     * @param \Magento\Sales\Api\Data\CreditmemoInterface $memo
      * @param $orderLines
      * @param $orderObject
      * @param $payment
@@ -275,7 +275,7 @@ class CreditmemoRefundObserver implements ObserverInterface
     }
 
     /**
-     * @param $order
+     * @param \Magento\Sales\Api\Data\CreditmemoInterface $memo
      *
      * @return float|int
      */

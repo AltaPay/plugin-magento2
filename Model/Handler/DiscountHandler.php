@@ -43,9 +43,9 @@ class DiscountHandler
     }
 
     /**
-     * @param $discountAmount
-     * @param $productOriginalPrice
-     * @param $quantity
+     * @param float|null $discountAmount
+     * @param float      $productOriginalPrice
+     * @param float|null $quantity
      *
      * @return float|int
      */

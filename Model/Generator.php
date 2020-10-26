@@ -523,7 +523,7 @@ class Generator
     }
 
     /**
-     * @param $order
+     * @param order $order
      *
      * @return float|int
      */

@@ -11,15 +11,17 @@ namespace SDM\Altapay\Block\Callback;
 
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Customer\Model\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Http\Context as HttpContext;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Pricing\Helper\Data;
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context as TemplateContext;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
-use \Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\Order\Address\Renderer;
 use Magento\Sales\Model\Order\Config;
-use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
 
 class Ordersummary extends Template
@@ -69,25 +71,26 @@ class Ordersummary extends Template
     protected $_appConfigScopeConfigInterface;
 
     /**
-     * OrderSummary constructor.
+     * Ordersummary constructor.
      *
-     * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param OrderFactory                                     $orderFactory
-     * @param Http                                             $request
-     * @param Config                                           $orderConfig
-     * @param \Magento\Framework\App\Http\Context              $httpContext
-     * @param OrderRepositoryInterface                         $orderRepository
-     * @param \Magento\Framework\App\Http\Context              $renderer
-     * @param ProductRepository                                $productRepository
-     * @param Data
-     * @param array                                            $data
+     * @param TemplateContext          $context
+     * @param OrderFactory             $orderFactory
+     * @param Http                     $request
+     * @param Config                   $orderConfig
+     * @param HttpContext              $httpContext
+     * @param OrderRepositoryInterface $orderRepository
+     * @param Renderer                 $renderer
+     * @param ProductRepository        $productRepository
+     * @param Data                     $priceHelper
+     * @param ScopeConfigInterface     $appConfigScopeConfigInterface
+     * @param array                    $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
+        TemplateContext $context,
         OrderFactory $orderFactory,
         Http $request,
         Config $orderConfig,
-        \Magento\Framework\App\Http\Context $httpContext,
+        HttpContext $httpContext,
         OrderRepositoryInterface $orderRepository,
         Renderer $renderer,
         ProductRepository $productRepository,
@@ -109,9 +112,9 @@ class Ordersummary extends Template
     }
 
     /**
-     * Get orderif from param
+     * Get order id from param
      *
-     * @return mixed
+     * @return string
      */
     public function getOrderId()
     {
@@ -121,7 +124,7 @@ class Ordersummary extends Template
     /**
      * Load order
      *
-     * @return string
+     * @return Magento\Sales\Api\Data\OrderInterface|null
      */
 
     public function getOrder()
@@ -131,7 +134,7 @@ class Ordersummary extends Template
             return $this->orderFactory->create()->loadByIncrementId($orderIncrementId);
         }
 
-        return '';
+        return null;
     }
 
     /**
@@ -176,9 +179,9 @@ class Ordersummary extends Template
     /**
      * Load product from productId
      *
-     * @param $id
+     * @param int $id
      *
-     * @return mixed
+     * @return ProductInterface
      */
     public function getProductById($id)
     {
@@ -186,13 +189,13 @@ class Ordersummary extends Template
     }
 
     /**
-     * Get Formated Price
+     * Get Formatted Price
      *
      * @param string $price
      *
-     * @return mixed
+     * @return string
      */
-    public function getFormatedPrice($price = '')
+    public function getFormattedPrice($price = '')
     {
         return $this->priceHelper->currency($price, true, false);
     }

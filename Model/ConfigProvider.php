@@ -241,7 +241,7 @@ class ConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * @return mixed
+     * @return \Magento\Payment\Model\MethodInterface
      */
     protected function getData()
     {
@@ -249,7 +249,7 @@ class ConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * @param $collection
+     * @param array $collection
      *
      * @return string
      */

@@ -9,7 +9,7 @@ web shop.
 ** Version 2.0.0
 
     * Improvements:
-            - Code refactored according to Magento recommended coding standards
+            - Code formatted to Magento's recommended coding standards
     * Bug fixes:
             - Fix variable undefined issue
 

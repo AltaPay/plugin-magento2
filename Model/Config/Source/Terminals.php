@@ -55,7 +55,7 @@ class Terminals implements ArrayInterface
                 $terminals[] = ['value' => $terminal->Title, 'label' => $terminal->Title];
             }
         } catch (\Exception $e) {
-            $this->logger->debug('Exception', $e->getMessage());
+            $this->logger->debug('Exception: ' . $e->getMessage());
         }
         // Sort the terminals alphabetically
         array_multisort(array_column($terminals, 'label'), SORT_ASC, SORT_NUMERIC, $terminals);

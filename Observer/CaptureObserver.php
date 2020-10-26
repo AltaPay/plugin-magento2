@@ -117,7 +117,7 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param $invoice
+     * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
      *
      * @return array
      */
@@ -148,7 +148,7 @@ class CaptureObserver implements ObserverInterface
 
     /**
      * @param $couponCodeAmount
-     * @param $invoice
+     * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
      * @param $discountAllItems
      *
      * @return array
@@ -223,7 +223,7 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param $invoice
+     * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
      *
      * @return array
      */
@@ -246,7 +246,7 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param $invoice
+     * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
      * @param $orderLines
      * @param $orderObject
      * @param $payment
@@ -304,7 +304,7 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param $order
+     * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
      *
      * @return float|int
      */
