@@ -24,6 +24,7 @@ use Magento\Payment\Model\Config\Source\Allmethods;
 use Magento\Framework\View\Asset\Repository;
 use SDM\Altapay\Model\TokenFactory;
 use Magento\Customer\Model\Session;
+use Magento\Payment\Model\MethodInterface;
 
 class ConfigProvider implements ConfigProviderInterface
 {
@@ -241,7 +242,7 @@ class ConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * @return \Magento\Payment\Model\MethodInterface
+     * @return MethodInterface
      */
     protected function getData()
     {

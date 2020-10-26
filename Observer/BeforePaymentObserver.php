@@ -44,7 +44,7 @@ class BeforePaymentObserver implements ObserverInterface
         $payment     = $observer['payment'];
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
             /**
-             * @var \Magento\Sales\Model\Order
+             * @var Order
              */
             $order      = $payment->getOrder();
             $storeScope = ScopeInterface::SCOPE_STORE;

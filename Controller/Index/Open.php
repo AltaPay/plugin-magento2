@@ -11,6 +11,8 @@ namespace SDM\Altapay\Controller\Index;
 
 use Magento\Framework\App\ResponseInterface;
 use SDM\Altapay\Controller\Index;
+use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\NotFoundException;
 
 class Open extends Index
 {
@@ -18,8 +20,8 @@ class Open extends Index
     /**
      * Dispatch request
      *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
-     * @throws \Magento\Framework\Exception\NotFoundException
+     * @return ResultInterface|ResponseInterface
+     * @throws NotFoundException
      */
     public function execute()
     {

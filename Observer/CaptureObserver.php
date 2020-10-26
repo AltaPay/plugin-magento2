@@ -22,6 +22,9 @@ use SDM\Altapay\Helper\Config as storeConfig;
 use SDM\Altapay\Model\Handler\OrderLinesHandler;
 use SDM\Altapay\Model\Handler\PriceHandler;
 use SDM\Altapay\Model\Handler\DiscountHandler;
+use Magento\Sales\Model\Order\Payment;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Sales\Api\Data\InvoiceInterface;
 
 /**
  * Class CaptureObserver
@@ -101,7 +104,7 @@ class CaptureObserver implements ObserverInterface
      * @return void
      * @throws ResponseHeaderException
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         $payment          = $observer['payment'];
         $invoice          = $observer['invoice'];
@@ -117,7 +120,7 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
+     * @param InvoiceInterface $invoice
      *
      * @return array
      */
@@ -148,7 +151,7 @@ class CaptureObserver implements ObserverInterface
 
     /**
      * @param                                         $couponCodeAmount
-     * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
+     * @param InvoiceInterface                        $invoice
      * @param                                         $discountAllItems
      *
      * @return array
@@ -223,7 +226,7 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
+     * @param InvoiceInterface $invoice
      *
      * @return array
      */
@@ -246,11 +249,11 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param Magento\Sales\Api\Data\InvoiceInterface   $invoice
-     * @param array                                     $orderLines
-     * @param Magento\Sales\Model\Order                 $orderObject
-     * @param Magento\Sales\Model\Order\Payment         $payment
-     * @param Magento\Store\Model\StoreManagerInterface $storeCode
+     * @param InvoiceInterface      $invoice
+     * @param array                 $orderLines
+     * @param Order                 $orderObject
+     * @param Payment               $payment
+     * @param StoreManagerInterface $storeCode
      *
      * @throws ResponseHeaderException
      */
@@ -273,7 +276,7 @@ class CaptureObserver implements ObserverInterface
         try {
             $response = $api->call();
         } catch (ResponseHeaderException $e) {
-            $this->logger->info("Exception" , print_r($e->getHeader()));
+            $this->logger->info("Exception", print_r($e->getHeader()));
             $this->logger->critical('Response header exception: ' . $e->getMessage());
             throw $e;
         } catch (\Exception $e) {
@@ -283,7 +286,7 @@ class CaptureObserver implements ObserverInterface
         $rawResponse = $api->getRawResponse();
         if (!empty($rawResponse)) {
             $body = $rawResponse->getBody();
-            $this->logger->info('Response body' , $body);
+            $this->logger->info('Response body', $body);
             //Update comments if capture fail
             $xml = simplexml_load_string($body);
             if ($xml->Body->Result == 'Error' || $xml->Body->Result == 'Failed') {
@@ -296,7 +299,7 @@ class CaptureObserver implements ObserverInterface
             foreach ($rawResponse->getHeaders() as $k => $v) {
                 $headData[] = $k . ': ' . json_encode($v);
             }
-            $this->logger->info('Response headers: ' , implode(", ", $headData));
+            $this->logger->info('Response headers: ', implode(", ", $headData));
         }
         if (!isset($response->Result) || $response->Result != 'Success') {
             throw new \InvalidArgumentException('Could not capture reservation');
@@ -304,7 +307,7 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
+     * @param InvoiceInterface $invoice
      *
      * @return float|int
      */

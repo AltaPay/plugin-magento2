@@ -22,6 +22,7 @@ use SDM\Altapay\Helper\Config as storeConfig;
 use SDM\Altapay\Model\Handler\OrderLinesHandler;
 use SDM\Altapay\Model\Handler\PriceHandler;
 use SDM\Altapay\Model\Handler\DiscountHandler;
+use Magento\Sales\Api\Data\CreditmemoInterface;
 
 /**
  * Class CreditmemoRefundObserver
@@ -68,7 +69,7 @@ class CreditmemoRefundObserver implements ObserverInterface
      * CreditmemoRefundObserver constructor.
      *
      * @param SystemConfig      $systemConfig
-     * @param LoggerInterface           $logger
+     * @param LoggerInterface   $logger
      * @param Order             $order
      * @param Data              $helper
      * @param storeConfig       $storeConfig
@@ -87,7 +88,7 @@ class CreditmemoRefundObserver implements ObserverInterface
         DiscountHandler $discountHandler
     ) {
         $this->systemConfig    = $systemConfig;
-        $this->logger         = $logger;
+        $this->logger          = $logger;
         $this->order           = $order;
         $this->helper          = $helper;
         $this->storeConfig     = $storeConfig;
@@ -121,7 +122,7 @@ class CreditmemoRefundObserver implements ObserverInterface
     }
 
     /**
-     * @param Magento\Sales\Api\Data\CreditmemoInterface $memo
+     * @param CreditmemoInterface $memo
      *
      * @return array
      */
@@ -152,9 +153,9 @@ class CreditmemoRefundObserver implements ObserverInterface
     }
 
     /**
-     * @param $couponCodeAmount
-     * @param $discountAllItems
-     * @param \Magento\Sales\Api\Data\CreditmemoInterface $memo
+     * @param                     $couponCodeAmount
+     * @param                     $discountAllItems
+     * @param CreditmemoInterface $memo
      *
      * @return array
      */
@@ -231,11 +232,11 @@ class CreditmemoRefundObserver implements ObserverInterface
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\CreditmemoInterface $memo
-     * @param $orderLines
-     * @param $orderObject
-     * @param $payment
-     * @param $storeCode
+     * @param CreditmemoInterface $memo
+     * @param                     $orderLines
+     * @param                     $orderObject
+     * @param                     $payment
+     * @param                     $storeCode
      *
      * @throws ResponseHeaderException
      */
@@ -259,7 +260,7 @@ class CreditmemoRefundObserver implements ObserverInterface
         $rawResponse = $refund->getRawResponse();
         $body        = $rawResponse->getBody();
         //add information to the altapay log
-        $this->logger->info('Response body: ' , $body);
+        $this->logger->info('Response body: ', $body);
 
         //Update comments if refund fail
         $xml = simplexml_load_string($body);
@@ -275,7 +276,7 @@ class CreditmemoRefundObserver implements ObserverInterface
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\CreditmemoInterface $memo
+     * @param CreditmemoInterface $memo
      *
      * @return float|int
      */

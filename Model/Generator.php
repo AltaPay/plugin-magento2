@@ -37,6 +37,8 @@ use SDM\Altapay\Model\Handler\DiscountHandler;
 use SDM\Altapay\Model\Handler\CreatePaymentHandler;
 use SDM\Altapay\Model\TokenFactory;
 use Magento\Sales\Model\OrderFactory;
+use Altapay\Response\PaymentRequestResponse;
+use Magento\Payment\Model\MethodInterface;
 
 /**
  * Class Generator
@@ -165,7 +167,6 @@ class Generator
         $this->order              = $order;
         $this->orderSender        = $orderSender;
         $this->systemConfig       = $systemConfig;
-        $this->_logger            = $_logger;
         $this->invoiceService     = $invoiceService;
         $this->transactionFactory = $transactionFactory;
         $this->orderFactory       = $orderFactory;
@@ -516,7 +517,7 @@ class Generator
     }
 
     /**
-     * @param Magento\Sales\Model\Order  $order
+     * @param Order $order
      *
      * @return float|int
      */
@@ -570,7 +571,8 @@ class Generator
                     $item,
                     $unitPrice,
                     $couponCode,
-                    $this->discountHandler->getItemDiscount($discountAmount, $productOriginalPrice, $item->getQtyOrdered())
+                    $this->discountHandler->getItemDiscount($discountAmount, $productOriginalPrice,
+                        $item->getQtyOrdered())
                 );
                 $taxAmount            = $dataForPrice["taxAmount"];
                 $discount             = $this->discountHandler->orderLineDiscount(
@@ -707,7 +709,7 @@ class Generator
         $storeCode  = $order->getStore()->getCode();
 
         try {
-            /** @var \Altapay\Response\PaymentRequestResponse $response */
+            /** @var PaymentRequestResponse $response */
             $response                 = $request->call();
             $requestParams['result']  = ConstantConfig::SUCCESS;
             $requestParams['formurl'] = $response->Url;
@@ -752,7 +754,7 @@ class Generator
      * @param $storeCode
      * @param $storeScope
      *
-     * @return bool|\Magento\Payment\Model\MethodInterface
+     * @return bool|MethodInterface
      */
     private function isCaptured($response, $storeCode, $storeScope)
     {

@@ -42,7 +42,7 @@ class Ordersummary extends Template
     protected $orderConfig;
 
     /**
-     * @var \Magento\Framework\App\Http\Context
+     * @var Context
      */
     protected $httpContext;
 
@@ -71,7 +71,7 @@ class Ordersummary extends Template
     protected $_appConfigScopeConfigInterface;
 
     /**
-     * Ordersummary constructor.
+     * OrderSummary constructor.
      *
      * @param TemplateContext          $context
      * @param OrderFactory             $orderFactory

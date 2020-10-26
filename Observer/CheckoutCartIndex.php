@@ -94,7 +94,7 @@ class CheckoutCartIndex implements ObserverInterface
 
 
     /**
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param Observer $observer
      *
      * @return void
      */
@@ -182,7 +182,7 @@ class CheckoutCartIndex implements ObserverInterface
     }
 
     /**
-     * @param \Magento\Sales\Model\Order $order
+     * @param Order $order
      *
      * @throws \Exception
      */

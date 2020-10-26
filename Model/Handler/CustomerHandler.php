@@ -65,6 +65,7 @@ class CustomerHandler
      * @param Order $order
      *
      * @return Customer
+     * @throws \Exception
      */
     public function setCustomer(Order $order)
     {

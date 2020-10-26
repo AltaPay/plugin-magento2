@@ -17,6 +17,7 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\State;
+use Magento\Payment\Model\MethodInterface;
 
 class SystemConfig
 {
@@ -138,7 +139,7 @@ class SystemConfig
      * @param ScopeConfigInterface $storeScope
      * @param null|string          $storeCode
      *
-     * @return \Magento\Payment\Model\MethodInterface
+     * @return MethodInterface
      */
     public function getTerminalConfig($terminalId, $configKey, $storeScope = null, $storeCode = null)
     {
@@ -156,7 +157,7 @@ class SystemConfig
      * @param ScopeConfigInterface $storeScope
      * @param null|string          $storeCode
      *
-     * @return \Magento\Payment\Model\MethodInterface
+     * @return MethodInterface
      */
     public function getTerminalConfigFromTerminalName($terminalName, $configKey, $storeScope = null, $storeCode = null)
     {
@@ -178,7 +179,7 @@ class SystemConfig
      * @param ScopeConfigInterface $storeScope
      * @param null|string          $storeCode
      *
-     * @return \Magento\Payment\Model\MethodInterface
+     * @return MethodInterface
      */
     public function getApiConfig($configKey, $storeScope = null, $storeCode = null)
     {
