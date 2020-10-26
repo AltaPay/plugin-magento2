@@ -14,7 +14,7 @@ use Altapay\Exceptions\ResponseHeaderException;
 use Altapay\Response\CaptureReservationResponse;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Logger\Monolog;
+use Psr\Log\LoggerInterface;
 use SDM\Altapay\Model\SystemConfig;
 use Magento\Sales\Model\Order;
 use SDM\Altapay\Helper\Data;
@@ -34,9 +34,9 @@ class CaptureObserver implements ObserverInterface
      */
     private $systemConfig;
     /**
-     * @var Logger
+     * @var LoggerInterface
      */
-    private $monolog;
+    private $logger;
     /**
      * @var Order
      */
@@ -67,7 +67,7 @@ class CaptureObserver implements ObserverInterface
      * CaptureObserver constructor.
      *
      * @param SystemConfig      $systemConfig
-     * @param Monolog           $monolog
+     * @param LoggerInterface   $logger
      * @param Order             $order
      * @param Data              $helper
      * @param storeConfig       $storeConfig
@@ -77,7 +77,7 @@ class CaptureObserver implements ObserverInterface
      */
     public function __construct(
         SystemConfig $systemConfig,
-        Monolog $monolog,
+        LoggerInterface $logger,
         Order $order,
         Data $helper,
         storeConfig $storeConfig,
@@ -86,7 +86,7 @@ class CaptureObserver implements ObserverInterface
         DiscountHandler $discountHandler
     ) {
         $this->systemConfig    = $systemConfig;
-        $this->monolog         = $monolog;
+        $this->logger          = $logger;
         $this->order           = $order;
         $this->helper          = $helper;
         $this->storeConfig     = $storeConfig;
@@ -147,9 +147,9 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param $couponCodeAmount
+     * @param                                         $couponCodeAmount
      * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
-     * @param $discountAllItems
+     * @param                                         $discountAllItems
      *
      * @return array
      */
@@ -246,10 +246,10 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param Magento\Sales\Api\Data\InvoiceInterface $invoice
-     * @param array $orderLines
-     * @param Magento\Sales\Model\Order $orderObject
-     * @param Magento\Sales\Model\Order\Payment $payment
+     * @param Magento\Sales\Api\Data\InvoiceInterface   $invoice
+     * @param array                                     $orderLines
+     * @param Magento\Sales\Model\Order                 $orderObject
+     * @param Magento\Sales\Model\Order\Payment         $payment
      * @param Magento\Store\Model\StoreManagerInterface $storeCode
      *
      * @throws ResponseHeaderException
@@ -273,17 +273,17 @@ class CaptureObserver implements ObserverInterface
         try {
             $response = $api->call();
         } catch (ResponseHeaderException $e) {
-            $this->monolog->addInfo(print_r($e->getHeader()));
-            $this->monolog->addCritical('Response header exception: ' . $e->getMessage());
+            $this->logger->info("Exception" , print_r($e->getHeader()));
+            $this->logger->critical('Response header exception: ' . $e->getMessage());
             throw $e;
         } catch (\Exception $e) {
-            $this->monolog->addCritical('Exception: ' . $e->getMessage());
+            $this->logger->critical('Exception: ' . $e->getMessage());
         }
 
         $rawResponse = $api->getRawResponse();
         if (!empty($rawResponse)) {
             $body = $rawResponse->getBody();
-            $this->monolog->addInfo('Response body: ' . $body);
+            $this->logger->info('Response body' , $body);
             //Update comments if capture fail
             $xml = simplexml_load_string($body);
             if ($xml->Body->Result == 'Error' || $xml->Body->Result == 'Failed') {
@@ -296,7 +296,7 @@ class CaptureObserver implements ObserverInterface
             foreach ($rawResponse->getHeaders() as $k => $v) {
                 $headData[] = $k . ': ' . json_encode($v);
             }
-            $this->monolog->addInfo('Response headers: ' . implode(", ", $headData));
+            $this->logger->info('Response headers: ' , implode(", ", $headData));
         }
         if (!isset($response->Result) || $response->Result != 'Success') {
             throw new \InvalidArgumentException('Could not capture reservation');

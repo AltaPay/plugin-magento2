@@ -14,7 +14,7 @@ use Altapay\Exceptions\ResponseHeaderException;
 use Altapay\Response\RefundResponse;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Logger\Monolog;
+use Psr\Log\LoggerInterface;
 use SDM\Altapay\Model\SystemConfig;
 use Magento\Sales\Model\Order;
 use SDM\Altapay\Helper\Data;
@@ -34,9 +34,9 @@ class CreditmemoRefundObserver implements ObserverInterface
      */
     private $systemConfig;
     /**
-     * @var Monolog
+     * @var LoggerInterface
      */
-    private $monolog;
+    private $logger;
 
     /**
      * @var Order
@@ -68,7 +68,7 @@ class CreditmemoRefundObserver implements ObserverInterface
      * CreditmemoRefundObserver constructor.
      *
      * @param SystemConfig      $systemConfig
-     * @param Monolog           $monolog
+     * @param LoggerInterface           $logger
      * @param Order             $order
      * @param Data              $helper
      * @param storeConfig       $storeConfig
@@ -78,7 +78,7 @@ class CreditmemoRefundObserver implements ObserverInterface
      */
     public function __construct(
         SystemConfig $systemConfig,
-        Monolog $monolog,
+        LoggerInterface $logger,
         Order $order,
         Data $helper,
         storeConfig $storeConfig,
@@ -87,7 +87,7 @@ class CreditmemoRefundObserver implements ObserverInterface
         DiscountHandler $discountHandler
     ) {
         $this->systemConfig    = $systemConfig;
-        $this->monolog         = $monolog;
+        $this->logger         = $logger;
         $this->order           = $order;
         $this->helper          = $helper;
         $this->storeConfig     = $storeConfig;
@@ -250,16 +250,16 @@ class CreditmemoRefundObserver implements ObserverInterface
         try {
             $refund->call();
         } catch (ResponseHeaderException $e) {
-            $this->monolog->addCritical('Response header exception: ' . $e->getMessage());
+            $this->logger->critical('Response header exception: ' . $e->getMessage());
             throw $e;
         } catch (\Exception $e) {
-            $this->monolog->addCritical('Exception: ' . $e->getMessage());
+            $this->logger->critical('Exception: ' . $e->getMessage());
         }
 
         $rawResponse = $refund->getRawResponse();
         $body        = $rawResponse->getBody();
         //add information to the altapay log
-        $this->monolog->addInfo('Response body: ' . $body);
+        $this->logger->info('Response body: ' , $body);
 
         //Update comments if refund fail
         $xml = simplexml_load_string($body);

@@ -20,7 +20,6 @@ use Altapay\Response\CallbackResponse;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Logger\Monolog;
 use Magento\Framework\UrlInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\Order;
@@ -78,10 +77,6 @@ class Generator
      */
     private $systemConfig;
     /**
-     * @var Monolog
-     */
-    private $_logger;
-    /**
      * @var TransactionFactory
      */
     private $transactionFactory;
@@ -131,7 +126,6 @@ class Generator
      * @param Order                $order
      * @param OrderSender          $orderSender
      * @param SystemConfig         $systemConfig
-     * @param Monolog              $_logger
      * @param OrderFactory         $orderFactory
      * @param InvoiceService       $invoiceService
      * @param TransactionFactory   $transactionFactory
@@ -152,7 +146,6 @@ class Generator
         Order $order,
         OrderSender $orderSender,
         SystemConfig $systemConfig,
-        Monolog $_logger,
         OrderFactory $orderFactory,
         InvoiceService $invoiceService,
         TransactionFactory $transactionFactory,
