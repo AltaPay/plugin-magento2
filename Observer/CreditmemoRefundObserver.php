@@ -102,7 +102,7 @@ class CreditmemoRefundObserver implements ObserverInterface
      *
      * @throws ResponseHeaderException
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         $memo = $observer['creditmemo'];
         //proceed if online refund
