@@ -52,7 +52,7 @@ $block->getViewFileUrl('SDM_Altapay::css/ordersummary.css') ?>">
                 <th class="mark" scope="row">Cart Subtotal</th>
                 <td class="amount">
                     <span class="price" data-th="Cart Subtotal">
-                    <?= $block->escapeHtml($block->getFormatedPrice($order->getSubtotal())); ?>
+                    <?= $block->escapeHtml($block->getFormattedPrice($order->getSubtotal())); ?>
                     </span>
                 </td>
             </tr>
@@ -63,7 +63,7 @@ $block->getViewFileUrl('SDM_Altapay::css/ordersummary.css') ?>">
                 </th>
                 <td class="amount">
                     <span class="price">
-                        -<?= $block->escapeHtml($block->getFormatedPrice($order->getDiscountAmount())); ?>
+                        -<?= $block->escapeHtml($block->getFormattedPrice($order->getDiscountAmount())); ?>
                     </span>
                 </td>
             </tr>
@@ -74,7 +74,7 @@ $block->getViewFileUrl('SDM_Altapay::css/ordersummary.css') ?>">
                 </th>
                 <td class="amount">
                     <span class="price" data-th="Shipping">
-                        <?= $block->escapeHtml($block->getFormatedPrice($order->getShippingAmount())); ?>
+                        <?= $block->escapeHtml($block->getFormattedPrice($order->getShippingAmount())); ?>
                     </span>
                 </td>
             </tr>
@@ -82,7 +82,7 @@ $block->getViewFileUrl('SDM_Altapay::css/ordersummary.css') ?>">
                 <th class="mark">Tax</th>
                 <td class="amount">
                     <span class="price">
-                        <?= $block->escapeHtml($block->getFormatedPrice($order->getTaxAmount())); ?>
+                        <?= $block->escapeHtml($block->getFormattedPrice($order->getTaxAmount())); ?>
                     </span>
                 </td>
             </tr>
@@ -93,7 +93,7 @@ $block->getViewFileUrl('SDM_Altapay::css/ordersummary.css') ?>">
                 <td class="amount" data-th="Order Total">
                     <strong>
                         <span class="price">
-                            <?= $block->escapeHtml($block->getFormatedPrice($order->getGrandTotal())); ?>
+                            <?= $block->escapeHtml($block->getFormattedPrice($order->getGrandTotal())); ?>
                         </span>
                     </strong>
                 </td>
@@ -142,7 +142,7 @@ $block->getViewFileUrl('SDM_Altapay::css/ordersummary.css') ?>">
                                             <span class="price-excluding-tax">
                                                 <span class="cart-price">
                                                     <span class="price">
-                                                        <?= $block->escapeHtml($block->getFormatedPrice($item->getBaseRowTotal())); ?>
+                                                        <?= $block->escapeHtml($block->getFormattedPrice($item->getBaseRowTotal())); ?>
                                                     </span>
                                                 </span>
                                             </span>

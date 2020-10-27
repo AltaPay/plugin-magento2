@@ -15,6 +15,7 @@ use Magento\Framework\UrlInterface;
 use Magento\Payment\Helper\Data;
 use Altapay\Api\Test\TestAuthentication;
 use Altapay\Api\Test\TestConnection;
+use Magento\Store\Model\ScopeInterface;
 use SDM\Altapay\Model\SystemConfig;
 use Altapay\Authentication;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -23,10 +24,11 @@ use Magento\Payment\Model\Config\Source\Allmethods;
 use Magento\Framework\View\Asset\Repository;
 use SDM\Altapay\Model\TokenFactory;
 use Magento\Customer\Model\Session;
+use Magento\Payment\Model\MethodInterface;
 
 class ConfigProvider implements ConfigProviderInterface
 {
-    const CODE = 'SDM_Altapay';
+    const CODE = 'sdm_altapay';
 
     /**
      * @var Data
@@ -126,7 +128,7 @@ class ConfigProvider implements ConfigProviderInterface
 
     public function getActivePaymentMethod()
     {
-        $storeScope        = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+        $storeScope        = ScopeInterface::SCOPE_STORE;
         $storeCode         = $this->systemConfig->resolveCurrentStoreCode();
         $methods           = [];
         $allPaymentMethod  = $this->data->getPaymentMethods();
@@ -240,7 +242,7 @@ class ConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * @return \Magento\Payment\Model\MethodInterface
+     * @return MethodInterface
      */
     protected function getData()
     {
@@ -248,7 +250,7 @@ class ConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * @param $collection
+     * @param array $collection
      *
      * @return string
      */

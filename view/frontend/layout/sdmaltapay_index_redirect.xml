@@ -14,7 +14,7 @@
         <block
             template="callback_redirect.phtml"
             class="SDM\Altapay\Block\Callback\Redirect"
-            name="SDM_Altapay_callback_redirect"
+            name="sdm_altapay_callback_redirect"
         />
     </referenceBlock>
 </page>

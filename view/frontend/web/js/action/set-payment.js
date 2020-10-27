@@ -63,7 +63,7 @@ define(
 
                 $.ajax({
                     method: "POST",
-                    url: window.checkoutConfig.payment['SDM_Altapay'].url,
+                    url: window.checkoutConfig.payment['sdm_altapay'].url,
                     data: {
                         paytype: method,
                         cartid: quote.getQuoteId(),

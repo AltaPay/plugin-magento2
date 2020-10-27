@@ -9,7 +9,11 @@
 
 namespace SDM\Altapay\Block;
 
+use Magento\Checkout\Model\Session;
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Framework\App\Http\Context as HttpContext;
+use Magento\Sales\Model\Order\Config;
 use SDM\Altapay\Model\TokenFactory;
 use Magento\Payment\Helper\Data;
 use SDM\Altapay\Model\ConfigProvider;
@@ -26,18 +30,19 @@ class Success extends \Magento\Checkout\Block\Onepage\Success
     /**
      * Success constructor.
      *
-     * @param Template\Context                    $context
-     * @param \Magento\Checkout\Model\Session     $checkoutSession
-     * @param \Magento\Sales\Model\Order\Config   $orderConfig
-     * @param \Magento\Framework\App\Http\Context $httpContext
-     * @param TokenFactory                        $dataToken
-     * @param array                               $data
+     * @param Context        $context
+     * @param Session        $checkoutSession
+     * @param Config         $orderConfig
+     * @param HttpContext    $httpContext
+     * @param TokenFactory   $dataToken
+     * @param array          $data
+     * @param ConfigProvider $dataPayment
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Sales\Model\Order\Config $orderConfig,
-        \Magento\Framework\App\Http\Context $httpContext,
+        Context $context,
+        Session $checkoutSession,
+        Config $orderConfig,
+        HttpContext $httpContext,
         TokenFactory $dataToken,
         array $data = [],
         ConfigProvider $dataPayment

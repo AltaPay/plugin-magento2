@@ -18,11 +18,11 @@ class Frauddetection implements ArrayInterface
      * @var array
      */
     private static $availible = [
-        '' => '- Disable -',
-        'red' => 'Red',
-        'maxmind' => 'Maxmind',
-        'test' => 'Test'
-    ];
+            ''        => '- Disable -',
+            'red'     => 'Red',
+            'maxmind' => 'Maxmind',
+            'test'    => 'Test'
+        ];
 
     /**
      * Return array of options as value-label pairs

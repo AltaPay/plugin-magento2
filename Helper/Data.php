@@ -15,6 +15,7 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Sales\Model\Order;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Sales\Model\ResourceModel\Order\Tax\Item;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Class Data for helper functions
@@ -77,15 +78,15 @@ class Data extends AbstractHelper
     {
         $order = $this->order->load($orderId);
         if ($order->getId()) {
-            $storeName                              = $order->getStore()->getName();
-            $websiteName                            = $order->getStore()->getWebsite()->getName();
-            $moduleInfo                             = $this->moduleList->getOne(self::MODULE_CODE);
-            $versionDetails                         = [];
-            $versionDetails['ecomPlatform']         = 'Magento';
-            $versionDetails['ecomVersion']          = $this->productMetadata->getVersion();
-            $versionDetails['ecomPluginName']       = $moduleInfo['name'];
-            $versionDetails['ecomPluginVersion']    = $moduleInfo['setup_version'];
-            $versionDetails['otherInfo']            = 'websiteName - ' . $websiteName . ', storeName - ' . $storeName;
+            $storeName                           = $order->getStore()->getName();
+            $websiteName                         = $order->getStore()->getWebsite()->getName();
+            $moduleInfo                          = $this->moduleList->getOne(self::MODULE_CODE);
+            $versionDetails                      = [];
+            $versionDetails['ecomPlatform']      = 'Magento';
+            $versionDetails['ecomVersion']       = $this->productMetadata->getVersion();
+            $versionDetails['ecomPluginName']    = $moduleInfo['name'];
+            $versionDetails['ecomPluginVersion'] = $moduleInfo['setup_version'];
+            $versionDetails['otherInfo']         = 'websiteName - ' . $websiteName . ', storeName - ' . $storeName;
 
             return $versionDetails;
         }
@@ -98,7 +99,7 @@ class Data extends AbstractHelper
      */
     public function getPaymentTitleTerminal($orderId)
     {
-        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+        $storeScope = ScopeInterface::SCOPE_STORE;
         $order      = $this->order->load($orderId);
         $storeCode  = $order->getStore()->getCode();
         $storeId    = $order->getStore()->getId();

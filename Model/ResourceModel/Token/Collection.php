@@ -9,10 +9,14 @@
 
 namespace SDM\Altapay\Model\ResourceModel\Token;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use SDM\Altapay\Model\ResourceModel\Token as ResourceToken;
+use SDM\Altapay\Model\Token;
+
+class Collection extends AbstractCollection
 {
     protected function _construct()
     {
-        $this->_init(\SDM\Altapay\Model\Token::class, \SDM\Altapay\Model\ResourceModel\Token::class);
+        $this->_init(Token::class, ResourceToken::class);
     }
 }

@@ -9,33 +9,51 @@
 
 namespace SDM\Altapay\Block\Adminhtml\Render;
 
-use Magento\Config\Block\System\Config\Form\Field;
+use Altapay\Api\Others\Terminals;
 use Magento\Backend\Block\Template\Context;
+use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
-use SDM\Altapay\Response\TerminalsResponse;
+use Psr\Log\LoggerInterface;
+use Magento\Framework\Module\ModuleListInterface;
 use SDM\Altapay\Model\SystemConfig;
+use SDM\Altapay\Response\TerminalsResponse;
 
 class Version extends Field
 {
+    const MODULE_CODE = 'SDM_Altapay';
+    /**
+     * @var ModuleListInterface
+     */
+    private $moduleList;
+
     /**
      * @var SystemConfig
      */
     private $systemConfig;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * Version constructor.
      *
-     * @param Context      $context
-     * @param SystemConfig $systemConfig
+     * @param Context             $context
+     * @param ModuleListInterface $moduleList
+     * @param SystemConfig        $systemConfig
+     * @param LoggerInterface     $logger
      */
     public function __construct(
         Context $context,
-        SystemConfig $systemConfig
+        ModuleListInterface $moduleList,
+        SystemConfig $systemConfig,
+        LoggerInterface $logger
     ) {
+        $this->moduleList = $moduleList;
         parent::__construct($context);
         $this->systemConfig = $systemConfig;
+        $this->logger       = $logger;
     }
-
 
     /**
      * Render module version
@@ -46,9 +64,10 @@ class Version extends Field
      */
     public function render(AbstractElement $element)
     {
-        $html = '';
+        $html       = '';
+        $moduleInfo = $this->moduleList->getOne(self::MODULE_CODE);
         try {
-            $call = new \Altapay\Api\Others\Terminals($this->systemConfig->getAuth());
+            $call = new Terminals($this->systemConfig->getAuth());
             /** @var TerminalsResponse $response */
             $response  = $call->call();
             $terminals = [];
@@ -62,7 +81,7 @@ class Version extends Field
                 }
                 $terminals[] = [
                     'title'      => $terminal->Title,
-                    'creditCard' => $creditCard
+                    'creditCard' => $creditCard,
                 ];
             }
 
@@ -74,7 +93,14 @@ class Version extends Field
             $html .= "</tr>";
 
         } catch (\Exception $e) {
+            $this->logger->critical('Exception :'. $e->getMessage());
         }
+
+        $html .= '<tr id="row_' . $element->getHtmlId() . '">';
+        $html .= '  <td class="label">' . $element->getData('label') . '</td>';
+        $html .= '  <td class="value">' . $moduleInfo['setup_version'] . '</td>';
+        $html .= '  <td></td>';
+        $html .= '</tr>';
 
         return $html;
     }

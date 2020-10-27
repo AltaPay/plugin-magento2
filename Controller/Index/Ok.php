@@ -11,6 +11,7 @@ namespace SDM\Altapay\Controller\Index;
 
 use Magento\Framework\App\ResponseInterface;
 use SDM\Altapay\Controller\Index;
+use Magento\Framework\Controller\ResultInterface;
 
 class Ok extends Index
 {
@@ -18,19 +19,20 @@ class Ok extends Index
     /**
      * Dispatch request
      *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
+     * @return ResultInterface|ResponseInterface
      * @throws \Exception
      */
     public function execute()
     {
         $this->writeLog();
         $checkAvs = false;
-        $post    = $this->getRequest()->getPostValue();
-        if(isset($post['avs_code']) && isset($post['avs_text'])){
-            $checkAvs = $this->generator->avsCheck($this->getRequest(), 
-                                                strtolower($post['avs_code']), 
-                                                strtolower($post['avs_text'])
-                                            );
+        $post     = $this->getRequest()->getPostValue();
+        if (isset($post['avs_code']) && isset($post['avs_text'])) {
+            $checkAvs = $this->generator->avsCheck(
+                $this->getRequest(),
+                strtolower($post['avs_code']),
+                strtolower($post['avs_text'])
+            );
         }
         if ($this->checkPost() && $checkAvs == false) {
             $this->generator->handleOkAction($this->getRequest());

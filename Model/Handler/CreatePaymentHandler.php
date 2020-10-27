@@ -9,6 +9,7 @@
 
 namespace SDM\Altapay\Model\Handler;
 
+use Magento\Store\Model\ScopeInterface;
 use SDM\Altapay\Model\SystemConfig;
 use Magento\Sales\Model\Order;
 
@@ -52,7 +53,7 @@ class CreatePaymentHandler
     public function setCustomOrderStatus(Order $order, $state, $statusKey)
     {
         $order->setState($state);
-        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+        $storeScope = ScopeInterface::SCOPE_STORE;
         $storeCode  = $order->getStore()->getCode();
         if ($status = $this->systemConfig->getStatusConfig($statusKey, $storeScope, $storeCode)) {
             $order->setStatus($status);

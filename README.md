@@ -6,6 +6,13 @@ web shop.
 
 == Change log ==
 
+** Version 2.0.0
+
+    * Improvements:
+            - Code formatted to Magento's recommended coding standards
+    * Bug fixes:
+            - Fix variable undefined issue
+
 ** Version 1.1.1
 
     * Improvements:

@@ -13,6 +13,8 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\NotFoundException;
 
 class Callbackform extends Action
 {
@@ -37,8 +39,8 @@ class Callbackform extends Action
     /**
      * Dispatch request
      *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
-     * @throws \Magento\Framework\Exception\NotFoundException
+     * @return ResultInterface|ResponseInterface
+     * @throws NotFoundException
      */
     public function execute()
     {

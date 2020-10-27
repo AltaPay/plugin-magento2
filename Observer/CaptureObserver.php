@@ -14,7 +14,7 @@ use Altapay\Exceptions\ResponseHeaderException;
 use Altapay\Response\CaptureReservationResponse;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Logger\Monolog;
+use Psr\Log\LoggerInterface;
 use SDM\Altapay\Model\SystemConfig;
 use Magento\Sales\Model\Order;
 use SDM\Altapay\Helper\Data;
@@ -22,7 +22,10 @@ use SDM\Altapay\Helper\Config as storeConfig;
 use SDM\Altapay\Model\Handler\OrderLinesHandler;
 use SDM\Altapay\Model\Handler\PriceHandler;
 use SDM\Altapay\Model\Handler\DiscountHandler;
-
+use Magento\Sales\Model\Order\Payment;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Sales\Api\Data\InvoiceInterface;
+use SimpleXMLElement;
 /**
  * Class CaptureObserver
  * Handle the invoice capture functionality.
@@ -34,9 +37,9 @@ class CaptureObserver implements ObserverInterface
      */
     private $systemConfig;
     /**
-     * @var Logger
+     * @var LoggerInterface
      */
-    private $monolog;
+    private $logger;
     /**
      * @var Order
      */
@@ -67,7 +70,7 @@ class CaptureObserver implements ObserverInterface
      * CaptureObserver constructor.
      *
      * @param SystemConfig      $systemConfig
-     * @param Monolog           $monolog
+     * @param LoggerInterface   $logger
      * @param Order             $order
      * @param Data              $helper
      * @param storeConfig       $storeConfig
@@ -77,7 +80,7 @@ class CaptureObserver implements ObserverInterface
      */
     public function __construct(
         SystemConfig $systemConfig,
-        Monolog $monolog,
+        LoggerInterface $logger,
         Order $order,
         Data $helper,
         storeConfig $storeConfig,
@@ -86,7 +89,7 @@ class CaptureObserver implements ObserverInterface
         DiscountHandler $discountHandler
     ) {
         $this->systemConfig    = $systemConfig;
-        $this->monolog         = $monolog;
+        $this->logger          = $logger;
         $this->order           = $order;
         $this->helper          = $helper;
         $this->storeConfig     = $storeConfig;
@@ -101,32 +104,31 @@ class CaptureObserver implements ObserverInterface
      * @return void
      * @throws ResponseHeaderException
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         $payment          = $observer['payment'];
         $invoice          = $observer['invoice'];
         $orderIncrementId = $invoice->getOrder()->getIncrementId();
         $orderObject      = $this->order->loadByIncrementId($orderIncrementId);
         $storeCode        = $invoice->getStore()->getCode();
-        $storePriceIncTax = $this->storeConfig->storePriceIncTax($invoice->getOrder());
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
             //Create orderlines from order items
-            $orderLines = $this->processInvoiceOrderLines($storePriceIncTax, $invoice);
+            $orderLines = $this->processInvoiceOrderLines($invoice);
             //Send request for payment refund
             $this->sendInvoiceRequest($invoice, $orderLines, $orderObject, $payment, $storeCode);
         }
     }
 
     /**
-     * @param $invoice
+     * @param InvoiceInterface $invoice
      *
      * @return array
      */
-    private function processInvoiceOrderLines($storePriceIncTax, $invoice)
+    private function processInvoiceOrderLines($invoice)
     {
         $couponCode       = $invoice->getDiscountDescription();
         $couponCodeAmount = $invoice->getDiscountAmount();
-        //Return true if disocunt enabled on all items
+        //Return true if discount enabled on all items
         $discountAllItems = $this->discountHandler->allItemsHaveDiscount($invoice->getOrder()->getAllVisibleItems());
         //order lines for items
         $orderLines = $this->itemOrderLines($couponCodeAmount, $invoice, $discountAllItems);
@@ -137,20 +139,20 @@ class CaptureObserver implements ObserverInterface
         }
         if ($invoice->getShippingInclTax() > 0) {
             //order lines for shipping
-            $orderLines[] = $this->orderLines->handleShipping($storePriceIncTax, $invoice, $discountAllItems, false);
+            $orderLines[] = $this->orderLines->handleShipping($invoice, $discountAllItems, false);
         }
-        if(!empty($this->fixedProductTax($invoice))){
+        if (!empty($this->fixedProductTax($invoice))) {
             //order lines for FPT
             $orderLines[] = $this->orderLines->fixedProductTaxOrderLine($this->fixedProductTax($invoice));
         }
-        
+
         return $orderLines;
     }
 
     /**
-     * @param $couponCodeAmount
-     * @param $invoice
-     * @param $discountAllItems
+     * @param                                         $couponCodeAmount
+     * @param InvoiceInterface                        $invoice
+     * @param                                         $discountAllItems
      *
      * @return array
      */
@@ -224,7 +226,7 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param $invoice
+     * @param InvoiceInterface $invoice
      *
      * @return array
      */
@@ -247,11 +249,11 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param $invoice
-     * @param $orderLines
-     * @param $orderObject
-     * @param $payment
-     * @param $storeCode
+     * @param InvoiceInterface      $invoice
+     * @param array                 $orderLines
+     * @param Order                 $orderObject
+     * @param Payment               $payment
+     * @param StoreManagerInterface $storeCode
      *
      * @throws ResponseHeaderException
      */
@@ -274,17 +276,18 @@ class CaptureObserver implements ObserverInterface
         try {
             $response = $api->call();
         } catch (ResponseHeaderException $e) {
-            $this->monolog->addInfo(print_r($e->getHeader()));
-            $this->monolog->addCritical('Response header exception: ' . $e->getMessage());
+            $this->logger->info("Exception: " . print_r($e->getHeader()));
+            $this->logger->critical('Response header exception: ' . $e->getMessage());
             throw $e;
         } catch (\Exception $e) {
-            $this->monolog->addCritical('Exception: ' . $e->getMessage());
+            $this->logger->critical('Exception: ' . $e->getMessage());
         }
 
         $rawResponse = $api->getRawResponse();
         if (!empty($rawResponse)) {
             $body = $rawResponse->getBody();
-            $this->monolog->addInfo('Response body: ' . $body);
+            $xml = json_encode(new SimpleXMLElement($body, LIBXML_NOCDATA));
+            $this->logger->info('Response body', json_decode($xml, true));
             //Update comments if capture fail
             $xml = simplexml_load_string($body);
             if ($xml->Body->Result == 'Error' || $xml->Body->Result == 'Failed') {
@@ -297,7 +300,7 @@ class CaptureObserver implements ObserverInterface
             foreach ($rawResponse->getHeaders() as $k => $v) {
                 $headData[] = $k . ': ' . json_encode($v);
             }
-            $this->monolog->addInfo('Response headers: ' . implode(", ", $headData));
+            $this->logger->info('Response headers: ', $headData);
         }
         if (!isset($response->Result) || $response->Result != 'Success') {
             throw new \InvalidArgumentException('Could not capture reservation');
@@ -305,17 +308,18 @@ class CaptureObserver implements ObserverInterface
     }
 
     /**
-     * @param $order
+     * @param InvoiceInterface $invoice
      *
      * @return float|int
      */
-    public function fixedProductTax($invoice){
+    public function fixedProductTax($invoice)
+    {
 
         $weeTaxAmount = 0;
         foreach ($invoice->getAllItems() as $item) {
-           $weeTaxAmount +=  $item->getWeeeTaxAppliedRowAmount();
+            $weeTaxAmount += $item->getWeeeTaxAppliedRowAmount();
         }
 
-       return $weeTaxAmount;
+        return $weeTaxAmount;
     }
 }

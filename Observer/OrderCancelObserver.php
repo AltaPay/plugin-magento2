@@ -15,6 +15,8 @@ use Altapay\Response\ReleaseReservationResponse;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use SDM\Altapay\Model\SystemConfig;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Payment;
 
 class OrderCancelObserver implements ObserverInterface
 {
@@ -40,11 +42,11 @@ class OrderCancelObserver implements ObserverInterface
      * @return void
      * @throws ResponseHeaderException
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
-        /** @var \Magento\Sales\Model\Order $order */
+        /** @var Order $order */
         $order = $observer['order'];
-        /** @var \Magento\Sales\Model\Order\Payment $payment */
+        /** @var Payment $payment */
         $payment = $order->getPayment();
 
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {

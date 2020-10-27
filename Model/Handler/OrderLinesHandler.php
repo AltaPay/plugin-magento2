@@ -101,6 +101,7 @@ class OrderLinesHandler
 
         return $orderLine;
     }
+
     /**
      * @param $fixedTaxAmount
      *
@@ -113,6 +114,7 @@ class OrderLinesHandler
 
         return $orderLine;
     }
+
     /**
      * @param $shippingAmount
      * @param $method
@@ -152,8 +154,7 @@ class OrderLinesHandler
         $order,
         $newOrder
     ) {
-        $itemName    = $item->getName();
-        $productType = $item->getProductType();
+        $itemName = $item->getName();
 
         if ($newOrder) {
             $quantity     = $item->getQtyOrdered();
@@ -161,19 +162,18 @@ class OrderLinesHandler
             $productUrl   = $item->getProduct()->getProductUrl();
             $productThumb = $item->getProduct()->getThumbnail();
             $taxPercent   = $item->getTaxPercent();
+            $options      = $item->getData('product_options');
         } else {
             $quantity     = $item->getQty();
             $itemId       = $item->getOrderItem()->getItemId();
             $productUrl   = $item->getOrderItem()->getProduct()->getProductUrl();
             $productThumb = $item->getOrderItem()->getProduct()->getThumbnail();
             $taxPercent   = $item->getOrderItem()->getTaxPercent();
+            $options      = $item->getOrderItem()->getData('product_options');
         }
 
-        if ($productType == "configurable") {
-            $options = $item->getProductOptions();
-            if (isset($options["simple_name"])) {
-                $itemName = $options["simple_name"];
-            }
+        if (isset($options['simple_name'])) {
+            $itemName = $options["simple_name"];
         }
         $itemName              = $this->escaper->escapeHtml($itemName);
         $orderLine             = new OrderLine($itemName, $itemId, $quantity, $unitPrice);
@@ -201,7 +201,7 @@ class OrderLinesHandler
      *
      * @return OrderLine
      */
-    public function handleShipping($priceIncEnable, $order, $discountOnAllItems, $newOrder)
+    public function handleShipping($order, $discountOnAllItems, $newOrder)
     {
         //add shipping tax amount in separate column of request
         $discount       = 0;
@@ -223,10 +223,12 @@ class OrderLinesHandler
                 $discount = ($order->getShippingDiscountAmount() / $shippingAmount) * 100;
             }
         }
+
         if ($taxPercent > 0) {
             $shippingTax = $shippingAmount * ($taxPercent / 100);
             $shippingTax = number_format($shippingTax, 2, '.', '');
         }
+
         return $this->shippingOrderLine($shippingAmount, $method, $carrier_code, $shippingTax, $taxPercent, $discount);
     }
 
@@ -243,5 +245,7 @@ class OrderLinesHandler
                 return true;
             }
         }
+
+        return false;
     }
 }

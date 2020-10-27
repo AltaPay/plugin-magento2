@@ -9,7 +9,9 @@
 
 namespace SDM\Altapay\Model\ResourceModel;
 
-class Token extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+
+class Token extends AbstractDb
 {
     public function _construct()
     {

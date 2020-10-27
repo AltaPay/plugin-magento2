@@ -9,12 +9,13 @@
 
 namespace SDM\Altapay\Ui\Component\Listing\Column;
 
-use \Magento\Sales\Api\OrderRepositoryInterface;
-use \Magento\Framework\View\Element\UiComponent\ContextInterface;
-use \Magento\Framework\View\Element\UiComponentFactory;
-use \Magento\Ui\Component\Listing\Columns\Column;
-use \Magento\Framework\Api\SearchCriteriaBuilder;
-use \Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Framework\View\Element\UiComponent\ContextInterface;
+use Magento\Framework\View\Element\UiComponentFactory;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Ui\Component\Listing\Columns\Column;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class PaymentMethod extends Column
 {
@@ -49,7 +50,7 @@ class PaymentMethod extends Column
      */
     public function prepareDataSource(array $dataSource)
     {
-        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+        $storeScope = ScopeInterface::SCOPE_STORE;
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as $key => &$items) {
                 $order_id = $items["entity_id"];

@@ -12,6 +12,7 @@ namespace SDM\Altapay\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\Order;
+use Magento\Store\Model\ScopeInterface;
 use SDM\Altapay\Model\SystemConfig;
 
 class BeforePaymentObserver implements ObserverInterface
@@ -43,10 +44,10 @@ class BeforePaymentObserver implements ObserverInterface
         $payment     = $observer['payment'];
         if (in_array($payment->getMethod(), SystemConfig::getTerminalCodes())) {
             /**
-             * @var \Magento\Sales\Model\Order
+             * @var Order
              */
             $order      = $payment->getOrder();
-            $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+            $storeScope = ScopeInterface::SCOPE_STORE;
             $storeCode  = $order->getStore()->getCode();
 
             //Set the first order state and status (custom, if applicable)

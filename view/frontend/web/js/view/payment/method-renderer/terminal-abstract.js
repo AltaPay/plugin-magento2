@@ -82,7 +82,7 @@ define(
 
             },
             getDefaultCode: function () {
-                return 'SDM_Altapay';
+                return 'sdm_altapay';
             },
             terminalLogo: function () {
                 var self = this;

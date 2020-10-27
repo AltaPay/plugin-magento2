@@ -12,7 +12,6 @@ namespace SDM\Altapay\Model\Config\Source;
 use Altapay\Response\TerminalsResponse;
 use Magento\Framework\Option\ArrayInterface;
 
-
 class TerminalLogo
 {
     /**
@@ -56,7 +55,6 @@ class TerminalLogo
             'visa'              => 'Visa',
             'visa_electron'     => 'Visa Electron'
         ];
-
 
         foreach ($terminalLogos as $key => $val) {
             $terminalsLogosWithLabel[] = ['value' => $key, 'label' => $val];

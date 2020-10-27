@@ -10,15 +10,16 @@
 namespace SDM\Altapay\Block;
 
 use Magento\Payment\Block\Info as BaseInfo;
+use Magento\Framework\DataObject;
 
 class Info extends BaseInfo
 {
     /**
      * Prepare credit card related payment info
      *
-     * @param \Magento\Framework\DataObject|array $transport
+     * @param DataObject|array|null $transport
      *
-     * @return \Magento\Framework\DataObject
+     * @return DataObject
      */
     protected function _prepareSpecificInformation($transport = null)
     {

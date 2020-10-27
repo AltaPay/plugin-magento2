@@ -36,31 +36,49 @@ class Transaction extends AbstractModel implements IdentityInterface
         return [InstallSchema::TABLE_NAME . '_' . $this->getId()];
     }
 
+    /**
+     * @return int
+     */
     public function getId()
     {
         return $this->getData(InstallSchema::TABLE_IDENTIFIER);
     }
 
+    /**
+     * @return string
+     */
     public function getOrderId()
     {
         return $this->getData(InstallSchema::COLUMN_ORDERID);
     }
 
+    /**
+     * @return string
+     */
     public function getTransactionId()
     {
         return $this->getData(InstallSchema::COLUMN_TRANSACTION_ID);
     }
 
+    /**
+     * @return string
+     */
     public function getPaymentId()
     {
-        return $this->getData(InstallSchema::COLUMN_PAYMENT_ID);
+        return (string)$this->getData(InstallSchema::COLUMN_PAYMENT_ID);
     }
 
+    /**
+     * @return string
+     */
     public function getTransactionData()
     {
         return $this->getData(InstallSchema::COLUMN_TRANSACTION_DATA);
     }
 
+    /**
+     * @return string
+     */
     public function getParametersData()
     {
         return $this->getData(InstallSchema::COLUMN_PARAMETERS_DATA);
