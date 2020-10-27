@@ -287,7 +287,7 @@ class CaptureObserver implements ObserverInterface
         if (!empty($rawResponse)) {
             $body = $rawResponse->getBody();
             $xml = json_encode(new SimpleXMLElement($body, LIBXML_NOCDATA));
-            $this->logger->info('Response body', json_decode($xml,true));
+            $this->logger->info('Response body', json_decode($xml, true));
             //Update comments if capture fail
             $xml = simplexml_load_string($body);
             if ($xml->Body->Result == 'Error' || $xml->Body->Result == 'Failed') {
