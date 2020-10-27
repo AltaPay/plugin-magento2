@@ -25,7 +25,7 @@ use SDM\Altapay\Model\Handler\DiscountHandler;
 use Magento\Sales\Model\Order\Payment;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Sales\Api\Data\InvoiceInterface;
-
+use SimpleXMLElement;
 /**
  * Class CaptureObserver
  * Handle the invoice capture functionality.
@@ -286,7 +286,7 @@ class CaptureObserver implements ObserverInterface
         $rawResponse = $api->getRawResponse();
         if (!empty($rawResponse)) {
             $body = $rawResponse->getBody();
-            $xml = json_encode(simplexml_load_string($body, "SimpleXMLElement", LIBXML_NOCDATA));
+            $xml = json_encode(new SimpleXMLElement($body, LIBXML_NOCDATA));
             $this->logger->info('Response body' , json_decode($xml,TRUE));
             //Update comments if capture fail
             $xml = simplexml_load_string($body);

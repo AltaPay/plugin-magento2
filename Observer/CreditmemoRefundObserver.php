@@ -23,7 +23,7 @@ use SDM\Altapay\Model\Handler\OrderLinesHandler;
 use SDM\Altapay\Model\Handler\PriceHandler;
 use SDM\Altapay\Model\Handler\DiscountHandler;
 use Magento\Sales\Api\Data\CreditmemoInterface;
-
+use SimpleXMLElement;
 /**
  * Class CreditmemoRefundObserver
  * Handle the refund functionality.
@@ -260,7 +260,7 @@ class CreditmemoRefundObserver implements ObserverInterface
         $rawResponse = $refund->getRawResponse();
         $body        = $rawResponse->getBody();
         //add information to the altapay log
-        $xml = json_encode(simplexml_load_string($body, "SimpleXMLElement", LIBXML_NOCDATA));
+        $xml = json_encode(new SimpleXMLElement($body, LIBXML_NOCDATA));
         $this->logger->info('Response body' , json_decode($xml,TRUE));
 
         //Update comments if refund fail
