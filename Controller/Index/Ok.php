@@ -11,7 +11,7 @@ namespace SDM\Altapay\Controller\Index;
 
 use Magento\Framework\App\ResponseInterface;
 use SDM\Altapay\Controller\Index;
-use \Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Controller\ResultInterface;
 
 class Ok extends Index
 {

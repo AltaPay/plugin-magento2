@@ -42,7 +42,7 @@ class OrderCancelObserver implements ObserverInterface
      * @return void
      * @throws ResponseHeaderException
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         /** @var Order $order */
         $order = $observer['order'];

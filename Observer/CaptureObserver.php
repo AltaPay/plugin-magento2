@@ -286,7 +286,8 @@ class CaptureObserver implements ObserverInterface
         $rawResponse = $api->getRawResponse();
         if (!empty($rawResponse)) {
             $body = $rawResponse->getBody();
-            $this->logger->info('Response body', $body);
+            $xml = json_encode(simplexml_load_string($body, "SimpleXMLElement", LIBXML_NOCDATA));
+            $this->logger->info('Response body' , json_decode($xml,TRUE));
             //Update comments if capture fail
             $xml = simplexml_load_string($body);
             if ($xml->Body->Result == 'Error' || $xml->Body->Result == 'Failed') {
@@ -299,7 +300,7 @@ class CaptureObserver implements ObserverInterface
             foreach ($rawResponse->getHeaders() as $k => $v) {
                 $headData[] = $k . ': ' . json_encode($v);
             }
-            $this->logger->info('Response headers: ', implode(", ", $headData));
+            $this->logger->info('Response headers: ', $headData);
         }
         if (!isset($response->Result) || $response->Result != 'Success') {
             throw new \InvalidArgumentException('Could not capture reservation');

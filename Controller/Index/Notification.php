@@ -11,7 +11,7 @@ namespace SDM\Altapay\Controller\Index;
 
 use Magento\Framework\App\ResponseInterface;
 use SDM\Altapay\Controller\Index;
-use \Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\Exception\NotFoundException;
 
 class Notification extends Index
 {

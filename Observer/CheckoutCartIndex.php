@@ -23,6 +23,7 @@ use Magento\CatalogInventory\Api\StockManagementInterface;
 use SDM\Altapay\Model\SystemConfig;
 use Magento\Framework\Session\SessionManagerInterface;
 use SDM\Altapay\Model\ConstantConfig;
+use Magento\Store\Model\ScopeInterface;
 
 class CheckoutCartIndex implements ObserverInterface
 {
@@ -103,7 +104,7 @@ class CheckoutCartIndex implements ObserverInterface
         if ($this->session->getAltapayCustomerRedirect()) {
             $order             = $this->session->getLastRealOrder();
             $quote             = $this->quoteFactory->create()->load($order->getQuoteId());
-            $storeScope        = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+            $storeScope        = ScopeInterface::SCOPE_STORE;
             $storeCode         = $order->getStore()->getCode();
             $statusHistoryItem = $order->getStatusHistoryCollection()->getFirstItem();
             $errorCodeMerchant = $statusHistoryItem->getData('comment');

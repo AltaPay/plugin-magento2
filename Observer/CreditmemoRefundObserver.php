@@ -260,7 +260,8 @@ class CreditmemoRefundObserver implements ObserverInterface
         $rawResponse = $refund->getRawResponse();
         $body        = $rawResponse->getBody();
         //add information to the altapay log
-        $this->logger->info('Response body: ', $body);
+        $xml = json_encode(simplexml_load_string($body, "SimpleXMLElement", LIBXML_NOCDATA));
+        $this->logger->info('Response body' , json_decode($xml,TRUE));
 
         //Update comments if refund fail
         $xml = simplexml_load_string($body);
