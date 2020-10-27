@@ -23,6 +23,7 @@ use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\Order\Address\Renderer;
 use Magento\Sales\Model\Order\Config;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 
 class Ordersummary extends Template
 {
@@ -124,7 +125,7 @@ class Ordersummary extends Template
     /**
      * Load order
      *
-     * @return Magento\Sales\Api\Data\OrderInterface|null
+     * @return OrderInterface|null
      */
 
     public function getOrder()

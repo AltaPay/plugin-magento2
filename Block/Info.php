@@ -17,7 +17,7 @@ class Info extends BaseInfo
     /**
      * Prepare credit card related payment info
      *
-     * @param DataObject|array $transport
+     * @param DataObject|array|null $transport
      *
      * @return DataObject
      */

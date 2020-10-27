@@ -276,7 +276,7 @@ class CaptureObserver implements ObserverInterface
         try {
             $response = $api->call();
         } catch (ResponseHeaderException $e) {
-            $this->logger->info("Exception", print_r($e->getHeader()));
+            $this->logger->info("Exception: " . print_r($e->getHeader()));
             $this->logger->critical('Response header exception: ' . $e->getMessage());
             throw $e;
         } catch (\Exception $e) {
@@ -287,7 +287,7 @@ class CaptureObserver implements ObserverInterface
         if (!empty($rawResponse)) {
             $body = $rawResponse->getBody();
             $xml = json_encode(new SimpleXMLElement($body, LIBXML_NOCDATA));
-            $this->logger->info('Response body' , json_decode($xml,TRUE));
+            $this->logger->info('Response body', json_decode($xml,true));
             //Update comments if capture fail
             $xml = simplexml_load_string($body);
             if ($xml->Body->Result == 'Error' || $xml->Body->Result == 'Failed') {
