@@ -6,6 +6,11 @@ web shop.
 
 == Change log ==
 
+** Version 2.0.1
+
+    * Improvements:
+            - Redirect failed orders to cart details page
+
 ** Version 2.0.0
 
     * Improvements:
