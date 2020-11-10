@@ -69,7 +69,7 @@ class Fail extends Index
             $msg = $e->getMessage();
         }
 
-        if ($status == 'failed' || $status == 'error') {
+        if ($status == 'failed' || $status == 'error' || $status == 'cancelled') {
             $resultRedirect = $this->prepareRedirect('checkout/cart', [], $msg);
         } else {
             $resultRedirect = $this->prepareRedirect('checkout', ['_fragment' => 'payment'], $msg);
