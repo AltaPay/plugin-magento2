@@ -6,6 +6,11 @@ web shop.
 
 == Change log ==
 
+** Version 2.0.2
+
+    * Bug fixes:
+        - Remove payment terminal shown upon editing order from backend.
+
 ** Version 2.0.1
 
     * Improvements:
