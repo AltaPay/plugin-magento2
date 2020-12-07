@@ -6,6 +6,12 @@ web shop.
 
 == Change log ==
 
+** Version 2.0.2
+
+    * Bug fixes:
+        - Remove payment terminal shown upon editing order from backend
+        - Fix "Could not load HTML" issue cause by X-Magento-Tags
+
 ** Version 2.0.1
 
     * Improvements:
