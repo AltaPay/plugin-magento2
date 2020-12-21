@@ -6,6 +6,11 @@ web shop.
 
 == Change log ==
 
+** Version 2.0.3
+
+    * Improvements:
+            - Added support for terminal sorting
+
 ** Version 2.0.2
 
     * Bug fixes:
