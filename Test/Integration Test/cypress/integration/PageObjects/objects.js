@@ -91,10 +91,17 @@ class Order
 
     admin()
     {
-        cy.visit('http://34.253.195.24/magento3/admin')
-        cy.get('#username').type('admin')
-        cy.get('#login').type('admin@1234')
-        cy.get('.action-login').click().wait(2000)
+        cy.fixture('config').then((admin)=>{
+            cy.visit(admin.adminURL)
+            cy.get('#username').type(admin.adminUsername)
+            cy.get('#login').type(admin.adminPass)
+            cy.get('.action-login').click().wait(2000)
+            })
+
+        // cy.visit('http://34.253.195.24/magento3/admin')
+        // cy.get('#username').type('admin')
+        // cy.get('#login').type('admin@1234')
+        // cy.get('.action-login').click().wait(2000)
     }
 
     capture()
