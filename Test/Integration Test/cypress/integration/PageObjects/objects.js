@@ -28,13 +28,13 @@ class Order
         cy.get('[id^=qty]').type('3')
         cy.wait(2000)
         cy.contains('Add to Cart').click()
-        cy.wait(2000)
-        cy.get('.message-success > div > a').click()
+        cy.wait(3000)
+        cy.get('.message-success > div > a').wait(2000).click()
         //cy.contains('shopping cart').click()
         cy.wait(5000)
         cy.get('.checkout-methods-items > :nth-child(1) > .action').click()
         //cy.contains('Proceed to Checkout').wait(3000).click()
-        cy.wait(3000)
+        cy.wait(10000)
         cy.get('.button').click()
     }
 
@@ -107,8 +107,9 @@ class Order
     capture()
         {
             cy.get('#menu-magento-sales-sales > [onclick="return false;"]').click().wait(3000)
-            cy.get('.item-sales-order > a').click().wait(5000)
+            cy.get('.item-sales-order > a').click().wait(7000)
             // cy.log(txt)
+            cy.wait(2000)
             cy.xpath('//*[@id="container"]/div/div[4]/table/tbody/tr[1]/td[2]/div').click()
             cy.get('#order_invoice > span').wait(5000).click()
             cy.wait(6000)
