@@ -30,7 +30,14 @@ class Order
         cy.contains('Add to Cart').click()
         cy.wait(3000)
         cy.get('.message-success > div > a').wait(2000).click()
+<<<<<<< HEAD
         cy.get('.checkout-methods-items > :nth-child(1) > .action').click()
+=======
+        //cy.contains('shopping cart').click()
+        cy.wait(5000)
+        cy.get('.checkout-methods-items > :nth-child(1) > .action').click()
+        //cy.contains('Proceed to Checkout').wait(3000).click()
+>>>>>>> 6a70a4a3dbe73e6db09c5c2d123094b63d0bdb60
         cy.wait(10000)
         cy.get('.button').click()
     }
@@ -49,6 +56,10 @@ class Order
         
         cy.get('#maincontent > div.columns > div > div.checkout-success > p:nth-child(1) > a > strong').then(($btn) => {
 
+<<<<<<< HEAD
+=======
+            // store the button's text
+>>>>>>> 6a70a4a3dbe73e6db09c5c2d123094b63d0bdb60
             const txt = $btn.text()
             cy.log(txt)
             }
@@ -78,6 +89,10 @@ class Order
         
         cy.get('#maincontent > div.columns > div > div.checkout-success > p:nth-child(1) > a > strong').then(($btn) => {
 
+<<<<<<< HEAD
+=======
+            // store the button's text
+>>>>>>> 6a70a4a3dbe73e6db09c5c2d123094b63d0bdb60
             const txt = $btn.text()
             cy.log(txt)
             }
@@ -93,7 +108,14 @@ class Order
             cy.get('.action-login').click().wait(2000)
             })
 
+<<<<<<< HEAD
 
+=======
+        // cy.visit('http://34.253.195.24/magento3/admin')
+        // cy.get('#username').type('admin')
+        // cy.get('#login').type('admin@1234')
+        // cy.get('.action-login').click().wait(2000)
+>>>>>>> 6a70a4a3dbe73e6db09c5c2d123094b63d0bdb60
     }
 
     capture()
@@ -152,6 +174,10 @@ class Order
             
             cy.get('#maincontent > div.columns > div > div.checkout-success > p:nth-child(1) > a > strong').then(($btn) => {
 
+<<<<<<< HEAD
+=======
+            // store the button's text
+>>>>>>> 6a70a4a3dbe73e6db09c5c2d123094b63d0bdb60
             const txt = $btn.text()
             cy.log(txt)
             }
@@ -162,10 +188,18 @@ class Order
         {
             cy.get('#menu-magento-sales-sales > [onclick="return false;"]').click().wait(3000)
             cy.get('.item-sales-order > a').click().wait(5000)
+<<<<<<< HEAD
+=======
+            // cy.log(txt)
+>>>>>>> 6a70a4a3dbe73e6db09c5c2d123094b63d0bdb60
             cy.xpath('//*[@id="container"]/div/div[4]/table/tbody/tr[1]/td[2]/div').click()
             cy.get('#order_invoice > span').wait(5000).click()
             cy.wait(5000)
             cy.xpath('/html/body/div[2]/main/div[2]/div/div/form/section[4]/section[2]/div[2]/div[2]/div[2]/div[4]/button/span').click()
+<<<<<<< HEAD
+=======
+            //cy.contains('Submit Invoice').click()
+>>>>>>> 6a70a4a3dbe73e6db09c5c2d123094b63d0bdb60
             cy.wait(5000)
             cy.get(':nth-child(1) > .note-list-comment').should('include.text', 'Captured amount')
         }
