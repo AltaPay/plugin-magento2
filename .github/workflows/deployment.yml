@@ -2,8 +2,8 @@ name: 'Deployment'
 
 # Only trigger, when the build workflow succeeded
 on:
-  push:
-    branches: [ feature/deployment-improvements ]
+  pull_request:
+    branches: [ main ]
     
 jobs:
   terraform:
