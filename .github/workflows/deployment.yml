@@ -17,7 +17,6 @@ jobs:
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: |
-        echo "$GITHUB_CONTEXT"
         echo ${{ github.head_ref }}
 
 #    # Configure AWS credentials
