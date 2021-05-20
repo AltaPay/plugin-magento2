@@ -13,9 +13,7 @@ jobs:
     steps:
 
     # Get Current Branch Name
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
+    - name: Step that prints name of pull request's head branch
       run: |
         echo ${{ github.head_ref }}
 
