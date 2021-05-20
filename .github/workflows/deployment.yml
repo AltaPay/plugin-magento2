@@ -13,15 +13,11 @@ jobs:
     steps:
 
     # Get Current Branch Name
-    - name: Get Current Branch Name
-      uses: mdecoleman/pr-branch-name@1.0.1
-      id: vars
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      # Echo Current Branch Name
-    - name: Echo Current Branch Name
-      run: echo ${{ steps.vars.outputs.branch }}
+    - name: Step that prints name of pull request's base branch
+      run: |
+        echo "Pull request's base branch is: ${BASE_BRANCH}"
+      env:
+        BASE_BRANCH: ${{ github.base_ref }}
 
 #    # Configure AWS credentials
 #    - name: Configure AWS credentials
