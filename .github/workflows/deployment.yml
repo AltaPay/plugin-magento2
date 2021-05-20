@@ -13,11 +13,8 @@ jobs:
     steps:
 
     # Get Current Branch Name
-    - name: Step that prints name of pull request's base branch
-      run: |
-        echo "Pull request's base branch is: ${BASE_BRANCH}"
-      env:
-        BASE_BRANCH: ${{ github.base_ref }}
+    - name: Branch name
+      run: echo running on branch ${GITHUB_REF##*/}
 
 #    # Configure AWS credentials
 #    - name: Configure AWS credentials
