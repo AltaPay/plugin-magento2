@@ -18,7 +18,7 @@ jobs:
       id: vars
       with:
         repo-token: ${{ secrets.ACCESS_TOKEN }}
-    - run: echo ${{ steps.vars.outputs.branch }}
+      run: echo ${{ steps.vars.outputs.branch }}
 
 #    # Configure AWS credentials
 #    - name: Configure AWS credentials
