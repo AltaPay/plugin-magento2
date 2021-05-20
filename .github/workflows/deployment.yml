@@ -18,6 +18,9 @@ jobs:
       id: vars
       with:
         repo-token: ${{ secrets.ACCESS_TOKEN }}
+
+      # Echo Current Branch Name
+    - name: Echo Current Branch Name
       run: echo ${{ steps.vars.outputs.branch }}
 
 #    # Configure AWS credentials
