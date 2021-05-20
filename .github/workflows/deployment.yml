@@ -13,8 +13,12 @@ jobs:
     steps:
 
     # Get Current Branch Name
-    - name: Branch name
-      run: echo running on branch ${GITHUB_REF##*/}
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: |
+        echo "$GITHUB_CONTEXT"
+        echo ${{ github.event.pull_request.title }}
 
 #    # Configure AWS credentials
 #    - name: Configure AWS credentials
