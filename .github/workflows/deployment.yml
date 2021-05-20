@@ -17,7 +17,7 @@ jobs:
     - uses: mdecoleman/pr-branch-name@1.0.1
       id: vars
       with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        repo-token: ${{ secrets.ACCESS_TOKEN }}
     - run: echo ${{ steps.vars.outputs.branch }}
 
 #    # Configure AWS credentials
