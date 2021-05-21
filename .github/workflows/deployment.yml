@@ -65,4 +65,4 @@ jobs:
         options: |
           -u ubuntu
           -i inventory
-          -branch ${{ github.head_ref }}
+          --extra-vars branch_name=${{ github.head_ref }}
