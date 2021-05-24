@@ -6,6 +6,11 @@ web shop.
 
 == Change log ==
 
+** Version 2.0.4
+
+    * Improvements:
+            - Added integration test
+
 ** Version 2.0.3
 
     * Improvements:
