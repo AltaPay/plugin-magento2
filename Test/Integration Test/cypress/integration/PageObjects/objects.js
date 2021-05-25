@@ -8,9 +8,8 @@ class Order
     visit()
     {
         cy.fixture('config').then((url)=>{
-        cy.visit(url.url) 
-        cy.contains('Sign In').click()   
-            })    
+        cy.visit(url.url)    
+        })    
     }
 
     signin(){
@@ -30,9 +29,18 @@ class Order
         cy.contains('Add to Cart').click()
         cy.wait(3000)
         cy.get('.message-success > div > a').wait(2000).click()
-        cy.get('.checkout-methods-items > :nth-child(1) > .action').wait(2000).click().wait(3000)
-        cy.wait(10000)
-        cy.get('.button > span').click()
+        cy.get('.checkout-methods-items > :nth-child(1) > .action').click().wait(5000)
+        cy.get('#customer-email-fieldset > .required > .control > #customer-email').type('demo@example.com')
+        cy.xpath('/html/body/div[2]/main/div[2]/div/div[2]/div[4]/ol/li[1]/div[2]/form[2]/div/div[1]/div/input').type('Testperson-dk')
+        cy.xpath('/html/body/div[2]/main/div[2]/div/div[2]/div[4]/ol/li[1]/div[2]/form[2]/div/div[2]/div/input').type('Testperson-dk')
+        cy.xpath('/html/body/div[2]/main/div[2]/div/div[2]/div[4]/ol/li[1]/div[2]/form[2]/div/fieldset/div/div[1]/div/input').type('Sæffleberggate 56,1 mf')
+        cy.xpath('/html/body/div[2]/main/div[2]/div/div[2]/div[4]/ol/li[1]/div[2]/form[2]/div/div[4]/div/select').select('Denmark')
+        cy.xpath('/html/body/div[2]/main/div[2]/div/div[2]/div[4]/ol/li[1]/div[2]/form[2]/div/div[7]/div/input').type('Varde')
+        cy.xpath('/html/body/div[2]/main/div[2]/div/div[2]/div[4]/ol/li[1]/div[2]/form[2]/div/div[8]/div/input').type('6800')
+        cy.xpath('/html/body/div[2]/main/div[2]/div/div[2]/div[4]/ol/li[1]/div[2]/form[2]/div/div[9]/div/input').type('20123456')
+        cy.get(':nth-child(2) > :nth-child(1) > .radio').click()
+        cy.wait(1000)
+        cy.get('.button').click()
     }
 
     cc_payment(){
@@ -47,8 +55,7 @@ class Order
 
         cy.get('.base').should('have.text', 'Thank you for your purchase!')
         
-        cy.get('#maincontent > div.columns > div > div.checkout-success > p:nth-child(1) > a > strong').then(($btn) => {
-
+        cy.get('.checkout-success > :nth-child(1) > span').then(($btn) => {
 
             const txt = $btn.text()
             cy.log(txt)
@@ -77,8 +84,7 @@ class Order
         cy.wait(3000)
         cy.get('.base').should('have.text', 'Thank you for your purchase!')
         
-        cy.get('#maincontent > div.columns > div > div.checkout-success > p:nth-child(1) > a > strong').then(($btn) => {
-
+        cy.get('.checkout-success > :nth-child(1) > span').then(($btn) => {
 
             const txt = $btn.text()
             cy.log(txt)
@@ -95,12 +101,14 @@ class Order
             cy.get('.action-login').click().wait(2000)
             })
 
+
     }
 
     capture()
         {
             cy.get('#menu-magento-sales-sales > [onclick="return false;"]').click().wait(3000)
             cy.get('.item-sales-order > a').click().wait(7000)
+
             cy.wait(2000)
             cy.xpath('//*[@id="container"]/div/div[4]/table/tbody/tr[1]/td[2]/div').click()
             cy.get('#order_invoice > span').wait(5000).click()
@@ -121,53 +129,6 @@ class Order
         
         }
 
-    subscription_product()
-        {
-            cy.get('[id=ui-id-6]').wait(1000).trigger('mouseover')
-            cy.get('[id=ui-id-25]').wait(1000).click()
-            cy.get('#product-item-info_1 > .details > .name > .product-item-link').click()
-            cy.get('[for="radio_subscribe_product"]').wait(1000).click()
-            cy.contains('Add to Cart').click()
-            cy.wait(2000)
-            cy.get('.message-success > div > a').click()
-            cy.wait(5000)
-            cy.get('.checkout-methods-items > :nth-child(1) > .action').click()
-            cy.wait(3000)
-            cy.get('.button').click()
-        }
-
-    subscription_payment()
-        {
-            cy.get('#terminal5').click()
-            cy.get('._active > .payment-method-content > :nth-child(5) > div.primary > .action').click().wait(3000)
-            cy.get('#creditCardNumberInput').type('4111111111111111')
-            cy.get('#emonth').type('01')
-            cy.get('#eyear').type('2023')
-            cy.get('#cvcInput').type('123')
-            cy.get('#cardholderNameInput').type('testname')
-            cy.get('#pensioCreditCardPaymentSubmitButton').click().wait(6000)
-
-            cy.get('.base').should('have.text', 'Thank you for your purchase!')
-            
-            cy.get('#maincontent > div.columns > div > div.checkout-success > p:nth-child(1) > a > strong').then(($btn) => {
-
-            const txt = $btn.text()
-            cy.log(txt)
-            }
-            )
-        }    
-    
-        capture_subscription()
-        {
-            cy.get('#menu-magento-sales-sales > [onclick="return false;"]').click().wait(3000)
-            cy.get('.item-sales-order > a').click().wait(5000)
-            cy.xpath('//*[@id="container"]/div/div[4]/table/tbody/tr[1]/td[2]/div').click()
-            cy.get('#order_invoice > span').wait(5000).click()
-            cy.wait(5000)
-            cy.xpath('/html/body/div[2]/main/div[2]/div/div/form/section[4]/section[2]/div[2]/div[2]/div[2]/div[4]/button/span').click()
-            cy.wait(5000)
-            cy.get(':nth-child(1) > .note-list-comment').should('include.text', 'Captured amount')
-        }
 
     }    
 
