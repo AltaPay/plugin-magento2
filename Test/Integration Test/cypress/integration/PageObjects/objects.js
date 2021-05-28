@@ -8,17 +8,10 @@ class Order
     visit()
     {
         cy.fixture('config').then((url)=>{
-        cy.visit(url.url)    
+        cy.visit(url.shopURL)    
         })    
     }
 
-    signin(){
-        cy.fixture('config').then((signin)=>{
-        cy.get('[id=email]').type(signin.email)
-        cy.get('#pass').type(signin.pass)
-        cy.get('#send2').click()
-        })
-    }
 
     addproduct()
     {
@@ -100,7 +93,6 @@ class Order
             cy.get('#login').type(admin.adminPass)
             cy.get('.action-login').click().wait(2000)
             })
-
 
     }
 
