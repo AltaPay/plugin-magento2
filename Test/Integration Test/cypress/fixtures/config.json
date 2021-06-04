@@ -1,9 +1,9 @@
 
 {
-  "url": "http://34.253.195.24/magento3",
-  "email": "saadidrees57@gmail.com",
-  "pass": "admin@123",
-  "adminURL": "http://34.253.195.24/magento3/admin",
-  "adminUsername": "admin",
-  "adminPass": "admin@1234"
+  "url": "http://yourdomain.com",
+  "email": "shop_login@mail.com",
+  "pass": "shop_password",
+  "adminURL": "http://yourdomain.com/admin",
+  "adminUsername": "admin_user",
+  "adminPass": "admin_password"
 }
