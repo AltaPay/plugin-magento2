@@ -6,6 +6,11 @@ web shop.
 
 == Change log ==
 
+** Version 2.0.4
+
+    * Improvements:
+        - Support multi-language for order summary section in form rendering
+
 ** Version 2.0.3
 
     * Improvements:
