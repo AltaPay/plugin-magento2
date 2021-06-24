@@ -1,9 +1,7 @@
 
 {
-  "url": "http://yourdomain.com",
-  "email": "shop_login@mail.com",
-  "pass": "shop_password",
-  "adminURL": "http://yourdomain.com/admin",
+  "shopURL": "http://yoursite.com",
+  "adminURL": "http://yoursite.com/admin",
   "adminUsername": "admin_user",
   "adminPass": "admin_password"
 }
