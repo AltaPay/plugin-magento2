@@ -21,10 +21,7 @@ class Index extends Action
      * @var TokenFactory
      */
     protected $tokenFactory;
-    /**
-     * @var ResultFactory
-     */
-    protected $resultFactory;
+
     /**
      * @var Session
      */
@@ -33,11 +30,10 @@ class Index extends Action
     public function __construct(
         Context $context,
         TokenFactory $tokenFactory,
-        ResultFactory $resultFactory,
         Session $checkoutSession
     ) {
         $this->tokenFactory    = $tokenFactory;
-        $this->resultFactory   = $resultFactory;
+        $this->resultFactory   = $context->getResultFactory();
         $this->checkoutSession = $checkoutSession;
         parent::__construct($context);
     }

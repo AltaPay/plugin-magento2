@@ -13,7 +13,6 @@ use Altapay\Api\Others\Terminals;
 use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
-use Psr\Log\LoggerInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use SDM\Altapay\Model\SystemConfig;
 use SDM\Altapay\Response\TerminalsResponse;
@@ -46,13 +45,12 @@ class Version extends Field
     public function __construct(
         Context $context,
         ModuleListInterface $moduleList,
-        SystemConfig $systemConfig,
-        LoggerInterface $logger
+        SystemConfig $systemConfig
     ) {
         $this->moduleList = $moduleList;
         parent::__construct($context);
         $this->systemConfig = $systemConfig;
-        $this->logger       = $logger;
+        $this->logger       = $context->getLogger();
     }
 
     /**

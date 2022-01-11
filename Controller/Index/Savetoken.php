@@ -36,13 +36,12 @@ class Savetoken extends Action
         Context $context,
         OrderFactory $orderFactory,
         TokenFactory $dataToken,
-        ResultFactory $result,
         Session $customerSession
     ) {
         parent::__construct($context);
         $this->orderFactory    = $orderFactory;
         $this->dataToken       = $dataToken;
-        $this->resultRedirect  = $result;
+        $this->resultRedirect  = $context->getResultFactory();
         $this->customerSession = $customerSession;
     }
 
