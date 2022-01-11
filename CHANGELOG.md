@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.5]
+**Fixes**
+- Resolve compilation issue for below Magento 2.1.9 version
+- Add missing Setup files
+
+
 ## [2.0.4]
 **Improvements**
 - Support multi-language for order summary section in form rendering
