@@ -111,15 +111,15 @@ jobs:
       with:
         name: "config.json"
         json: '{"shopURL": "http://${{env.IP}}/magento","adminURL": "http://${{env.IP}}/magento/admin","adminUsername": "${{secrets.CMS_ADMIN_USER}}","adminPass": "${{secrets.CMS_ADMIN_PASS}}", "CC_TERMINAL_NAME": "${{secrets.CC_TERMINAL_NAME}}", "KLARNA_DKK_TERMINAL_NAME": "${{secrets.KLARNA_DKK_TERMINAL_NAME}}", "SUBSCRIPTION_TERMINAL_NAME": "${{secrets.SUBSCRIPTION_TERMINAL_NAME}}"}'
-        dir: Test/integration-tests/cypress/fixtures/
+        dir: Tests/integration-tests/cypress/fixtures/
 
     - name: Install Cypress Dependencies 
       run: npm i
-      working-directory: Test/integration-tests
+      working-directory: Tests/integration-tests
 
     - name: Run Cypress tests 
       run: ./node_modules/.bin/cypress run
-      working-directory: Test/integration-tests
+      working-directory: Tests/integration-tests
 
       # after the test run completes
       # store screenshots
@@ -128,6 +128,6 @@ jobs:
       if: failure() || true
       with:
         name: cypress-screenshots
-        path: ./Test/integration-tests/cypress/screenshots
+        path: ./Tests/integration-tests/cypress/screenshots
         if-no-files-found: ignore
         
