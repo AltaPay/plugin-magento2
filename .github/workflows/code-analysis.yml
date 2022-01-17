@@ -21,10 +21,10 @@ jobs:
          extensions: intl #optional
          ini-values: "post_max_size=256M" #optional
        
-     - run: mkdir plugin-magento2-community
+     - run: mkdir plugin-magento2
      - uses: actions/checkout@v2 
        with: 
-         path: plugin-magento2-community
+         path: plugin-magento2
       
      - name: Run php7.0 linter
        run: |
