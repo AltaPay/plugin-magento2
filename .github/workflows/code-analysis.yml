@@ -1,0 +1,32 @@
+
+name: PHP Code Analysis
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  php-l:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['7.0']
+    steps:
+     - name: Install PHP 7.0
+       uses: shivammathur/setup-php@v2
+       with:
+         php-version: ${{ matrix.php-versions }}
+         extensions: intl #optional
+         ini-values: "post_max_size=256M" #optional
+       
+     - run: mkdir plugin-magento2
+     - uses: actions/checkout@v2 
+       with: 
+         path: plugin-magento2
+      
+     - name: Run php7.0 linter
+       run: |
+         find . -path ./vendor -prune -false -o -type f -name '*.php' -print0 | xargs -0 -n1 -P$(nproc) php7.0 -l -n | (! grep -v "No syntax errors detected" )
+       working-directory: plugin-magento2

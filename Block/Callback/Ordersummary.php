@@ -11,7 +11,6 @@ namespace SDM\Altapay\Block\Callback;
 
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Customer\Model\Context;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Http\Context as HttpContext;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Pricing\Helper\Data;
@@ -66,10 +65,6 @@ class Ordersummary extends Template
      * @var Data $priceHelper
      */
     protected $priceHelper;
-    /**
-     * @var ScopeConfigInterface
-     */
-    protected $_appConfigScopeConfigInterface;
 
     /**
      * OrderSummary constructor.
@@ -83,7 +78,6 @@ class Ordersummary extends Template
      * @param Renderer                 $renderer
      * @param ProductRepository        $productRepository
      * @param Data                     $priceHelper
-     * @param ScopeConfigInterface     $appConfigScopeConfigInterface
      * @param array                    $data
      */
     public function __construct(
@@ -96,7 +90,6 @@ class Ordersummary extends Template
         Renderer $renderer,
         ProductRepository $productRepository,
         Data $priceHelper,
-        ScopeConfigInterface $appConfigScopeConfigInterface,
         array $data = []
     ) {
 
@@ -109,7 +102,7 @@ class Ordersummary extends Template
         $this->renderer                       = $renderer;
         $this->productRepository              = $productRepository;
         $this->priceHelper                    = $priceHelper;
-        $this->_appConfigScopeConfigInterface = $appConfigScopeConfigInterface;
+        $this->_appConfigScopeConfigInterface = $context->getScopeConfig();
     }
 
     /**

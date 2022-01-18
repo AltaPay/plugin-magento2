@@ -34,9 +34,6 @@ class CheckoutCartIndex implements ObserverInterface
     /** @var QuoteFactory */
     private $quoteFactory;
 
-    /** @var ManagerInterface */
-    protected $messageManager;
-
     /** @var OrderFactory */
     protected $orderFactory;
 
@@ -75,7 +72,6 @@ class CheckoutCartIndex implements ObserverInterface
     public function __construct(
         Context $context,
         Session $session,
-        ManagerInterface $messageManager,
         QuoteFactory $quoteFactory,
         OrderFactory $orderFactory,
         Coupon $coupon,
@@ -85,7 +81,7 @@ class CheckoutCartIndex implements ObserverInterface
     ) {
         $this->session         = $session;
         $this->quoteFactory    = $quoteFactory;
-        $this->messageManager  = $messageManager;
+        $this->messageManager  = $context->getMessageManager();
         $this->orderFactory    = $orderFactory;
         $this->coupon          = $coupon;
         $this->couponUsage     = $couponUsage;
@@ -116,14 +112,9 @@ class CheckoutCartIndex implements ObserverInterface
                 || strpos($errorCodeMerchant, 'cancelled') !== false
             ) {
                 $consumerError        = explode('|', $errorCodeMerchant);
-                $consumerErrorMessage = $consumerError[1];
-                $merchantErrorMessage = $consumerError[2];
+                
                 //Displays merchant error message
-                if ($consumerErrorMessage == $merchantErrorMessage) {
-                    $historyComment = $consumerErrorMessage;
-                } else {
-                    $historyComment = $merchantErrorMessage . " - " . $consumerErrorMessage;
-                }
+                $historyComment = $consumerError[1];
                 //Display consumer error messages
                 $message = $consumerError[1];
                 if ($message == __(ConstantConfig::UNKNOWN_PAYMENT_STATUS_MERCHANT)) {
