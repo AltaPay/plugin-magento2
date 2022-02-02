@@ -1,5 +1,5 @@
 /vendor
 composer.lock
-Tests/integration-tests/node_modules
-Tests/integration-tests/cypress/screenshots
-Tests/integration-tests/cypress/videos
+Tests/integration-tests/node_modules/
+Tests/integration-tests/cypress/screenshots/
+Tests/integration-tests/cypress/videos/
