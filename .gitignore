@@ -1,3 +1,6 @@
 /vendor
 composer.lock
-Test/Integration Test/node_modules
+Tests/integration-tests/node_modules/
+Tests/integration-tests/cypress/screenshots/
+Tests/integration-tests/cypress/videos/
+.idea
