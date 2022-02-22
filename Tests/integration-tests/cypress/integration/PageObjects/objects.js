@@ -229,9 +229,10 @@ class Order {
 
         }
         const generatedUsername = generateNewUsername()
+        const generatedPassword = generateNewUsername()
         cy.get('#email_address').type(generatedUsername + '@example.com')
-        cy.get('#password').type('P@ssword123')
-        cy.get('#password-confirmation').type('P@ssword123')
+        cy.get('#password').type(generatedPassword)
+        cy.get('#password-confirmation').type(generatedPassword)
         cy.get('#form-validate > .actions-toolbar > div.primary > .action').click()
 
         //Manage Shipping details
