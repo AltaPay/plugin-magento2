@@ -219,7 +219,7 @@ class Order {
         cy.get('#firstname').type('Testperson-dk')
         cy.get('#lastname').type('Testperson-dk')
 
-        function generateNewUsername() {
+        function generateRandomString() {
             let text = "";
             let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
@@ -228,8 +228,8 @@ class Order {
             return text;
 
         }
-        const generatedUsername = generateNewUsername()
-        const generatedPassword = generateNewUsername()
+        const generatedUsername = generateRandomString()
+        const generatedPassword = generateRandomString()
         cy.get('#email_address').type(generatedUsername + '@example.com')
         cy.get('#password').type(generatedPassword)
         cy.get('#password-confirmation').type(generatedPassword)
