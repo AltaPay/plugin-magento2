@@ -2,42 +2,43 @@ import Order from '../PageObjects/objects'
 
 describe('Magento2', function () {
 
-    // it('TC # 1: CC full capture and refund', function () {
-    //     const ord = new Order()
-    //     ord.clrcookies()
-    //     ord.visit()
-    //     cy.get('body').then(($body) => {
-    //         if ($body.text().includes('€')) {
-    //             ord.clrcookies()
-    //             ord.admin()
-    //             ord.change_currency_to_DKK()
-    //         }
-    //         ord.visit()
-    //         ord.addproduct()
-    //         cy.fixture('config').then((admin) => {
-    //             if (admin.CC_TERMINAL_NAME != "") {
-    //                 cy.get('body').wait(5000).then(($a) => {
-    //                     if ($a.find("label:contains('" + admin.CC_TERMINAL_NAME + "')").length) {
-    //                         ord.cc_payment(admin.CC_TERMINAL_NAME)
-    //                         ord.clrcookies()
-    //                         ord.admin()
-    //                         ord.capture()
-    //                         ord.refund()
-    //                     } else {
-    //                         cy.log(admin.CC_TERMINAL_NAME + ' not found in page')
-    //                         this.skip()
-    //                     }
+    it('TC # 1: CC full capture and refund', function () {
+        const ord = new Order()
+        ord.clrcookies()
+        ord.visit()
+        cy.get('body').then(($body) => {
+            if ($body.text().includes('€')) {
+                ord.clrcookies()
+                ord.admin()
+                ord.change_currency_to_DKK()
+            }
+            ord.visit()
+            ord.addproduct()
+            cy.fixture('config').then((admin) => {
+                if (admin.CC_TERMINAL_NAME != "") {
+                    cy.get('body').wait(5000).then(($a) => {
+                        if ($a.find("label:contains('" + admin.CC_TERMINAL_NAME + "')").length) {
+                            ord.cc_payment(admin.CC_TERMINAL_NAME)
+                            ord.clrcookies()
+                            ord.admin()
+                            ord.capture()
+                            ord.refund()
+                        } else {
+                            cy.log(admin.CC_TERMINAL_NAME + ' not found in page')
+                            this.skip()
+                        }
 
-    //                 })
-    //             }
-    //             else {
-    //                 cy.log('CC_TERMINAL_NAME skipped')
-    //                 this.skip()
-    //             }
-    //         })
-    //     })
-    //     cy.wait(3000)
-    // })
+                    })
+                }
+                else {
+                    cy.log('CC_TERMINAL_NAME skipped')
+                    this.skip()
+                }
+            })
+            cy.wait(3000)
+        })
+        
+    })
 
     it('TC # 2: Klarna full capture and refund', function () {
         const ord = new Order()
@@ -69,8 +70,8 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
-        cy.wait(3000)
     })
 
     it('TC # 3: iDEAL Payment', function () {
@@ -103,8 +104,8 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
-        cy.wait(3000)
     })
 
     it('TC # 4: Subscription', function () {
@@ -126,9 +127,8 @@ describe('Magento2', function () {
                 cy.log('Subscription product not found')
                 this.skip()
             }
-
+            cy.wait(3000)
         })
-        cy.wait(3000)
     })
 
     it('TC # 5: CC partial capture', function () {
@@ -161,8 +161,8 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
-        cy.wait(3000)
     })
 
     it('TC # 6: Klarna partial capture', function () {
@@ -195,8 +195,8 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
-        cy.wait(3000)
     })
 
     it('TC # 7: CC partial refund', function () {
@@ -231,8 +231,8 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
-        cy.wait(3000)
     })
 
     it('TC # 8: Klarna partial refund', function () {
@@ -266,8 +266,8 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
-        cy.wait(3000)
     })
 
     it('TC # 9: CC release payment', function () {
@@ -299,8 +299,8 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
-        cy.wait(3000)
     })
 
     it('TC # 10: Klarna release payment', function () {
@@ -333,8 +333,8 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
-
+            cy.wait(3000)
         })
     })
-    cy.wait(3000)
+
 })
