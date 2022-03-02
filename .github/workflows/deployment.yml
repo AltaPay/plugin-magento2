@@ -11,9 +11,10 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    outputs:
+      ip: ${{ steps.expose_ip.outputs.ip}}
 
     steps:
-    
     # Configure AWS credentials
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -72,8 +73,7 @@ jobs:
           else
               echo "TEST_BRANCH_NAME=main" >> "$GITHUB_ENV"
           fi  	
-          
-   
+
     # Run Ansible playbook
     - name: Run playbook
       uses: dawidd6/action-ansible-playbook@v2
@@ -85,21 +85,21 @@ jobs:
           -u ubuntu
           -i inventory
           --extra-vars "branch_name=${{env.TEST_BRANCH_NAME}} gatewayURL=${{ secrets.GATEWAYURL }} gatewayUser=${{ secrets.GATEWAYUSER }} gatewayPass=${{ secrets.GATEWAYPASS }} mg2_admin_email=${{secrets.CMS_ADMIN_EMAIL}} mg2_admin_user=${{secrets.CMS_ADMIN_USER}} mg2_admin_password=${{secrets.CMS_ADMIN_PASS}}"   
-          
-          
+
     # Export IP for use in cypress tests config
     - name: Export IP
-      id: export_ip
       run: |
         testvar=$(sed '4!d' inventory)
         echo $testvar
         echo "IP=$testvar">> $GITHUB_ENV
         echo $IP
-        echo "::set-output name=ip::$IP"
       working-directory: ../plugin-infrastructure/deploy/plugins
 
-    outputs:
-      ip: ${{ steps.export_ip.outputs.ip}}
+    - name: Expose IP
+      id: expose_ip
+      run: |
+          echo "::set-output name=ip::${{ env.IP }}"      
+
 
   # Run Cypress tests
   cypress-run:
@@ -109,6 +109,7 @@ jobs:
     # Docker image with Cypress pre-installed
     # https://github.com/cypress-io/cypress-docker-images/tree/master/included
     container: cypress/included:7.0.0
+
     steps:
       - uses: actions/checkout@v1
         with:
