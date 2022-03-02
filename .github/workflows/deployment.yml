@@ -10,7 +10,6 @@ on:
 
 jobs:
   terraform:
-    name: 'Terraform'
     runs-on: ubuntu-latest
 
     steps:
@@ -129,6 +128,8 @@ jobs:
           # we could simply run "npm ci" but that would not cache dependencies
           # thus we can use this 3rd party action
         uses: bahmutov/npm-install@v1
+        with:
+          working-directory: "Tests/integration-tests"
 
       - name: Run Cypress tests
         run: cypress run --config video=false
