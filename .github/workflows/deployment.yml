@@ -95,7 +95,7 @@ jobs:
         echo $testvar
         echo "IP=$testvar">> $GITHUB_ENV
         echo $IP
-        echo "::set-output name=ip::${{env.IP}}"
+        echo "::set-output name=ip::$IP"
       working-directory: ../plugin-infrastructure/deploy/plugins
 
     outputs:
