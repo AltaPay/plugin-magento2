@@ -7,7 +7,9 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-    
+env:
+  IP: localhost
+
 jobs:
   terraform:
     name: 'Terraform'
@@ -121,7 +123,7 @@ jobs:
           dir: Tests/integration-tests/cypress/fixtures/
 
       - name: Run Cypress tests
-        run: cypress run --config video=false
+        run: npm i cypress-xpath -g && cypress run --config video=false
         working-directory: "Tests/integration-tests"
 
         # after the test run completes
