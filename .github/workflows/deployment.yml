@@ -107,9 +107,6 @@ jobs:
     name: 'Run Cypress'
     runs-on: ubuntu-latest
     needs: terraform
-    # Docker image with Cypress pre-installed
-    # https://github.com/cypress-io/cypress-docker-images/tree/master/included
-    container: cypress/included:7.0.0
 
     steps:
       - uses: actions/checkout@v1
@@ -126,15 +123,12 @@ jobs:
           json: '{"shopURL": "http://${{ needs.terraform.outputs.ip }}/magento","adminURL": "http://${{ needs.terraform.outputs.ip }}/magento/admin","adminUsername": "${{secrets.CMS_ADMIN_USER}}","adminPass": "${{secrets.CMS_ADMIN_PASS}}", "CC_TERMINAL_NAME": "${{secrets.CC_TERMINAL_NAME}}", "KLARNA_DKK_TERMINAL_NAME": "${{secrets.KLARNA_DKK_TERMINAL_NAME}}", "SUBSCRIPTION_TERMINAL_NAME": "${{secrets.SUBSCRIPTION_TERMINAL_NAME}}", "iDEAL_EUR_TERMINAL": "${{secrets.IDEAL_EUR_TERMINAL_NAME}}"}'
           dir: Tests/integration-tests/cypress/fixtures/
 
-      - name: Install dependencies 📦
-          # we could simply run "npm ci" but that would not cache dependencies
-          # thus we can use this 3rd party action
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: "Tests/integration-tests"
+      - name: Install Cypress Dependencies 
+        run: npm i
+        working-directory: Tests/integration-tests
 
       - name: Run Cypress tests
-        run: cypress run --config video=false
+        run: DEBUG=cypress:server:util:process_profiler ./node_modules/.bin/cypress --config video=false
         working-directory: "Tests/integration-tests"
 
         # after the test run completes
