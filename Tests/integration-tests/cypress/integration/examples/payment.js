@@ -35,7 +35,9 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
+        
     })
 
     it('TC # 2: Klarna full capture and refund', function () {
@@ -68,6 +70,7 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
     })
 
@@ -101,6 +104,7 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
     })
 
@@ -123,7 +127,7 @@ describe('Magento2', function () {
                 cy.log('Subscription product not found')
                 this.skip()
             }
-
+            cy.wait(3000)
         })
     })
 
@@ -157,6 +161,7 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
     })
 
@@ -190,6 +195,7 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
     })
 
@@ -225,6 +231,7 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
     })
 
@@ -259,6 +266,7 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
     })
 
@@ -291,6 +299,7 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
+            cy.wait(3000)
         })
     })
 
@@ -324,7 +333,7 @@ describe('Magento2', function () {
                     this.skip()
                 }
             })
-
+            cy.wait(3000)
         })
     })
 

@@ -11,11 +11,11 @@ class Order {
         })
     }
 
-    addproduct() {
+    addproduct(discount_type='') {
         cy.contains('Fusion Backpack').wait(1000).click().wait(2000)
         cy.contains('Add to Cart').click().wait(8000)
-        cy.get('.showcart').click().wait(2000)
-        cy.get('#top-cart-btn-checkout').click().wait(7000)
+        cy.get('.showcart').click().wait(3000)
+        cy.get('#top-cart-btn-checkout').click().wait(10000)
         cy.get('#customer-email-fieldset > .required > .control > #customer-email').type('demo@example.com')
         cy.get('body').then(($a) => {
             if ($a.find('[name="firstname"]').length) {
@@ -47,6 +47,11 @@ class Order {
             }
         })
         cy.get('.button').click().wait(10000)
+        if(discount_type != ""){
+            cy.get('#block-discount-heading').click().wait(2000)
+            cy.get('#discount-code').type(discount_type) 
+            cy.get('#discount-form > .actions-toolbar > .primary > .action').click().wait(2000)
+        } 
     }
 
     cc_payment(CC_TERMINAL_NAME) {
@@ -63,7 +68,7 @@ class Order {
     klarna_payment(KLARNA_DKK_TERMINAL_NAME) {
         cy.contains(KLARNA_DKK_TERMINAL_NAME).click({ force: true })
         cy.wait(3000)
-        cy.get('._active > .payment-method-content > :nth-child(5) > div.primary > .action').click().wait(7000)
+        cy.get('._active > .payment-method-content > :nth-child(5) > div.primary > .action').click().wait(10000)
         cy.get('[id=submitbutton]').click().wait(5000)
         cy.wait(5000)
         cy.get('[id=klarna-pay-later-fullscreen]').then(function ($iFrame) {
@@ -100,8 +105,8 @@ class Order {
     }
 
     refund() {
-        cy.xpath('//*[@id="sales_order_view_tabs_order_invoices"]/span[1]').wait(2000).click()
-        cy.xpath('//*[@id="sales_order_view_tabs_order_invoices_content"]/div/div[3]/table/tbody/tr').wait(2000).click()
+        cy.get('#sales_order_view_tabs_order_invoices').click().wait(3000)
+        cy.get('.data-grid-actions-cell > .action-menu-item').click()
         cy.wait(2000)
         cy.get('body').then(($a) => {
             if ($a.find('[title="Credit Memo"]').length) {
@@ -109,7 +114,7 @@ class Order {
             }
         })
         cy.wait(2000)
-        cy.xpath('/html/body/div[2]/main/div[2]/div/div/form/div[2]/section[2]/div[2]/div[2]/div[3]/div[3]/button[2]/span').click()
+        cy.get('[title="Refund"]').click()
         cy.wait(3000)
         cy.get(':nth-child(1) > .note-list-comment').should('include.text', 'We refunded')
     }
@@ -118,10 +123,21 @@ class Order {
         cy.get('#menu-magento-backend-stores > [onclick="return false;"]').click()
         cy.get('.item-system-config > a').click()
         cy.contains('Currency Setup').click().wait(2000)
-        cy.get('#currency_options_base').wait(2000).select('Euro')
-        cy.get('#currency_options_default').wait(2000).select('Euro')
-        cy.get('#currency_options_allow').wait(2000).select('Euro')
-        cy.get('#save').click().wait(2000)
+        cy.get('#currency_options-head').then(($cr) => {
+            if ($cr.hasClass('open')) {
+                cy.get('#currency_options_base').wait(2000).select('Euro')
+                cy.get('#currency_options_default').wait(2000).select('Euro')
+                cy.get('#currency_options_allow').wait(2000).select('Euro')
+                cy.get('#save').click().wait(2000)
+            } else {
+                cy.get('#currency_options-head').click()
+                cy.get('#currency_options_base').wait(2000).select('Euro')
+                cy.get('#currency_options_default').wait(2000).select('Euro')
+                cy.get('#currency_options_allow').wait(2000).select('Euro')
+                cy.get('#save').click().wait(2000)
+            }
+        })
+        
         //Flush cache
         cy.get('#menu-magento-backend-system > [onclick="return false;"]').scrollIntoView().click()
         cy.get('.item-system-cache > a').click()
@@ -145,10 +161,21 @@ class Order {
         cy.get('.item-system-config > a').click()
         cy.get('#save').click()
         cy.contains('Currency Setup').click()
-        cy.get('#currency_options_base').select('Danish Krone')
-        cy.get('#currency_options_default').select('Danish Krone')
-        cy.get('#currency_options_allow').select('Danish Krone')
-        cy.get('#save').click().wait(2000)
+
+        cy.get('#currency_options-head').then(($cr) => {
+            if ($cr.hasClass('open')) {
+                cy.get('#currency_options_base').select('Danish Krone')
+                cy.get('#currency_options_default').select('Danish Krone')
+                cy.get('#currency_options_allow').select('Danish Krone')
+                cy.get('#save').click().wait(2000)
+            } else {
+                cy.get('#currency_options-head').click()
+                cy.get('#currency_options_base').select('Danish Krone')
+                cy.get('#currency_options_default').select('Danish Krone')
+                cy.get('#currency_options_allow').select('Danish Krone')
+                cy.get('#save').click().wait(2000)
+            }
+        })
         //Flush cache
         cy.get('#menu-magento-backend-system > [onclick="return false;"]').scrollIntoView().click()
         cy.get('.item-system-cache > a').click()
@@ -276,6 +303,238 @@ class Order {
             cy.get('#pensioCreditCardPaymentSubmitButton').click().wait(6000)
 
         })
+    }
+
+    create_cart_percent_discount() {
+        //Check if catalog discount is active. If so, deactivate it.
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"]').click()
+        cy.get('.item-promo-catalog > a').wait(5000).click()
+        cy.contains("AltaPay Catalog Rule Percentage").click().wait(5000)
+        cy.get('[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "1") {
+                    cy.get('[name="is_active"]').select('Inactive')
+                    cy.get('#save_and_apply').click()
+                    cy.wait(50000)
+                }
+            })
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"]').wait(5000).click()
+        cy.get('.item-promo-catalog > a').wait(3000).click()
+        cy.contains("AltaPay Catalog Rule Fixed").click().wait(3000)
+        cy.get('[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "1") {
+                    cy.get('[name="is_active"]').select('Inactive')
+                    cy.get('#save_and_apply').click()
+                    cy.wait(50000)
+                }
+            })
+        //Start creating/activating cart discount    
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"] > span').click()
+        cy.get('.item-promo-quote > a > span').click()
+        cy.contains('$4 Luma water bottle (save 70%)').wait(2000).click().wait(2000)
+        cy.get('[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "0") {
+                    cy.get('[data-index="is_active"] > .admin__field-control > .admin__actions-switch > .admin__actions-switch-label').click()
+                }
+            })
+        cy.get('[name="coupon_code"]').clear().type("percentage")
+        cy.get('[data-index="actions"] > .fieldset-wrapper-title > .admin__collapsible-title').click()
+        cy.get('[name="simple_action"]').select('Percent of product price discount')
+        cy.get('[name="discount_amount"]').clear().type('10')
+        cy.get('body').then(($p) => {
+            if ($p.find(".rule-param-remove > .v-middle").length) {
+                cy.get('.rule-param-remove > .v-middle').click()
+            }
+        })
+
+        cy.get('#save').click()
+    }
+
+    apply_cart_percent_discount() {
+        cy.contains('Fusion Backpack').wait(3000).click()
+        cy.get('#product-addtocart-button').click()
+        cy.wait(6000)
+        cy.get('.showcart').click().wait(3000)
+        cy.get('#top-cart-btn-checkout').click().wait(7000)
+    }
+
+    complete_checkout(discount_type) {
+
+        cy.get('#customer-email-fieldset input[name=username]#customer-email').type('demo@example.com')
+        cy.get('input[name=firstname]').type('Testperson-dk')
+        cy.get('input[name=lastname]').type('Approved')
+        cy.get('select[name=country_id]').select('Denmark')
+        cy.get('input[name="street[0]"]').type('Sæffleberggate 56,1 mf')
+        cy.get('input[name=city]').type('Varde')
+        cy.get('input[name=postcode]').type('6800')
+        cy.get('input[name=telephone]').type('20123456')
+        cy.get('.radio').click({ multiple: true })
+        cy.wait(1000)
+        cy.get('.button').click().wait(5000)
+        if(discount_type != ""){
+            cy.get('#block-discount-heading').click().wait(2000)
+            cy.get('#discount-code').type(discount_type) 
+            cy.get('#discount-form > .actions-toolbar > .primary > .action').click().wait(2000)
+        } 
+    }
+
+    create_cart_fixed_discount() {
+        //Check if catalog discount is active. If so, deactivate it.
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"]').click()
+        cy.get('.item-promo-catalog > a').click()
+        cy.contains("AltaPay Catalog Rule Percentage").click()
+        cy.get('[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "1") {
+                    cy.get('[name="is_active"]').select('Inactive')
+                    cy.get('#save_and_apply').click()
+                    cy.wait(50000)
+                }
+            })
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"]').click()
+        cy.get('.item-promo-catalog > a').click()
+        cy.contains("AltaPay Catalog Rule Fixed").click()
+        cy.get('[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "1") {
+                    cy.get('[data-index="is_active"] > .admin__field-control > .admin__actions-switch > .admin__actions-switch-label').click()
+                    cy.get('#save_and_apply').click()
+                    cy.wait(50000)
+                }
+            })
+
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"] > span').click()
+        cy.get('.item-promo-quote > a > span').click()
+        cy.contains('$4 Luma water bottle (save 70%)').wait(1000).click()
+        cy.get('[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "0") {
+                    cy.get('[data-index="is_active"] > .admin__field-control > .admin__actions-switch > .admin__actions-switch-label').click()
+                }
+            })
+        cy.get('[name="coupon_code"]').clear().type("fixed")
+        cy.get('[data-index="actions"] > .fieldset-wrapper-title > .admin__collapsible-title').click()
+        cy.get('[name="simple_action"]').select('Fixed amount discount')
+        cy.get('[name="discount_amount"]').clear().type('10')
+        cy.get('body').then(($p) => {
+            if ($p.find(".rule-param-remove > .v-middle").length) {
+                cy.get('.rule-param-remove > .v-middle').click()
+            }
+        })
+        cy.get('#save').click()
+    }
+
+    apply_cart_fixed_discount() {
+        this.apply_cart_percent_discount()
+    }
+
+    create_catalog_percentage_discount() {
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"] > span').click()
+        cy.get('.item-promo-catalog > a > span').click()
+        cy.contains('AltaPay Catalog Rule Fixed').wait(1000).click()
+        cy.get('[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "1") {
+                    cy.get('[name="is_active"]').select('Inactive')
+                    cy.wait(50000)
+                    cy.get('#save_and_apply').click()
+                }
+            })
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"] > span').click()
+        cy.get('.item-promo-catalog > a > span').click()
+        cy.contains('AltaPay Catalog Rule Percentage').wait(1000).click()
+        cy.get('[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "0") {
+                    cy.get('[name="is_active"]').select('Active')
+                    cy.get('#save_and_apply').click()
+                    cy.wait(50000)
+                }
+            })
+    }
+
+    create_catalog_fixed_discount() {
+        //Check if catalog discount is active. If so, deactivate it.
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"]').click()
+        cy.get('.item-promo-catalog > a').click()
+        cy.contains("AltaPay Catalog Rule Percentage").click()
+        cy.get('[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "1") {
+                    cy.get('[name="is_active"]').select('Inactive')
+                    cy.get('#save_and_apply').click()
+                    cy.wait(50000)
+                }
+            })
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"] > span').click()
+        cy.get('.item-promo-catalog > a > span').click()
+        cy.contains('AltaPay Catalog Rule Fixed').wait(1000).click().wait(2000)
+        cy.get('[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "0") {
+                    cy.get('[name="is_active"]').select('Active')
+                    cy.wait(50000)
+                    cy.get('#save_and_apply').click()
+                }
+            })
+    }
+
+    create_cart_percentage_with_catalog() {
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"] > span').click()
+        cy.get('.item-promo-quote > a > span').click()
+        cy.contains('$4 Luma water bottle (save 70%)').wait(1000).click()
+        cy.get('[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "0") {
+                    cy.get('[data-index="is_active"] > .admin__field-control > .admin__actions-switch > .admin__actions-switch-label').click()
+                }
+            })
+            cy.get('[name="coupon_code"]').clear().type("percentage")
+            cy.get('[data-index="actions"] > .fieldset-wrapper-title > .admin__collapsible-title').click()
+            cy.get('[name="simple_action"]').select('Percent of product price discount')
+            cy.get('[name="discount_amount"]').clear().type('10')
+        cy.get('body').then(($p) => {
+            if ($p.find(".rule-param-remove > .v-middle").length) {
+                cy.get('.rule-param-remove > .v-middle').click()
+            }
+        })
+        cy.get('#save').click()
+    }
+
+    create_cart_fixed_with_catalog() {
+        cy.get('#menu-magento-backend-marketing > [onclick="return false;"] > span').click()
+        cy.get('.item-promo-quote > a > span').click()
+        cy.contains('$4 Luma water bottle (save 70%)').wait(1000).click()
+        cy.get('input[name="is_active"]')
+            .invoke('val')
+            .then(somevalue => {
+                if (somevalue == "0") {
+                    cy.get('[data-index="is_active"] > .admin__field-control > .admin__actions-switch > .admin__actions-switch-label').click()
+                }
+            })
+            cy.get('[name="coupon_code"]').clear().type("fixed")
+            cy.get('[data-index="actions"] > .fieldset-wrapper-title > .admin__collapsible-title').click()
+            cy.get('[name="simple_action"]').select('Percent of product price discount')
+            cy.get('[name="discount_amount"]').clear().type('10')
+        cy.get('body').then(($p) => {
+            if ($p.find(".rule-param-remove > .v-middle").length) {
+                cy.get('.rule-param-remove > .v-middle').click()
+            }
+        })
+        cy.get('#save').click()
     }
 }
 
