@@ -10,6 +10,5 @@
     "videoCompression": false,
     "videoUploadOnPasses": false,
     "NODE_TLS_REJECT_UNAUTHORIZED": 0
-  },
-  "projectId": "v4g9j6"
+  }
 }
