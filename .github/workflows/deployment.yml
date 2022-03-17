@@ -128,7 +128,7 @@ jobs:
         working-directory: Tests/integration-tests
 
       - name: Run Cypress tests
-        run: ./node_modules/.bin/cypress run 
+        run: ./node_modules/.bin/cypress run --headed
         working-directory: "Tests/integration-tests"
 
         # after the test run completes
