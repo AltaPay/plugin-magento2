@@ -38,7 +38,7 @@ class Order {
                 cy.get('[name="postcode"]').type('6800')
             }
             if ($a.find('[name="telephone"]').length) {
-                cy.get('[name="telephone"]').type('20123456').wait(6000)
+                cy.get('[name="telephone"]').type('20123456').wait(9000)
             }
         })
         cy.get('body').then(($p) => {
@@ -56,7 +56,7 @@ class Order {
 
     cc_payment(CC_TERMINAL_NAME) {
         cy.contains(CC_TERMINAL_NAME).click({ force: true })
-        cy.get('._active > .payment-method-content > :nth-child(5) > div.primary > .action').click().wait(6000)
+        cy.get('._active > .payment-method-content > :nth-child(5) > div.primary > .action').click().wait(9000)
         cy.get('#creditCardNumberInput').type('4111111111111111')
         cy.get('#emonth').type('01')
         cy.get('#eyear').type('2023')
@@ -146,7 +146,7 @@ class Order {
 
     ideal_payment(iDEAl_EUR_TERMINAL) {
         cy.contains(iDEAl_EUR_TERMINAL).click({ force: true })
-        cy.get('._active > .payment-method-content > :nth-child(5) > div.primary > .action').click().wait(4000)
+        cy.get('._active > .payment-method-content > :nth-child(5) > div.primary > .action').click().wait(8000)
         cy.get('#idealIssuer').select('AltaPay test issuer 1')
         cy.get('#pensioPaymentIdealSubmitButton').click()
         cy.get('[type="text"]').type('shahbaz.anjum123-facilitator@gmail.com')
@@ -258,8 +258,8 @@ class Order {
         const generatedUsername = generateRandomString()
         const generatedPassword = generateRandomString()
         cy.get('#email_address').type(generatedUsername + '@example.com')
-        cy.get('#password').type(generatedPassword)
-        cy.get('#password-confirmation').type(generatedPassword)
+        cy.get('#password').type(generatedPassword + '@Pass123')
+        cy.get('#password-confirmation').type(generatedPassword + '@Pass123')
         cy.get('#form-validate > .actions-toolbar > div.primary > .action').click()
 
         //Manage Shipping details
@@ -294,7 +294,7 @@ class Order {
     subscription_payment() {
         cy.fixture('config').then((admin) => {
             cy.contains(admin.SUBSCRIPTION_TERMINAL_NAME).click({ force: true })
-            cy.get('._active > .payment-method-content > :nth-child(5) > div.primary > .action').click().wait(3000)
+            cy.get('._active > .payment-method-content > :nth-child(5) > div.primary > .action').click().wait(9000)
             cy.get('#creditCardNumberInput').type('4111111111111111')
             cy.get('#emonth').type('01')
             cy.get('#eyear').type('2023')
@@ -359,7 +359,7 @@ class Order {
         cy.contains('Fusion Backpack').wait(3000).click()
         cy.get('#product-addtocart-button').click()
         cy.wait(6000)
-        cy.get('.showcart').click().wait(3000)
+        cy.get('.showcart').click().wait(6000)
         cy.get('#top-cart-btn-checkout').click().wait(7000)
     }
 
