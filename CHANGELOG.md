@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 - Add support when cart and catalog rules are applied simultaneously
 - Make text "No saved credit cards" translatable
 
+**Fixes**
+- Cancel order issues when there is no transaction
+
 ## [2.0.5]
 **Fixes**
 - Resolve compilation issue for Magento 2.1.9 and below
