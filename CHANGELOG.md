@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.0.0]
+**Improvements**
+- Add support when cart and catalog rules are applied simultaneously
+- Make text "No saved credit cards" translatable
+
 ## [2.0.5]
 **Fixes**
 - Resolve compilation issue for Magento 2.1.9 and below

@@ -194,7 +194,7 @@ class Generator
         if ($order->getId()) {
             $couponCode       = $order->getDiscountDescription();
             $couponCodeAmount = $order->getDiscountAmount();
-            $discountAllItems = $this->discountHandler->allItemsHaveDiscount($order->getAllVisibleItems());
+            $discountAllItems = $this->discountHandler->allItemsHaveDiscount($order->getAllItems());
             $orderLines       = $this->itemOrderLines($couponCodeAmount, $order, $discountAllItems);
             if ($this->orderLines->sendShipment($order) && !empty($order->getShippingMethod(true))) {
                 $orderLines[] = $this->orderLines->handleShipping($order, $discountAllItems, true);
@@ -543,7 +543,6 @@ class Generator
     private function itemOrderLines($couponCodeAmount, $order, $discountAllItems)
     {
         $orderLines       = [];
-        $couponCode       = $order->getDiscountDescription();
         $storePriceIncTax = $this->storeConfig->storePriceIncTax();
 
         foreach ($order->getAllItems() as $item) {
@@ -570,16 +569,17 @@ class Generator
                 $dataForPrice         = $this->priceHandler->dataForPrice(
                     $item,
                     $unitPrice,
-                    $couponCode,
+                    $couponCodeAmount,
                     $this->discountHandler->getItemDiscount($discountAmount, $productOriginalPrice,
                         $item->getQtyOrdered())
                 );
                 $taxAmount            = $dataForPrice["taxAmount"];
+                $catalogDiscount      = $dataForPrice["catalogDiscount"];
                 $discount             = $this->discountHandler->orderLineDiscount(
                     $discountAllItems,
-                    $dataForPrice["discount"]
+                    $dataForPrice["discount"],
+                    $catalogDiscount
                 );
-                $catalogDiscount      = $dataForPrice["catalogDiscount"];
                 $itemTaxAmount        = $taxAmount;
                 $orderLines[]         = $this->orderLines->itemOrderLine(
                     $item,
