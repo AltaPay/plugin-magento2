@@ -570,8 +570,8 @@ class Generator
                     $item,
                     $unitPrice,
                     $couponCodeAmount,
-                    $this->discountHandler->getItemDiscount($discountAmount, $productOriginalPrice,
-                        $item->getQtyOrdered())
+                    $this->discountHandler->getItemDiscount($discountAmount, $originalPrice, $item->getQtyOrdered()),
+                    $discountAllItems
                 );
                 $taxAmount            = $dataForPrice["taxAmount"];
                 $catalogDiscount      = $dataForPrice["catalogDiscount"];
@@ -587,7 +587,8 @@ class Generator
                     $discount,
                     $itemTaxAmount,
                     $order,
-                    true
+                    true,
+                    $discountAllItems
                 );
                 $roundingCompensation = $this->priceHandler->compensationAmountCal(
                     $item,

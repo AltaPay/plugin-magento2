@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 **Fixes**
 - Cancel order issues when there is no transaction
+- Order failing issue when applying a fixed discount on the cart
 
 ## [2.0.5]
 **Fixes**
