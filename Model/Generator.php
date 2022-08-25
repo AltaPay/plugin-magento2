@@ -39,6 +39,9 @@ use SDM\Altapay\Model\TokenFactory;
 use Magento\Sales\Model\OrderFactory;
 use Altapay\Response\PaymentRequestResponse;
 use Magento\Payment\Model\MethodInterface;
+use Magento\Checkout\Model\Cart;
+use Magento\CatalogInventory\Api\StockStateInterface;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 
 /**
  * Class Generator
@@ -118,6 +121,18 @@ class Generator
      * @var OrderFactory
      */
     private $orderFactory;
+    /**
+     * @var StockStateInterface
+     */
+    private $stockItem;
+    /**
+     * @var StockRegistryInterface
+     */
+    private $stockRegistry;
+    /**
+     * @var Cart
+     */
+    private  $modelCart;
 
     /**
      *
@@ -139,6 +154,9 @@ class Generator
      * @param DiscountHandler      $discountHandler
      * @param CreatePaymentHandler $paymentHandler
      * @param TokenFactory         $dataToken
+     * @param StockStateInterface            $stockItem
+     * @param StockRegistryInterface         $stockRegistry
+     * @param Cart                           $modelCart
      */
     public function __construct(
         Quote $quote,
@@ -158,7 +176,10 @@ class Generator
         PriceHandler $priceHandler,
         DiscountHandler $discountHandler,
         CreatePaymentHandler $paymentHandler,
-        TokenFactory $dataToken
+        TokenFactory $dataToken,
+        StockStateInterface $stockItem,
+        StockRegistryInterface $stockRegistry,
+        Cart $modelCart
     ) {
         $this->quote              = $quote;
         $this->urlInterface       = $urlInterface;
@@ -178,6 +199,9 @@ class Generator
         $this->discountHandler    = $discountHandler;
         $this->paymentHandler     = $paymentHandler;
         $this->dataToken          = $dataToken;
+        $this->stockItem             = $stockItem;
+        $this->stockRegistry         = $stockRegistry;
+        $this->modelCart             = $modelCart;
     }
 
     /**
@@ -471,6 +495,8 @@ class Generator
                 $order->addStatusHistoryComment($comment);
                 $order->addStatusHistoryComment($this->getTransactionInfoFromResponse($response));
                 $order->setIsNotified(false);
+                //Update stock quantity
+                $this->updateStockQty($order);
                 $order->getResource()->save($order);
 
                 if (strtolower($paymentStatus) == 'paymentandcapture') {
@@ -480,6 +506,28 @@ class Generator
         }
     }
 
+    /**
+     * @param $order
+     * return void
+     */
+    public function updateStockQty($order)
+    {
+        $cart = $this->modelCart;
+        $quoteItems = $this->checkoutSession->getQuote()->getItemsCollection();
+        foreach ($order->getAllItems() as $item) {
+            $stockQty  = $this->stockItem->getStockQty($item->getProductId(), $item->getStore()->getWebsiteId());
+            $qty       = $stockQty - $item->getQtyOrdered();                   
+            $stockItem = $this->stockRegistry->getStockItemBySku($item['sku']);         
+            $stockItem->setQty($qty);
+            $stockItem->setIsInStock((bool)$qty); 
+            $this->stockRegistry->updateStockItemBySku($item['sku'], $stockItem);
+        }
+        foreach($quoteItems as $item)
+        {
+            $cart->removeItem($item->getId())->save(); 
+        }
+    }
+    
     /**
      * @param $response
      *
