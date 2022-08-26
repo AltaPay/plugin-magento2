@@ -599,7 +599,7 @@ class Generator
 
         $weeTaxAmount = 0;
         foreach ($order->getAllItems() as $item) {
-            $weeTaxAmount += $item->getWeeeTaxAppliedRowAmount();
+            $weeTaxAmount +=  $item->getWeeeTaxAppliedRowAmount();
         }
 
         return $weeTaxAmount;
@@ -637,7 +637,6 @@ class Generator
                     $unitPrice           = bcdiv($unitPriceWithoutTax, 1, 2);
                 } else {
                     $unitPrice           = $productOriginalPrice;
-                    $unitPriceWithoutTax = $productOriginalPrice;
                 }
                 $dataForPrice         = $this->priceHandler->dataForPrice(
                     $item,
@@ -666,12 +665,8 @@ class Generator
                 $roundingCompensation = $this->priceHandler->compensationAmountCal(
                     $item,
                     $unitPrice,
-                    $unitPriceWithoutTax,
                     $taxAmount,
                     $discount,
-                    $couponCodeAmount,
-                    $catalogDiscount,
-                    $storePriceIncTax,
                     true
                 );
                 // check if rounding compensation amount, send in the separate orderline

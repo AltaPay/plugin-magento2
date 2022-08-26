@@ -176,6 +176,7 @@ class DiscountHandler
     ) {
         $rowTotal = $item->getRowTotal()-$item->getDiscountAmount()+$item->getTaxAmount()+$item->getDiscountTaxCompensationAmount();
         $discount = ['discount' => 0, 'catalogDiscount' => false];
+        $originalPriceWithTax = $originalPrice + $taxAmount;
         if ($discountAmount && $originalPrice == $priceInclTax) {
             $discountAmount = ($discountAmount * 100) / ($originalPrice * $quantity);
         } elseif ($originalPrice > 0 && $originalPrice > $priceInclTax && empty($discountAmount)) {
@@ -183,7 +184,13 @@ class DiscountHandler
             $discountAmount      = $this->catalogDiscount($originalPrice, $priceInclTax);
         } elseif ($originalPrice > 0 && $originalPrice > $priceInclTax && $discountAmount) {
             $discount['catalogDiscount'] = true;
-            $discountAmount      = $this->combinationDiscount($originalPrice, $rowTotal);
+            if (!$this->storeConfig->storePriceIncTax()) {
+                $discountAmount = $originalPriceWithTax - $rowTotal;
+                $discountPercentage = ($discountAmount * 100) / $originalPriceWithTax;
+                $discountAmount = $discountPercentage;
+            } else {
+                $discountAmount = $this->combinationDiscount($originalPrice, $rowTotal);
+            }
         }
         $discount['discount'] = $this->orderLineDiscount($discountOnAllItems, $discountAmount, $discount['catalogDiscount']);
 
