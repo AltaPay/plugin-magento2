@@ -508,6 +508,7 @@ class Generator
                 if($order->getState() == 'canceled') {
                     $this->updateStockQty($order);
                 }
+                $this->resetCanceledQty($order);
                 $order->getResource()->save($order);
 
                 if (strtolower($paymentType) === 'paymentandcapture' || strtolower($paymentType) === 'subscriptionandcharge') {
@@ -985,5 +986,19 @@ class Generator
         $payment->setPaymentId($response->paymentId);
         $payment->setLastTransId($response->transactionId);
         $payment->save();
+    }
+
+    /**
+     * @param $order
+     * 
+     * @return void
+     */
+    public function resetCanceledQty($order) {
+        foreach ($order->getAllItems() as $item) {
+            if ($item->getQtyCanceled > 0) {
+                    $item->setQtyCanceled($item->getQtyToCancel());
+                    $item->save();
+            }
+        }
     }
 }

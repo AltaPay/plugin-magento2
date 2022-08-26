@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - Handle empty synch button response
 - Stock quantity calculation issue
 - Canceled order qty from item grid is missing
+- Order status set to "closed" despite the orders being in a pre-auth state.
 
 ## [2.0.5]
 **Fixes**
