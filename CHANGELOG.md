@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 **Improvements**
 - Add support when cart and catalog rules are applied simultaneously
 - Make text "No saved credit cards" translatable
+- Add a button to trigger the sync of the terminals with the gateway
 
 **Fixes**
 - Cancel order issues when there is no transaction
