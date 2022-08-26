@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Cancel order issues when there is no transaction
 - Order failing issue when applying a fixed discount on the cart
 - Product stock not updating when order status change from cancel to processing
+- Saved credit cards grid styling for mobile view
 
 ## [2.0.5]
 **Fixes**
