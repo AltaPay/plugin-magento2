@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - Add support when cart and catalog rules are applied simultaneously
 - Make text "No saved credit cards" translatable
 - Add a button to trigger the sync of the terminals with the gateway
+- Add configurations section to setup cron scheduler to change the status of the pending order to cancel
 
 **Fixes**
 - Cancel order issues when there is no transaction
@@ -13,6 +14,9 @@ All notable changes to this project will be documented in this file.
 - Product stock not updating when order status change from cancel to processing
 - Saved credit cards grid styling for mobile view
 - Success page rendering issue when placing an order in incognito mode with the MobilePay
+- Cancel order if payment_status is "released" in notification callback
+- Handle empty synch button response
+- Stock quantity calculation issue
 
 ## [2.0.5]
 **Fixes**
