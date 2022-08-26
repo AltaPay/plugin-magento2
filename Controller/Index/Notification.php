@@ -84,6 +84,7 @@ class Notification extends Index
                 break;
             case "error":
             case "failed":
+            case "incomplete":
                 $this->generator->handleFailedStatusAction($this->getRequest(), $msg, $merchantError, $status);
                 break;
             case "succeeded":

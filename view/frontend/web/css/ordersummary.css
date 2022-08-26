@@ -22,6 +22,10 @@ input#pensioCreditCardPaymentSubmitButton {
     margin-bottom: 5%;
 }
 
+#notice-cookie-block {
+    display: none;
+}
+
 select#emonth {
     width: 50%;
 }
