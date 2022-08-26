@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file.
 - Incorrect discount calculation 
 - Support tax exclusive configurations
 - Order status set to "pending" on "incomplete" response
+- Release stock qty on order cancellation
 
 ## [2.0.5]
 **Fixes**
