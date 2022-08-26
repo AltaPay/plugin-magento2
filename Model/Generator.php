@@ -36,8 +36,10 @@ use SDM\Altapay\Model\Handler\PriceHandler;
 use SDM\Altapay\Model\Handler\DiscountHandler;
 use SDM\Altapay\Model\Handler\CreatePaymentHandler;
 use SDM\Altapay\Model\TokenFactory;
+use SDM\Altapay\Model\ApplePayOrder;
 use Magento\Sales\Model\OrderFactory;
 use Altapay\Response\PaymentRequestResponse;
+use Altapay\Api\Payments\CardWalletAuthorize;
 use Magento\Payment\Model\MethodInterface;
 use Magento\Checkout\Model\Cart;
 use Magento\CatalogInventory\Api\StockStateInterface;
@@ -179,7 +181,8 @@ class Generator
         TokenFactory $dataToken,
         StockStateInterface $stockItem,
         StockRegistryInterface $stockRegistry,
-        Cart $modelCart
+        Cart $modelCart,
+        ApplePayOrder $applePayOrder
     ) {
         $this->quote              = $quote;
         $this->urlInterface       = $urlInterface;
@@ -199,9 +202,10 @@ class Generator
         $this->discountHandler    = $discountHandler;
         $this->paymentHandler     = $paymentHandler;
         $this->dataToken          = $dataToken;
-        $this->stockItem             = $stockItem;
-        $this->stockRegistry         = $stockRegistry;
-        $this->modelCart             = $modelCart;
+        $this->stockItem          = $stockItem;
+        $this->stockRegistry      = $stockRegistry;
+        $this->modelCart          = $modelCart;
+        $this->applePayOrder      = $applePayOrder;
     }
 
     /**
@@ -229,7 +233,7 @@ class Generator
             if (!empty($this->fixedProductTax($order))) {
                 $orderLines[] = $this->orderLines->fixedProductTaxOrderLine($this->fixedProductTax($order));
             }
-            $request = $this->preparePaymentRequest($order, $orderLines, $orderId, $terminalId);
+            $request = $this->preparePaymentRequest($order, $orderLines, $orderId, $terminalId, null);
             if ($request) {
                 return $this->sendPaymentRequest($order, $request);
             }
@@ -439,6 +443,8 @@ class Generator
         $requireCapture = $response->requireCapture;
         $paymentStatus  = strtolower($response->paymentStatus);
         $responseStatus = $response->status;
+        $max_date = '';
+        $latestTransKey = '';
 
         if ($paymentStatus === 'released') {
             $this->handleCancelStatusAction($request, $responseStatus);
@@ -449,6 +455,12 @@ class Generator
             $order      = $this->loadOrderFromCallback($response);
             $storeScope = ScopeInterface::SCOPE_STORE;
             $storeCode  = $order->getStore()->getCode();
+            foreach ($response->Transactions as $key=>$value) {
+                if ($value->CreatedDate > $max_date) {
+                    $max_date = $value->CreatedDate;
+                    $latestTransKey = $key;
+                }
+            }
             if ($order->getId()) {
                 $cardType = '';
                 $expires  = '';
@@ -457,8 +469,8 @@ class Generator
                     $this->updateStockQty($order);
                 }
                 $this->resetCanceledQty($order);
-                if (isset($response->Transactions[0])) {
-                    $transaction = $response->Transactions[0];
+                if (isset($response->Transactions[$latestTransKey])) {
+                    $transaction = $response->Transactions[$latestTransKey];
                     if (isset($transaction->CreditCardExpiry->Month) && isset($transaction->CreditCardExpiry->Year)) {
                         $expires = $transaction->CreditCardExpiry->Month . '/' . $transaction->CreditCardExpiry->Year;
                     }
@@ -487,7 +499,7 @@ class Generator
                 $orderState              = Order::STATE_PROCESSING;
                 $statusKey               = 'process';
 
-                if ($this->isCaptured($response, $storeCode, $storeScope)) {
+                if ($this->isCaptured($response, $storeCode, $storeScope, $latestTransKey)) {
                     if ($orderStatusCapture == "complete") {
                         if ($this->orderLines->sendShipment($order)) {
                             $orderState = Order::STATE_COMPLETE;
@@ -698,9 +710,9 @@ class Generator
      * @param $orderId
      * @param $terminalId
      *
-     * @return mixed
+     * @return bool|PaymentRequest|CardWalletAuthorize
      */
-    private function preparePaymentRequest($order, $orderLines, $orderId, $terminalId)
+    private function preparePaymentRequest($order, $orderLines, $orderId, $terminalId, $providerData)
     {
         $storeScope = $this->storeConfig->getStoreScope();
         $storeCode  = $order->getStore()->getCode();
@@ -712,9 +724,14 @@ class Generator
             return false;
         }
         $terminalName = $this->systemConfig->getTerminalConfig($terminalId, 'terminalname', $storeScope, $storeCode);
+        $isApplePay = $this->systemConfig->getTerminalConfig($terminalId, 'isapplepay', $storeScope, $storeCode);
         //Transaction Info
         $transactionDetail = $this->helper->transactionDetail($orderId);
         $request           = new PaymentRequest($auth);
+        if ($isApplePay) {
+            $request = new CardWalletAuthorize($auth);
+            $request->setProviderData($providerData);
+        }
         $request->setTerminal($terminalName)
                 ->setShopOrderId($order->getIncrementId())
                 ->setAmount((float)number_format($order->getGrandTotal(), 2, '.', ''))
@@ -723,7 +740,7 @@ class Generator
                 ->setConfig($this->setConfig())
                 ->setTransactionInfo($transactionDetail)
                 ->setSalesTax((float)number_format($order->getTaxAmount(), 2, '.', ''))
-                ->setCookie($_SERVER['HTTP_COOKIE']);
+                ->setCookie($this->request->getServer('HTTP_COOKIE'));
 
         $post = $this->request->getPostValue();
 
@@ -818,7 +835,7 @@ class Generator
      *
      * @return bool|MethodInterface
      */
-    private function isCaptured($response, $storeCode, $storeScope)
+    private function isCaptured($response, $storeCode, $storeScope, $latestTransKey)
     {
         $isCaptured = false;
         foreach (SystemConfig::getTerminalCodes() as $terminalName) {
@@ -828,7 +845,7 @@ class Generator
                 $storeScope,
                 $storeCode
             );
-            if ($terminalConfig === $response->Transactions[0]->Terminal) {
+            if ($terminalConfig === $response->Transactions[$latestTransKey]->Terminal) {
                 $isCaptured = $this->systemConfig->getTerminalConfigFromTerminalName(
                     $terminalName,
                     'capture',
@@ -932,7 +949,7 @@ class Generator
                 $storeScope,
                 $storeCode
             );
-            if ($terminalConfig === $response->Transactions[0]->Terminal) {
+            if ($terminalConfig === $response->Transactions[$this->getLatestTransaction($response)]->Terminal) {
                 $isEnabled = $this->systemConfig->getTerminalConfigFromTerminalName(
                     $terminalName,
                     $configField,
@@ -963,7 +980,7 @@ class Generator
                 $storeScope,
                 $storeCode
             );
-            if ($terminalConfig === $response->Transactions[0]->Terminal) {
+            if ($terminalConfig === $response->Transactions[$this->getLatestTransaction($response)]->Terminal) {
                 $acceptedAvsResults = $this->systemConfig->getTerminalConfigFromTerminalName(
                     $terminalName,
                     'avs_acceptance',
@@ -1002,4 +1019,63 @@ class Generator
             }
         }
     }
+
+    public function getLatestTransaction($response) {
+        $max_date = '';
+        $latestTransKey = '';
+        foreach ($response->Transactions as $key=>$value) {
+            if ($value->CreatedDate > $max_date) {
+                $max_date = $value->CreatedDate;
+                $latestTransKey = $key;
+            }
+        }
+        return $latestTransKey;
+    }
+    /**
+     * @param $terminalId
+     * @param $orderId
+     * @param $providerData
+     *
+     * @return mixed
+     */
+    public function createRequestApplepay($terminalId, $orderId, $providerData)
+    {
+        $storeScope = $this->storeConfig->getStoreScope();
+        $order = $this->order->load($orderId);
+        $storeCode  = $order->getStore()->getCode();
+        if ($order->getId()) {
+            $couponCode       = $order->getDiscountDescription();
+            $couponCodeAmount = $order->getDiscountAmount();
+            $discountAllItems = $this->discountHandler->allItemsHaveDiscount($order->getAllItems());
+            $orderLines       = $this->itemOrderLines($couponCodeAmount, $order, $discountAllItems);
+            if ($this->orderLines->sendShipment($order) && !empty($order->getShippingMethod(true))) {
+                $orderLines[] = $this->orderLines->handleShipping($order, $discountAllItems, true);
+                //Shipping Discount Tax Compensation Amount
+                $compAmount = $this->discountHandler->hiddenTaxDiscountCompensation($order, $discountAllItems, true);
+                if ($compAmount > 0 && $discountAllItems == false) {
+                    $orderLines[] = $this->orderLines->compensationOrderLine(
+                        "Shipping compensation",
+                        "comp-ship",
+                        $compAmount
+                    );
+                }
+            }
+            if ($discountAllItems && abs($couponCodeAmount) > 0) {
+                $orderLines[] = $this->orderLines->discountOrderLine($couponCodeAmount, $couponCode);
+            }
+            if(!empty($this->fixedProductTax($order))){
+                $orderLines[] = $this->orderLines->fixedProductTaxOrderLine($this->fixedProductTax($order));
+            }
+            $request = $this->preparePaymentRequest($order, $orderLines, $orderId, $terminalId, $providerData);
+            if ($request) {
+                $response = $request->call();
+                $this->applePayOrder->handleCardWalletPayment($response, $order);
+
+                return $response;
+            }
+        }
+
+        return $this->restoreOrderAndReturnError($order);
+    }
+
 }
