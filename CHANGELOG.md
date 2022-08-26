@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - Cancel order if payment_status is "released" in notification callback
 - Handle empty synch button response
 - Stock quantity calculation issue
+- Canceled order qty from item grid is missing
 
 ## [2.0.5]
 **Fixes**

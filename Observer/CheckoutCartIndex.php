@@ -141,7 +141,8 @@ class CheckoutCartIndex implements ObserverInterface
                 if ($order->getCouponCode()) {
                     $this->resetCouponAfterCancellation($order);
                 }
-
+                //revert quantity when cancel order
+                $this->revertOrderQty($order);
                 //revert quantity when cancel order
                 $orderItems = $order->getAllItems();
                 foreach ($orderItems as $item) {
@@ -213,5 +214,20 @@ class CheckoutCartIndex implements ObserverInterface
         }
 
         return false;
+    }
+    
+    /**
+     * @param $order
+     */
+    public function revertOrderQty($order)
+    {
+        foreach ($order->getAllItems() as $item) {
+            $item->setQtyCanceled($item['qty_ordered']);
+            $item->save();  
+            $qty = $item->getQtyOrdered() - max($item->getQtyShipped(), $item->getQtyInvoiced());
+            if ($item->getId() && $item->getProductId() && empty($item->getChildrenItems()) && $qty) {
+                $this->stockManagement->backItemQty($item->getProductId(), $qty, $item->getStore()->getWebsiteId());
+            }
+        }
     }
 }
