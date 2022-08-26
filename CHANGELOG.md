@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - Stock quantity calculation issue
 - Canceled order qty from item grid is missing
 - Order status set to "closed" despite the orders being in a pre-auth state.
+- Order status set to "closed" for "Vipps" payment method
 
 ## [2.0.5]
 **Fixes**
