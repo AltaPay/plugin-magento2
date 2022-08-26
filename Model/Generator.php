@@ -435,8 +435,16 @@ class Generator
     {
         $callback       = new Callback($request->getParams());
         $response       = $callback->call();
-        $paymentStatus  = $response->type;
+        $paymentType    = $response->type;
         $requireCapture = $response->requireCapture;
+        $paymentStatus  = strtolower($response->paymentStatus);
+        $responseStatus = $response->status;
+
+        if ($paymentStatus === 'released') {
+            $this->handleCancelStatusAction($request, $responseStatus);
+            return;
+        }
+
         if ($response) {
             $order      = $this->loadOrderFromCallback($response);
             $storeScope = ScopeInterface::SCOPE_STORE;
@@ -461,6 +469,7 @@ class Generator
                 $payment->setAdditionalInformation('masked_credit_card', $response->maskedCreditCard);
                 $payment->setAdditionalInformation('expires', $expires);
                 $payment->setAdditionalInformation('card_type', $cardType);
+                $payment->setAdditionalInformation('payment_type', $paymentType);
                 $payment->save();
                 //send order confirmation email
                 $this->sendOrderConfirmationEmail($comment, $order);
@@ -496,10 +505,12 @@ class Generator
                 $order->addStatusHistoryComment($this->getTransactionInfoFromResponse($response));
                 $order->setIsNotified(false);
                 //Update stock quantity
-                $this->updateStockQty($order);
+                if($order->getState() == 'canceled') {
+                    $this->updateStockQty($order);
+                }
                 $order->getResource()->save($order);
 
-                if (strtolower($paymentStatus) == 'paymentandcapture') {
+                if (strtolower($paymentType) === 'paymentandcapture' || strtolower($paymentType) === 'subscriptionandcharge') {
                     $this->createInvoice($order, $requireCapture);
                 }
             }
@@ -516,7 +527,7 @@ class Generator
         $quoteItems = $this->checkoutSession->getQuote()->getItemsCollection();
         foreach ($order->getAllItems() as $item) {
             $stockQty  = $this->stockItem->getStockQty($item->getProductId(), $item->getStore()->getWebsiteId());
-            $qty       = $stockQty - $item->getQtyOrdered();                   
+            $qty       = $stockQty - $item->getQtyOrdered();
             $stockItem = $this->stockRegistry->getStockItemBySku($item['sku']);         
             $stockItem->setQty($qty);
             $stockItem->setIsInStock((bool)$qty); 
