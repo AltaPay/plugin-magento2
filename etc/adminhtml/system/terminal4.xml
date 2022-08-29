@@ -33,6 +33,11 @@
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/terminal4/isapplepay</config_path>
         </field>
+        <field id="applepaylabel" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Apple Pay Form Label</label>
+            <comment>Add custom text for the Apple Pay popup label</comment>
+            <config_path>payment/terminal1/applepaylabel</config_path>
+        </field>
         <field id="language" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Force Language</label>
             <comment>Force the language of the payment page</comment>
@@ -45,7 +50,7 @@
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/terminal4/capture</config_path>
         </field>
-        <field id="terminallogo" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+        <field id="terminallogo" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Terminal Logo</label>
             <comment>Select terminal logo that will be displayed on the store with the terminal name.</comment>
             <config_path>payment/terminal4/terminallogo</config_path>

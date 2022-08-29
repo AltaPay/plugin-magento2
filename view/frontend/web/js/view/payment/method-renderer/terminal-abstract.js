@@ -56,6 +56,27 @@ define(
                     );
                 }
             },
+            termnialId: function () {
+                var self = this;
+                var terminalname;
+                var terminalinfo = [];
+                var paymentMethod = window.checkoutConfig.payment[this.getDefaultCode()].terminaldata;
+                var isSafari = (/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
+                for (var obj in paymentMethod) {
+                    if (obj === self.getCode()) {
+                        if (paymentMethod[obj].isapplepay == 1 && isSafari === false) {
+                            terminalname = "";
+                        } else {
+                            if (paymentMethod[obj].terminalname != " ") {
+                                terminalname = paymentMethod[obj].terminalname;
+                            }
+                        }
+                    }
+                }
+                terminalinfo.push(terminalname, paymentMethod[obj].applepaylabel);
+
+                return terminalinfo;
+            },
             terminalName: function () {
                 var self = this;
                 var terminalname;
@@ -63,15 +84,15 @@ define(
                 var isSafari = (/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
                 for (var obj in paymentMethod) {
                     if (obj === self.getCode()) {
-                        if ((paymentMethod[obj].terminallogo != "" && paymentMethod[obj].showlogoandtitle == false) || (paymentMethod[obj].isapplepay ==1 && isSafari === false)) {
+                        if (paymentMethod[obj].isapplepay == 1 && isSafari === false) {
                             terminalname = "";
                         } else {
                             if (paymentMethod[obj].terminalname != " ") {
-                                    if (paymentMethod[obj].label != null) {
-                                        terminalname = paymentMethod[obj].label
-                                    } else {
-                                        terminalname = paymentMethod[obj].terminalname;
-                                    }
+                                if (paymentMethod[obj].label != null) {
+                                    terminalname = paymentMethod[obj].label
+                                } else {
+                                    terminalname = paymentMethod[obj].terminalname;
+                                }
                             }
                         }
                     }
@@ -93,9 +114,13 @@ define(
 
             },
             onApplePayButtonClicked: function() {
-               var configData = window.checkoutConfig.payment[this.getDefaultCode()];
+                var terminalinfo = this.termnialId();
+                var applePayLabel = 'AltaPay ApplePay Charge';
+                var configData = window.checkoutConfig.payment[this.getDefaultCode()];
                 var baseurl = configData.baseUrl;
-
+                if (terminalinfo[1] !== null) {
+                    applePayLabel = terminalinfo[1];
+                }
                 if (!ApplePaySession) {
                     return;
                 }
@@ -114,7 +139,7 @@ define(
                         "discover"
                     ],
                     "total": {
-                        "label": "Demo (Card is not charged)",
+                        "label": applePayLabel,
                         "type": "final",
                         "amount": configData.grandTotalAmount
                     }
@@ -130,7 +155,7 @@ define(
                         url: url,
                         data: {
                             validationUrl: event.validationURL,
-                            termminalid: this.terminalName()
+                            termminalid: terminalinfo[0]
                         },
                         type: 'post',
                         dataType: 'JSON',
@@ -143,7 +168,7 @@ define(
                 
                 session.onpaymentmethodselected = event => {
                     let total = {
-                        "label": "AltaPay ApplePay Charge",
+                        "label": applePayLabel,
                         "type": "final",
                         "amount": configData.grandTotalAmount
                     }
@@ -214,7 +239,7 @@ define(
 
                 for (var obj in paymentMethod) {
                     if (obj === self.getCode()) {
-                        if (paymentMethod[obj].terminallogo != " ") {
+                        if (paymentMethod[obj].terminallogo != " " && paymentMethod[obj].showlogoandtitle == true) {
                             if (paymentMethod[obj].terminallogo != null) {
                                 terminallogo = paymentMethod[obj].terminallogo
                             }

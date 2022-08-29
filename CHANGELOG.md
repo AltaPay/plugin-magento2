@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Add a button to trigger the sync of the terminals with the gateway
 - Add configurations section to setup cron scheduler to change the status of the pending order to cancel
 - Add support for Apple Pay
+- Support multiple logos/icons option for terminals.
 
 **Fixes**
 - Cancel order issues when there is no transaction
