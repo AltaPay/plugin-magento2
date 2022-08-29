@@ -70,7 +70,7 @@
             <frontend_class>altapay-terminal-token-control</frontend_class>
         </field>
          <field id="avscontrol" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>AVS Accepted Codes<</label>
+            <label>AVS</label>
             <comment>Address Verification System</comment>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/terminal1/avscontrol</config_path>
