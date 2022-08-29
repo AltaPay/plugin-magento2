@@ -16,6 +16,7 @@ use Magento\Framework\View\Result\PageFactory;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
+use SDM\Altapay\Logger\Logger;
 use SDM\Altapay\Model\Generator;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Encryption\EncryptorInterface;

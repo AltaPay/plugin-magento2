@@ -16,14 +16,11 @@ use SDM\Altapay\Helper\Config as storeConfig;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\App\Action\Action;
-use Magento\Framework\App\CsrfAwareActionInterface;
-use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\UrlInterface;
 
-class ApplePay extends Action implements CsrfAwareActionInterface
+class ApplePay extends Action
 {
     /**
      * @var Helper Config
@@ -58,29 +55,6 @@ class ApplePay extends Action implements CsrfAwareActionInterface
         $this->systemConfig  = $systemConfig;
         $this->_storeManager = $storeManager;
         $this->_urlInterface = $urlInterface;
-    }
-
-    /**
-     * Dispatch request
-     *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
-     * @throws \Magento\Framework\Exception\NotFoundException
-     */
-    /**
-     * @inheritDoc
-     */
-    public function createCsrfValidationException(
-        RequestInterface $request
-    ): ?InvalidRequestException {
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function validateForCsrf(RequestInterface $request): ?bool
-    {
-        return true;
     }
 
     /**

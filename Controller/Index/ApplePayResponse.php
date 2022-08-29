@@ -9,20 +9,17 @@
 
 namespace SDM\Altapay\Controller\Index;
 
-use SDM\Altapay\Model\Gateway;
+use SDM\Altapay\Model\Generator;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\App\Action\Action;
-use Magento\Framework\App\CsrfAwareActionInterface;
-use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\Order;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Math\Random;
 
-class ApplePayResponse extends Action implements CsrfAwareActionInterface
+class ApplePayResponse extends Action
 {
     /**
      * @var Order
@@ -44,7 +41,7 @@ class ApplePayResponse extends Action implements CsrfAwareActionInterface
         Context $context,
         Session $checkoutSession,
         Order $orderRepository,
-        Gateway $gateway,
+        Generator $gateway,
         RedirectFactory $redirectFactory,
         Order $order,
         Random $random
@@ -56,29 +53,6 @@ class ApplePayResponse extends Action implements CsrfAwareActionInterface
         $this->order            = $order;
         $this->random           = $random;
         $this->_orderRepository = $orderRepository;
-    }
-
-    /**
-     * Dispatch request
-     *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
-     * @throws \Magento\Framework\Exception\NotFoundException
-     */
-    /**
-     * @inheritDoc
-     */
-    public function createCsrfValidationException(
-        RequestInterface $request
-    ): ?InvalidRequestException {
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function validateForCsrf(RequestInterface $request): ?bool
-    {
-        return true;
     }
 
     public function execute()

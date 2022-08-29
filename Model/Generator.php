@@ -249,7 +249,7 @@ class Generator
      */
     public function restoreOrderFromOrderId($orderId)
     {
-        $order = $this->orderLoader->getOrderByOrderIncrementId($orderId);
+        $order = $this->loadOrderFromCallback($orderId);
         if ($order->getId()) {
             $quote = $this->quote->loadByIdWithoutStore($order->getQuoteId());
             $quote->setIsActive(1)->setReservedOrderId(null);

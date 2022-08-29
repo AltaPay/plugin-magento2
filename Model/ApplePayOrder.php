@@ -9,11 +9,9 @@
 
 namespace SDM\Altapay\Model;
 
-use SDM\Altapay\Api\OrderLoaderInterface;
 use Magento\Checkout\Model\Session;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
-use SDM\Altapay\Api\TransactionRepositoryInterface;
 use SDM\Altapay\Model\SystemConfig;
 use Magento\Sales\Model\Order;
 use SDM\Altapay\Model\ConstantConfig;
@@ -21,11 +19,6 @@ use SDM\Altapay\Model\Handler\CreatePaymentHandler;
 use Magento\Framework\DB\TransactionFactory;
 
 class ApplePayOrder {
-
-    /**
-     * @var OrderLoaderInterface
-     */
-    private $orderLoader;
 
     /**
      * @var Session
@@ -41,11 +34,6 @@ class ApplePayOrder {
      * @var StockRegistryInterface
      */
     private $stockRegistry;
-
-    /**
-     * @var TransactionRepositoryInterface
-     */
-    private $transactionRepository;
 
     /**
      * @var SystemConfig
@@ -68,21 +56,17 @@ class ApplePayOrder {
     private $transactionFactory;
 
     public function __construct(
-        OrderLoaderInterface $orderLoader,
         Session $checkoutSession,
         StockStateInterface $stockItem,
         StockRegistryInterface $stockRegistry,
-        TransactionRepositoryInterface $transactionRepository,
         SystemConfig $systemConfig,
         Order $order,
         CreatePaymentHandler $paymentHandler,
         TransactionFactory $transactionFactory
     ) {
-        $this->orderLoader           = $orderLoader;
         $this->checkoutSession       = $checkoutSession;
         $this->stockItem             = $stockItem;
         $this->stockRegistry         = $stockRegistry;
-        $this->transactionRepository = $transactionRepository;
         $this->systemConfig          = $systemConfig;
         $this->order                 = $order;
         $this->paymentHandler        = $paymentHandler;
@@ -137,7 +121,7 @@ class ApplePayOrder {
                 //save transaction data
                 $parametersData  = null;
                 $transactionData = json_encode($response);
-                $this->transactionRepository->addTransactionData(
+                $this->addTransactionData(
                     $order->getIncrementId(),
                     $transaction->TransactionId,
                     $transaction->PaymentId,
@@ -244,6 +228,27 @@ class ApplePayOrder {
         }
 
         return $isCaptured;
+    }
+
+    /**
+     * It creates the entity and saves the JSON request.
+     *
+     * @param string $orderid
+     * @param string $transactionid
+     * @param string $paymentid
+     * @param string $transactiondata
+     * @param string $parametersdata
+     */
+    public function addTransactionData($orderid, $transactionid, $paymentid, $transactiondata, $parametersdata)
+    {
+        /** @var Transaction $transaction */
+        $transaction = $this->transactionFactory->create();
+        $transaction->setOrderid($orderid);
+        $transaction->setTransactionid($transactionid);
+        $transaction->setPaymentid($paymentid);
+        $transaction->setTransactiondata($transactiondata);
+        $transaction->setParametersdata($parametersdata);
+        $transaction->getResource()->save($transaction);
     }
 
 }

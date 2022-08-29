@@ -10,15 +10,12 @@
 namespace SDM\Altapay\Controller\Index;
 
 use SDM\Altapay\Model\Handler\CreatePaymentHandler;
-use Magento\Framework\App\CsrfAwareActionInterface;
-use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\Action\Context;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Sales\Model\Order;
 
-class Cancel extends Action implements CsrfAwareActionInterface
+class Cancel extends Action
 {
     /**
      * @var Session
@@ -49,23 +46,6 @@ class Cancel extends Action implements CsrfAwareActionInterface
         $this->_checkoutSession = $checkoutSession;
         $this->order            = $order;
         $this->paymentHandler   = $paymentHandler;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function createCsrfValidationException(
-        RequestInterface $request
-    ): ?InvalidRequestException {
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function validateForCsrf(RequestInterface $request): ?bool
-    {
-        return true;
     }
 
     /**
