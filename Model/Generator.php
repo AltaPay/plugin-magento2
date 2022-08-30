@@ -44,6 +44,7 @@ use Magento\Payment\Model\MethodInterface;
 use Magento\Checkout\Model\Cart;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Generator
@@ -51,6 +52,10 @@ use Magento\CatalogInventory\Api\StockRegistryInterface;
  */
 class Generator
 {
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
     /**
      * @var Helper Data
      */
@@ -182,7 +187,8 @@ class Generator
         StockStateInterface $stockItem,
         StockRegistryInterface $stockRegistry,
         Cart $modelCart,
-        ApplePayOrder $applePayOrder
+        ApplePayOrder $applePayOrder,
+        LoggerInterface $logger
     ) {
         $this->quote              = $quote;
         $this->urlInterface       = $urlInterface;
@@ -206,6 +212,7 @@ class Generator
         $this->stockRegistry      = $stockRegistry;
         $this->modelCart          = $modelCart;
         $this->applePayOrder      = $applePayOrder;
+        $this->logger             = $logger;
     }
 
     /**
@@ -645,7 +652,7 @@ class Generator
                     $item,
                     $unitPrice,
                     $couponCodeAmount,
-                    $this->discountHandler->getItemDiscount($discountAmount, $originalPrice, $item->getQtyOrdered()),
+                    $this->discountHandler->getItemDiscount($discountAmount, $productOriginalPrice, $item->getQtyOrdered()),
                     $discountAllItems
                 );
                 $taxAmount            = $dataForPrice["taxAmount"];
@@ -662,8 +669,7 @@ class Generator
                     $discount,
                     $itemTaxAmount,
                     $order,
-                    true,
-                    $discountAllItems
+                    true
                 );
                 $roundingCompensation = $this->priceHandler->compensationAmountCal(
                     $item,

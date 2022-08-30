@@ -172,7 +172,8 @@ class DiscountHandler
         $discountAmount,
         $quantity,
         $discountOnAllItems,
-        $item
+        $item,
+        $taxAmount
     ) {
         $rowTotal = $item->getRowTotal()-$item->getDiscountAmount()+$item->getTaxAmount()+$item->getDiscountTaxCompensationAmount();
         $discount = ['discount' => 0, 'catalogDiscount' => false];
