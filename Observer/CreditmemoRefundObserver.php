@@ -206,8 +206,7 @@ class CreditmemoRefundObserver implements ObserverInterface
                         $discountedAmount,
                         $taxAmount,
                         $memo->getOrder(),
-                        false,
-                        $discountAllItems
+                        false
                     );
                     // Gateway and cms rounding amount
                     $roundingCompensation = $this->priceHandler->compensationAmountCal(
