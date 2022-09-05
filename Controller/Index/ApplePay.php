@@ -11,7 +11,7 @@ namespace SDM\Altapay\Controller\Index;
 
 use SDM\Altapay\Model\SystemConfig;
 use Altapay\Api\Test\TestAuthentication;
-use SDM\Altapay\Api\Payments\CardWalletSession;
+use Altapay\Api\Payments\CardWalletSession;
 use SDM\Altapay\Helper\Config as storeConfig;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultFactory;
