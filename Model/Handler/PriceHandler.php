@@ -49,23 +49,35 @@ class PriceHandler
      *
      * @return mixed
      */
-    public function dataForPrice($item, $unitPrice, $couponCode, $itemDiscount)
+    public function dataForPrice($item, $unitPrice, $couponAmount, $itemDiscount, $discountAllItems)
     {
         $data["catalogDiscount"] = false;
         $taxPercent              = $item->getTaxPercent();
         $quantity                = $item->getQtyOrdered();
         $originalPrice           = $item->getBaseOriginalPrice();
+        $data["taxAmount"]       = $this->calculateTaxAmount($unitPrice, $taxPercent, $quantity);
+        $rowTotal = ($item->getRowTotal()-$item->getDiscountAmount()+$item->getTaxAmount()+$item->getDiscountTaxCompensationAmount());
         if ($this->storeConfig->storePriceIncTax()) {
             $price = $item->getPriceInclTax();
         } else {
             $price = $item->getPrice();
         }
-        $data["taxAmount"] = $this->calculateTaxAmount($unitPrice, $taxPercent, $quantity);
-        if ($originalPrice > $price && empty($couponCode)) {
+        if ($originalPrice > $price && abs((float)$couponAmount) > 0 && !$discountAllItems) {
+            $originalPrice = $originalPrice * $quantity;
+            $originalPriceWithTax = $originalPrice + $data["taxAmount"];
             $data["catalogDiscount"] = true;
-            $data["discount"]        = $this->discountHandler->catalogDiscount($originalPrice, $price);
+            if (!$this->storeConfig->storePriceIncTax()) {
+                $discountAmount = $originalPriceWithTax - $rowTotal;
+                $discountPercentage = ($discountAmount * 100) / $originalPriceWithTax;
+                $data["discount"] = $discountPercentage;
+            } else {
+                $data["discount"] = $this->discountHandler->combinationDiscount($originalPrice, $rowTotal);
+            }
+        } else if ($originalPrice > $price && !(float)$couponAmount) {
+            $data["catalogDiscount"] = true;
+            $data["discount"] = $this->discountHandler->catalogDiscount($originalPrice, $price);
         } else {
-            $data["discount"] = $itemDiscount;
+           $data["discount"] = $itemDiscount;
         }
 
         return $data;
@@ -113,37 +125,20 @@ class PriceHandler
     public function compensationAmountCal(
         $item,
         $unitPrice,
-        $unitPriceWithoutTax,
         $taxAmount,
         $discountedAmount,
-        $couponCodeAmount,
-        $catalogDiscountCheck,
-        $storePriceIncTax,
-        $newOrder
-    ) {
+        $newOrder) 
+        {
         if ($newOrder) {
-            $quantity   = $item->getQtyOrdered();
-            $taxPercent = $item->getTaxPercent();
+            $quantity = $item->getQtyOrdered();
         } else {
-            $quantity   = $item->getQty();
-            $taxPercent = $item->getOrderItem()->getTaxPercent();
+            $quantity = $item->getQty();
         }
-
-        $compensation = 0;
         //Discount compensation calculation - Gateway calculation pattern
         $gatewaySubTotal = ($unitPrice * $quantity) + $taxAmount;
         $gatewaySubTotal = $gatewaySubTotal - ($gatewaySubTotal * ($discountedAmount / 100));
-        // Magento calculation pattern
-        if (abs($couponCodeAmount) > 0 && $storePriceIncTax) {
-            $cmsPriceCal  = $unitPriceWithoutTax * $quantity;
-            $cmsTaxCal    = $cmsPriceCal * ($taxPercent / 100);
-            $cmsSubTotal  = $cmsPriceCal + $cmsTaxCal;
-            $cmsSubTotal  = $cmsSubTotal - ($cmsSubTotal * ($discountedAmount / 100));
-            $compensation = $cmsSubTotal - $gatewaySubTotal;
-        } elseif ($catalogDiscountCheck || empty($couponCodeAmount) || $couponCodeAmount == 0) {
-            $cmsSubTotal  = $item->getBaseRowTotal() + $item->getBaseTaxAmount();
-            $compensation = $cmsSubTotal - $gatewaySubTotal;
-        }
+        $cmsSubTotal = $item->getRowTotal() - $item->getDiscountAmount() + $item->getTaxAmount() + $item->getDiscountTaxCompensationAmount();
+        $compensation = $cmsSubTotal - $gatewaySubTotal;
 
         return $compensation;
     }

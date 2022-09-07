@@ -1,0 +1,37 @@
+<?php
+/**
+ * Altapay Module for Magento 2.x.
+ *
+ * Copyright © 2018 Altapay. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+?>
+
+<script>
+    require([
+        'jquery',
+        'prototype'
+    ], function ($) {
+
+        $('#change_order_status').click(function () {
+
+            var params = {storeid: "<?php echo $block->getUrlInterfaceData(); ?>"};
+            new Ajax.Request('<?php echo $block->getCustomUrl() ?>', {
+                parameters: params,
+                loaderArea: false,
+                asynchronous: true,
+                onSuccess: function (transport) {
+                    if (transport.status > 200) {
+                        resultText = transport.statusText;
+                    } else {
+                        var response = JSON.parse(transport.responseText);
+                        resultText = response.message
+                    }
+                    alert(resultText);
+                }
+            });
+        });
+    });
+</script>
+<?= $block->getButtonHtml(); ?>

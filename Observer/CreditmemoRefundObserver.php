@@ -173,7 +173,7 @@ class CreditmemoRefundObserver implements ObserverInterface
             if ($qty > 0 && $productType != 'bundle') {
                 $discountAmount = $item->getDiscountAmount();
                 $originalPrice  = $item->getOrderItem()->getOriginalPrice();
-
+                $totalPrice     = $originalPrice * $qty;
                 if ($originalPrice == 0) {
                     $originalPrice = $item->getPriceInclTax();
                 }
@@ -186,15 +186,16 @@ class CreditmemoRefundObserver implements ObserverInterface
                 } else {
                     $price           = $item->getPrice();
                     $unitPrice       = $originalPrice;
-                    $priceWithoutTax = $originalPrice;
                     $taxAmount       = $this->priceHandler->calculateTaxAmount($unitPrice, $taxPercent, $qty);
                 }
                 $itemDiscountInformation = $this->discountHandler->getItemDiscountInformation(
-                    $originalPrice,
+                    $totalPrice,
                     $price,
                     $discountAmount,
                     $qty,
-                    $discountAllItems
+                    $discountAllItems,
+                    $item,
+                    $taxAmount
                 );
                 if ($item->getPriceInclTax()) {
                     $discountedAmount = $itemDiscountInformation['discount'];
@@ -211,12 +212,8 @@ class CreditmemoRefundObserver implements ObserverInterface
                     $roundingCompensation = $this->priceHandler->compensationAmountCal(
                         $item,
                         $unitPrice,
-                        $priceWithoutTax,
                         $taxAmount,
                         $discountedAmount,
-                        $couponCodeAmount,
-                        $catalogDiscount,
-                        $storePriceIncTax,
                         false
                     );
                     //send the rounding mismatch value into separate orderline if any
@@ -268,7 +265,7 @@ class CreditmemoRefundObserver implements ObserverInterface
 
         //Update comments if refund fail
         $xml = simplexml_load_string($body);
-        if ($xml->Body->Result == 'Error' || $xml->Body->Result == 'Failed') {
+        if ($xml->Body->Result == 'Error' || $xml->Body->Result == 'Failed' || $xml->Body->Result == 'Incomplete') {
             $orderObject->addStatusHistoryComment('Refund failed: ' . $xml->Body->MerchantErrorMessage)
                         ->setIsCustomerNotified(false);
             $orderObject->getResource()->save($orderObject);
@@ -289,7 +286,7 @@ class CreditmemoRefundObserver implements ObserverInterface
 
         $weeTaxAmount = 0;
         foreach ($memo->getAllItems() as $item) {
-            $weeTaxAmount += $item->getWeeeTaxAppliedRowAmount();
+            $weeTaxAmount +=  $item->getWeeeTaxAppliedRowAmount();
         }
 
         return $weeTaxAmount;

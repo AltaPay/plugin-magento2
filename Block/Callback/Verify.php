@@ -16,5 +16,7 @@ class Verify extends Template
     protected function _prepareLayout()
     {
         $this->setMessage(__('OKAY'));
+
+        return $this;
     }
 }

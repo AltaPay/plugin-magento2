@@ -90,13 +90,29 @@ class DiscountHandler
      *
      * @return int|string
      */
-    public function orderLineDiscount($discountOnAllItems, $discount)
+    public function orderLineDiscount($discountOnAllItems, $discount, $catalogDiscount)
     {
-        if ($discountOnAllItems) {
+        if ($discountOnAllItems && !$catalogDiscount) {
             $discount = 0;
         }
 
         return number_format($discount, 2, '.', '');
+    }
+
+    /**
+     * Calculate combination of cart and catalog price rule.
+     *
+     * @param $originalPrice
+     * @param $rowTotal
+     *
+     * @return float|int
+     */
+    public function combinationDiscount($originalPrice, $rowTotal)
+    {
+        $discountAmount = $originalPrice - $rowTotal;
+        $discountPercentage = ($discountAmount / $originalPrice) * 100;
+
+        return number_format($discountPercentage, 2, '.', '');
     }
 
     /**
@@ -143,7 +159,7 @@ class DiscountHandler
 
     /**
      * @param $originalPrice
-     * @param $discountedPrice
+     * @param $priceInclTax
      * @param $discountAmount
      * @param $quantity
      * @param $discountOnAllItems
@@ -152,19 +168,32 @@ class DiscountHandler
      */
     public function getItemDiscountInformation(
         $originalPrice,
-        $discountedPrice,
+        $priceInclTax,
         $discountAmount,
         $quantity,
-        $discountOnAllItems
+        $discountOnAllItems,
+        $item,
+        $taxAmount
     ) {
+        $rowTotal = $item->getRowTotal()-$item->getDiscountAmount()+$item->getTaxAmount()+$item->getDiscountTaxCompensationAmount();
         $discount = ['discount' => 0, 'catalogDiscount' => false];
-        if (!empty($discountAmount)) {
+        $originalPriceWithTax = $originalPrice + $taxAmount;
+        if ($discountAmount && $originalPrice == $priceInclTax) {
             $discountAmount = ($discountAmount * 100) / ($originalPrice * $quantity);
-        } elseif ($originalPrice > 0 && $originalPrice > $discountedPrice) {
-            $discount['catalog'] = true;
-            $discountAmount      = $this->catalogDiscount($originalPrice, $discountedPrice);
+        } elseif ($originalPrice > 0 && $originalPrice > $priceInclTax && empty($discountAmount)) {
+            $discount['catalogDiscount'] = true;
+            $discountAmount      = $this->catalogDiscount($originalPrice, $priceInclTax);
+        } elseif ($originalPrice > 0 && $originalPrice > $priceInclTax && $discountAmount) {
+            $discount['catalogDiscount'] = true;
+            if (!$this->storeConfig->storePriceIncTax()) {
+                $discountAmount = $originalPriceWithTax - $rowTotal;
+                $discountPercentage = ($discountAmount * 100) / $originalPriceWithTax;
+                $discountAmount = $discountPercentage;
+            } else {
+                $discountAmount = $this->combinationDiscount($originalPrice, $rowTotal);
+            }
         }
-        $discount['discount'] = $this->orderLineDiscount($discountOnAllItems, $discountAmount);
+        $discount['discount'] = $this->orderLineDiscount($discountOnAllItems, $discountAmount, $discount['catalogDiscount']);
 
         return $discount;
     }
@@ -180,9 +209,18 @@ class DiscountHandler
     {
         $discountOnAllItems = true;
         foreach ($orderItems as $item) {
-            $appliedRule = $item->getAppliedRuleIds();
-            $productType = $item->getProductType();
-            if (!empty($appliedRule)) {
+            $appliedRule    = $item->getAppliedRuleIds();
+            $productType    = $item->getProductType();
+            $originalPrice  = $item->getBaseOriginalPrice();
+
+            if ($this->storeConfig->storePriceIncTax()) {
+                $price = $item->getPriceInclTax();
+            } else {
+                $price = $item->getPrice();
+            }        
+            if ($originalPrice > $price) {
+                $discountOnAllItems = false;
+            } elseif (!empty($appliedRule)) {
                 $appliedRuleArr = explode(",", $appliedRule);
                 foreach ($appliedRuleArr as $ruleId) {
                     $coupon = $this->storeConfig->getRuleInformationByID($ruleId);

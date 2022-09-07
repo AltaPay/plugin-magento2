@@ -2,7 +2,7 @@
 /**
  * Altapay Module for Magento 2.x.
  *
- * Copyright © 2020 Altapay. All rights reserved.
+ * Copyright © 2018 Altapay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -15,21 +15,24 @@ use Magento\Framework\UrlInterface;
 use Magento\Payment\Helper\Data;
 use Altapay\Api\Test\TestAuthentication;
 use Altapay\Api\Test\TestConnection;
-use Magento\Store\Model\ScopeInterface;
 use SDM\Altapay\Model\SystemConfig;
-use Altapay\Authentication;
+use SDM\Altapay\Authentication;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Payment\Model\Config;
 use Magento\Payment\Model\Config\Source\Allmethods;
 use Magento\Framework\View\Asset\Repository;
 use SDM\Altapay\Model\TokenFactory;
 use Magento\Customer\Model\Session;
-use Magento\Payment\Model\MethodInterface;
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Store\Model\StoreManagerInterface;
 
 class ConfigProvider implements ConfigProviderInterface
 {
     const CODE = 'sdm_altapay';
 
+    protected $_checkoutSession;
+
+    protected $_storeManager;
     /**
      * @var Data
      */
@@ -89,7 +92,9 @@ class ConfigProvider implements ConfigProviderInterface
         ScopeConfigInterface $scopeConfig,
         Repository $assetRepository,
         TokenFactory $dataToken,
-        Session $customerSession
+        Session $customerSession,
+        CheckoutSession $checkoutSession,
+        StoreManagerInterface $storeManager
     ) {
         $this->data             = $data;
         $this->escaper          = $escaper;
@@ -100,6 +105,8 @@ class ConfigProvider implements ConfigProviderInterface
         $this->assetRepository  = $assetRepository;
         $this->dataToken        = $dataToken;
         $this->customerSession  = $customerSession;
+        $this->_checkoutSession = $checkoutSession;
+        $this->_storeManager    = $storeManager;
     }
 
     /**
@@ -111,7 +118,12 @@ class ConfigProvider implements ConfigProviderInterface
     {
         $store               = null;
         $activePaymentMethod = $this->getActivePaymentMethod();
-
+        $getCurrentQuote     = $this->_checkoutSession->getQuote();
+        $config                     = [];
+        $baseUrl                    = $this->_storeManager->getStore()->getBaseUrl();
+        $grandTotal                 = $getCurrentQuote->getGrandTotal();
+        $countryCode                = $this->scopeConfig->getValue('general/country/default',
+        \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         return [
             'payment' => [
                 self::CODE => [
@@ -120,7 +132,11 @@ class ConfigProvider implements ConfigProviderInterface
                     ),
                     'auth'         => $this->checkAuth(),
                     'connection'   => $this->checkConn(),
-                    'terminaldata' => $activePaymentMethod
+                    'terminaldata' => $activePaymentMethod,
+                    'grandTotalAmount' => $grandTotal,
+                    'countryCode' => $countryCode,
+                    'currencyCode' => $this->_storeManager->getStore()->getBaseCurrencyCode(),
+                    'baseUrl' => $baseUrl
                 ]
             ]
         ];
@@ -128,7 +144,7 @@ class ConfigProvider implements ConfigProviderInterface
 
     public function getActivePaymentMethod()
     {
-        $storeScope        = ScopeInterface::SCOPE_STORE;
+        $storeScope        = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
         $storeCode         = $this->systemConfig->resolveCurrentStoreCode();
         $methods           = [];
         $allPaymentMethod  = $this->data->getPaymentMethods();
@@ -166,12 +182,15 @@ class ConfigProvider implements ConfigProviderInterface
             $terminalStatus = $this->scopeConfig->getValue($paymentCode . '/active', $storeScope, $storeCode);
             $terminalLogo   = $this->scopeConfig->getValue($paymentCode . '/terminallogo', $storeScope, $storeCode);
             if (!empty($terminalLogo)) {
-                $logoURL = $this->getLogoFilePath($terminalLogo);
+                $logoURL = $this->getLogoPath($terminalLogo);
             } else {
                 $logoURL = '';
             }
             $showBoth      = $this->scopeConfig->getValue($paymentCode . '/showlogoandtitle', $storeScope, $storeCode);
             $saveCardToken = $this->scopeConfig->getValue($paymentCode . '/savecardtoken', $storeScope, $storeCode);
+            $isApplePay    = $this->scopeConfig->getValue($paymentCode . '/isapplepay', $storeScope, $storeCode);
+            $applePayLabel = $this->scopeConfig->getValue($paymentCode . '/applepaylabel', $storeScope, $storeCode);
+            
             if ($terminalStatus == 1) {
                 $methods[$key] = [
                     'label'             => $label,
@@ -180,7 +199,9 @@ class ConfigProvider implements ConfigProviderInterface
                     'terminalstatus'    => $terminalStatus,
                     'terminallogo'      => $logoURL,
                     'showlogoandtitle'  => $showBoth,
-                    'enabledsavetokens' => $saveCardToken
+                    'enabledsavetokens' => $saveCardToken,
+                    'isapplepay'        => $isApplePay,
+                    'applepaylabel'     => $applePayLabel
                 ];
                 if ($saveCardToken == 1 && !empty($savedTokenList)) {
                     $methods[$key]['savedtokenlist']          = json_encode($savedTokenList);
@@ -197,16 +218,18 @@ class ConfigProvider implements ConfigProviderInterface
      *
      * @return mixed|null
      */
-    public function getLogoFilePath($name)
+    public function getLogoPath($name)
     {
-        $fileId = 'SDM_Altapay::images/' . $name . '.png';
-        $params = ['area' => 'frontend'];
-        $asset  = $this->assetRepository->createAsset($fileId, $params);
-        try {
-            return $asset->getUrl();
-        } catch (\Exception $e) {
-            return null;
+        $path = [];
+        $terminalLogo   = explode(",",$name);
+        foreach ($terminalLogo as $logoName) {
+            $fileId = 'SDM_Altapay::images/' . $logoName . '.png';
+            $params = ['area' => 'frontend'];
+            $asset  = $this->assetRepository->createAsset($fileId, $params);
+            $path[] = $asset->getUrl();
         }
+
+        return $path;
     }
 
     public function checkAuth()
@@ -242,7 +265,7 @@ class ConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * @return MethodInterface
+     * @return \Magento\Payment\Model\MethodInterface
      */
     protected function getData()
     {
@@ -250,7 +273,7 @@ class ConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * @param array $collection
+     * @param $collection
      *
      * @return string
      */

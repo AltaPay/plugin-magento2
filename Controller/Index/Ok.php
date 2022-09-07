@@ -27,6 +27,7 @@ class Ok extends Index
         $this->writeLog();
         $checkAvs = false;
         $post     = $this->getRequest()->getPostValue();
+        $orderId  = $post['shop_orderid'];
         if (isset($post['avs_code']) && isset($post['avs_text'])) {
             $checkAvs = $this->generator->avsCheck(
                 $this->getRequest(),
@@ -37,7 +38,7 @@ class Ok extends Index
         if ($this->checkPost() && $checkAvs == false) {
             $this->generator->handleOkAction($this->getRequest());
 
-            return $this->_redirect('checkout/onepage/success');
+            return $this->setSuccessPath($orderId);
 
         } else {
             $this->_eventManager->dispatch('order_cancel_after', ['order' => $this->order]);

@@ -1,6 +1,32 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.0.0]
+**Improvements**
+- Add support when cart and catalog rules are applied simultaneously
+- Make text "No saved credit cards" translatable
+- Add a button to trigger the sync of the terminals with the gateway
+- Add configurations section to setup cron scheduler to change the status of the pending order to cancel
+- Add support for Apple Pay
+- Support multiple logos/icons option for terminals.
+
+**Fixes**
+- Cancel order issues when there is no transaction
+- Order failing issue when applying a fixed discount on the cart
+- Product stock not updating when order status change from cancel to processing
+- Saved credit cards grid styling for mobile view
+- Success page rendering issue when placing an order in incognito mode with the MobilePay
+- Cancel order if payment_status is "released" in notification callback
+- Handle empty synch button response
+- Stock quantity calculation issue
+- Canceled order qty from item grid is missing
+- Order status set to "closed" despite the orders being in a pre-auth state.
+- Order status set to "closed" for "Vipps" payment method
+- Incorrect discount calculation 
+- Support tax exclusive configurations
+- Order status set to "pending" on "incomplete" response
+- Release stock qty on order cancellation
+
 ## [2.0.5]
 **Fixes**
 - Resolve compilation issue for Magento 2.1.9 and below

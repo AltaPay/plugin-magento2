@@ -60,6 +60,7 @@ class Fail extends Index
                     break;
                 case "failed":
                 case "error":
+                case "incomplete":
                     $this->generator->handleFailedStatusAction($this->getRequest(), $msg, $merchantError, $status);
                     break;
                 default:
@@ -69,7 +70,7 @@ class Fail extends Index
             $msg = $e->getMessage();
         }
 
-        if ($status == 'failed' || $status == 'error' || $status == 'cancelled') {
+        if ($status == 'failed' || $status == 'error' || $status == 'cancelled' || $status == 'incomplete') {
             $resultRedirect = $this->prepareRedirect('checkout/cart', [], $msg);
         } else {
             $resultRedirect = $this->prepareRedirect('checkout', ['_fragment' => 'payment'], $msg);

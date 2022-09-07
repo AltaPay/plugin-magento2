@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 -->
-<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())},visible : terminalStatus()">
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())},visible : terminalStatus(),visible : terminalName()">
     <div class="payment-method-title field choice">
         <input type="radio"
                name="payment[method]"
@@ -17,7 +17,9 @@
         <label data-bind="attr: {'for': getCode()}" class="label">
             <span data-bind="text: terminalName()"></span>&nbsp;
             <!-- ko if: terminalLogo() -->
-            <img style="vertical-align: middle;max-width: 100px;" data-bind="attr:{src: terminalLogo()}"/>
+            <!-- ko foreach: { data: terminalLogo(), as: 'item' } -->
+            <img style="vertical-align: middle;max-width: 100px;" data-bind="attr:{src: item}"/>
+            <!-- /ko -->
             <!-- /ko -->
         </label>
     </div>
